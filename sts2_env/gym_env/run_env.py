@@ -240,7 +240,7 @@ class STS2RunEnv(gymnasium.Env):
     character_id : str
         Character to play (``"Ironclad"``, ``"Silent"``, etc.).
     ascension_level : int
-        Ascension level (0-20).
+        Ascension level (0-10).
     max_steps : int
         Maximum environment steps before the episode is truncated.
     max_combat_turns : int
@@ -273,6 +273,8 @@ class STS2RunEnv(gymnasium.Env):
         max_steps: int = DEFAULT_MAX_STEPS,
         max_combat_turns: int = DEFAULT_MAX_COMBAT_TURNS,
         render_mode: str | None = None,
+        act_count: int = 3,
+        strict_errors: bool = False,
     ):
         super().__init__()
 
@@ -284,6 +286,15 @@ class STS2RunEnv(gymnasium.Env):
         )
         self.action_space = spaces.Discrete(_LAYOUT.total_actions)
 
+        from sts2_env.characters import get_character
+        get_character(character_id)
+        if act_count not in (1, 2, 3):
+            raise ValueError("act_count must be 1, 2, or 3")
+        if not 0 <= ascension_level <= 10:
+            raise ValueError("ascension_level must be between 0 and 10")
+        self.act_count = act_count
+        self.strict_errors = strict_errors
+        self._simulation_error = None
         self._character_id = character_id
         self._ascension_level = ascension_level
         self.max_steps = max_steps
@@ -316,6 +327,7 @@ class STS2RunEnv(gymnasium.Env):
         )
         self._step_count = 0
         self._episode_ended = False
+        self._simulation_error = None
 
         obs = self._encode_obs()
         info = self._build_info()
@@ -356,12 +368,20 @@ class STS2RunEnv(gymnasium.Env):
                 self._step_event(action)
             elif phase == RunManager.PHASE_TREASURE:
                 self._step_treasure()
-        except Exception:
+        except Exception as exc:
+            self._simulation_error = f"{type(exc).__name__}: {exc}"
+            if self.strict_errors:
+                raise
             # Guard against simulation bugs so the episode can finish.
             # Force-end as a loss if the run is not already over.
             logger.exception("STS2RunEnv.step failed during phase %s with action %s", phase, action)
             if not self._mgr.is_over:
                 self._mgr.run_state.lose_run()
+
+        # Reaching the next act completes the curriculum, not the full game.
+        if (not self._mgr.is_over
+                and self._mgr.run_state.current_act_index >= self.act_count):
+            self._mgr.run_state.win_run()
 
         # ---- terminal conditions ----
         terminated = self._mgr.is_over
@@ -776,6 +796,9 @@ class STS2RunEnv(gymnasium.Env):
         if self._mgr is not None:
             rs = self._mgr.run_state
             info.update({
+                "simulation_error": self._simulation_error,
+                "curriculum_win": bool(self._mgr.player_won),
+                "full_run_win": bool(self._mgr.player_won and self.act_count == 3),
                 "phase": self._mgr.phase,
                 "act": rs.current_act_index,
                 "floor": rs.total_floor,
