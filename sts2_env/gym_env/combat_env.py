@@ -9,9 +9,9 @@ import numpy as np
 from gymnasium import spaces
 
 from sts2_env.cards.base import reset_instance_counter
-from sts2_env.cards.ironclad import create_ironclad_starter_deck
+from sts2_env.characters import create_starting_deck, get_character
 from sts2_env.core.combat import CombatState
-from sts2_env.core.constants import ACTION_END_TURN, ACTION_SPACE_SIZE, IRONCLAD_STARTING_HP
+from sts2_env.core.constants import ACTION_END_TURN, ACTION_SPACE_SIZE
 from sts2_env.encounters.act1 import ALL_ACT1_ENCOUNTERS, EncounterSetup
 from sts2_env.core.rng import INT_MAX_EXCLUSIVE, Rng
 from sts2_env.gym_env.action_space import (
@@ -47,10 +47,13 @@ class STS2CombatEnv(gymnasium.Env):
     def __init__(
         self,
         encounter_pool: list[EncounterSetup] | None = None,
-        player_hp: int = IRONCLAD_STARTING_HP,
-        player_max_hp: int = IRONCLAD_STARTING_HP,
+        player_hp: int | None = None,
+        player_max_hp: int | None = None,
         max_turns: int = 200,
         render_mode: str | None = None,
+        character_id: str = "Ironclad",
+        ascension_level: int = 0,
+        starting_relic: bool = False,
     ):
         super().__init__()
         self.observation_space = spaces.Box(
@@ -58,8 +61,14 @@ class STS2CombatEnv(gymnasium.Env):
         )
         self.action_space = spaces.Discrete(ACTION_SPACE_SIZE)
         self.encounter_pool = encounter_pool or ALL_ACT1_ENCOUNTERS
-        self.player_hp = player_hp
-        self.player_max_hp = player_max_hp
+        config = get_character(character_id)
+        if not 0 <= ascension_level <= 10:
+            raise ValueError("ascension_level must be between 0 and 10")
+        self.character_id = config.character_id
+        self.ascension_level = ascension_level
+        self.starting_relic = starting_relic
+        self.player_max_hp = config.starting_hp if player_max_hp is None else player_max_hp
+        self.player_hp = self.player_max_hp if player_hp is None else player_hp
         self.max_turns = max_turns
         self.render_mode = render_mode
 
@@ -77,7 +86,7 @@ class STS2CombatEnv(gymnasium.Env):
         rng = Rng(rng_seed)
 
         # Create deck
-        deck = create_ironclad_starter_deck()
+        deck = create_starting_deck(self.character_id)
 
         # Create combat
         self.combat = CombatState(
@@ -85,7 +94,9 @@ class STS2CombatEnv(gymnasium.Env):
             player_max_hp=self.player_max_hp,
             deck=deck,
             rng_seed=rng_seed,
-            character_id="Ironclad",
+            character_id=self.character_id,
+            ascension_level=self.ascension_level,
+            relics=[get_character(self.character_id).starting_relic] if self.starting_relic else [],
         )
 
         # Setup encounter
@@ -97,7 +108,8 @@ class STS2CombatEnv(gymnasium.Env):
         self.combat.start_combat()
 
         obs = encode_observation(self.combat)
-        info = {"action_mask": get_action_mask(self.combat)}
+        info = {"action_mask": get_action_mask(self.combat),
+                "combat_win": bool(self.combat.is_over and self.combat.player_won)}
         return obs, info
 
     def step(self, action: int):
@@ -142,7 +154,8 @@ class STS2CombatEnv(gymnasium.Env):
             # final observation is returned as-is) and any later step() call
             # is rejected by the _episode_ended guard.
             self._episode_ended = True
-        info = {"action_mask": get_action_mask(self.combat)}
+        info = {"action_mask": get_action_mask(self.combat),
+                "combat_win": bool(self.combat.is_over and self.combat.player_won)}
 
         return obs, reward, terminated, truncated, info
 

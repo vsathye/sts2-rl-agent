@@ -1,5 +1,10 @@
 # STS2 RL Agent
 
+> **Fork:** Per-character training and a versioned character observation are
+> available. See [Multi-character experiments](docs/MULTICHARACTER.md) for the
+> maintained commands, validation status, and simulator-only limitations.
+> Upstream performance claims below have not been reproduced by this fork.
+
 A reinforcement learning agent for **Slay the Spire 2**, built on a high-performance headless combat simulator and a Gymnasium training environment. Includes a C# bridge mod for connecting the trained agent to the real game.
 
 ## Architecture

@@ -1,0 +1,222 @@
+{
+  "status": "correctness_only_no_performance_verdict",
+  "upstream_commit": "5d874e855ae1d0550d5c30416fadd7dbb0d133b7",
+  "tests": {
+    "upstream_passed": 4862,
+    "new_regressions_passed": 21,
+    "upstream_seconds": 326.09,
+    "note": "Upstream suite and new regression file run separately. One sandbox pytest-cache write warning."
+  },
+  "ppo_smokes": [
+    {
+      "mode": "combat",
+      "character": "Ironclad",
+      "exit_code": 0,
+      "timesteps": 32,
+      "truncations": 0,
+      "episodes": 2
+    },
+    {
+      "mode": "combat",
+      "character": "Silent",
+      "exit_code": 0,
+      "timesteps": 32,
+      "truncations": 0,
+      "episodes": 2
+    },
+    {
+      "mode": "combat",
+      "character": "Defect",
+      "exit_code": 0,
+      "timesteps": 32,
+      "truncations": 0,
+      "episodes": 2
+    },
+    {
+      "mode": "combat",
+      "character": "Necrobinder",
+      "exit_code": 0,
+      "timesteps": 32,
+      "truncations": 0,
+      "episodes": 2
+    },
+    {
+      "mode": "combat",
+      "character": "Regent",
+      "exit_code": 0,
+      "timesteps": 32,
+      "truncations": 0,
+      "episodes": 2
+    },
+    {
+      "mode": "run",
+      "character": "Ironclad",
+      "exit_code": 0,
+      "timesteps": 32,
+      "truncations": 1,
+      "episodes": 2
+    },
+    {
+      "mode": "run",
+      "character": "Silent",
+      "exit_code": 0,
+      "timesteps": 32,
+      "truncations": 0,
+      "episodes": 2
+    },
+    {
+      "mode": "run",
+      "character": "Defect",
+      "exit_code": 0,
+      "timesteps": 32,
+      "truncations": 0,
+      "episodes": 2
+    },
+    {
+      "mode": "run",
+      "character": "Necrobinder",
+      "exit_code": 0,
+      "timesteps": 32,
+      "truncations": 2,
+      "episodes": 2
+    },
+    {
+      "mode": "run",
+      "character": "Regent",
+      "exit_code": 0,
+      "timesteps": 32,
+      "truncations": 2,
+      "episodes": 2
+    }
+  ],
+  "ppo_smoke_settings": {
+    "n_steps": 16,
+    "batch_size": 16,
+    "n_epochs": 1,
+    "eval_freq": 16,
+    "eval_episodes": 1,
+    "test_episodes": 2,
+    "max_steps": 128,
+    "observation": "character-v1",
+    "device": "cpu"
+  },
+  "additional_checks": {
+    "two_worker_defect_a1": {
+      "timesteps": 32,
+      "n_envs": 2,
+      "episodes": 2,
+      "passed": true
+    },
+    "necrobinder_starting_relic_model_seed_2000000": {
+      "timesteps": 32,
+      "passed": true
+    },
+    "checkpoint_reload_exact_episode_match": true,
+    "legacy_benchmark_matches_upstream": {
+      "episodes": 1000,
+      "steps": 21845,
+      "wins": 291,
+      "losses": 709,
+      "truncated": 0
+    }
+  },
+  "a1_random_smokes": [
+    {
+      "mode": "combat",
+      "character": "Ironclad",
+      "episodes": 10,
+      "truncations": 0,
+      "max_steps": 1000,
+      "seed_start": 2000000,
+      "starting_relic": true
+    },
+    {
+      "mode": "combat",
+      "character": "Silent",
+      "episodes": 10,
+      "truncations": 0,
+      "max_steps": 1000,
+      "seed_start": 2000000,
+      "starting_relic": true
+    },
+    {
+      "mode": "combat",
+      "character": "Defect",
+      "episodes": 10,
+      "truncations": 0,
+      "max_steps": 1000,
+      "seed_start": 2000000,
+      "starting_relic": true
+    },
+    {
+      "mode": "combat",
+      "character": "Necrobinder",
+      "episodes": 10,
+      "truncations": 0,
+      "max_steps": 1000,
+      "seed_start": 2000000,
+      "starting_relic": true
+    },
+    {
+      "mode": "combat",
+      "character": "Regent",
+      "episodes": 10,
+      "truncations": 0,
+      "max_steps": 1000,
+      "seed_start": 2000000,
+      "starting_relic": true
+    },
+    {
+      "mode": "run",
+      "character": "Ironclad",
+      "episodes": 10,
+      "truncations": 0,
+      "max_steps": 1000,
+      "seed_start": 2000000,
+      "starting_relic": false
+    },
+    {
+      "mode": "run",
+      "character": "Silent",
+      "episodes": 10,
+      "truncations": 0,
+      "max_steps": 1000,
+      "seed_start": 2000000,
+      "starting_relic": false
+    },
+    {
+      "mode": "run",
+      "character": "Defect",
+      "episodes": 10,
+      "truncations": 0,
+      "max_steps": 1000,
+      "seed_start": 2000000,
+      "starting_relic": false
+    },
+    {
+      "mode": "run",
+      "character": "Necrobinder",
+      "episodes": 10,
+      "truncations": 0,
+      "max_steps": 1000,
+      "seed_start": 2000000,
+      "starting_relic": false
+    },
+    {
+      "mode": "run",
+      "character": "Regent",
+      "episodes": 10,
+      "truncations": 0,
+      "max_steps": 1000,
+      "seed_start": 2000000,
+      "starting_relic": false
+    }
+  ],
+  "limits": [
+    "32-step PPO trials verify updates, mask-aware evaluation and persistence only.",
+    "No reproduction of the advertised Ironclad trained win rate.",
+    "No real-game bridge validation for character-v1.",
+    "Noncombat option content and other observation gaps remain.",
+    "Ten-trial matrix preceded the final seed-schedule hardening and restoration of the upstream full-run 256x256 network; final two-worker and seed checks exercised those final changes."
+  ]
+}

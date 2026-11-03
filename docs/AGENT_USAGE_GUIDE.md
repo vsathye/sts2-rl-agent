@@ -1,3 +1,7 @@
+> **Fork note:** This is upstream historical documentation. For supported training
+> flags and evaluation in this fork, use [MULTICHARACTER.md](MULTICHARACTER.md).
+> Reward shaping is not implemented; the old flags are no longer accepted.
+
 # Agent Usage Guide
 
 This guide covers training RL agents and running them against the real Slay the Spire 2 game.
