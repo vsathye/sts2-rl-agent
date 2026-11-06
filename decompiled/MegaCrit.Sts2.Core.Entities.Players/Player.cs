@@ -37,7 +37,7 @@ public class Player
 
 	private int _gold;
 
-	private bool _canRemovePotions = true;
+	private bool _canUseOrRemovePotions = true;
 
 	public int MaxPotionCount => _potionSlots.Count;
 
@@ -165,16 +165,20 @@ public class Player
 
 	public bool HasOpenPotionSlots => _potionSlots.Any((PotionModel p) => p == null);
 
-	public bool CanRemovePotions
+	/// <summary>
+	/// Can this player use or remove potions?
+	/// Usually true, but set to false during some sensitive timing spots.
+	/// </summary>
+	public bool CanUseOrRemovePotions
 	{
 		get
 		{
-			return _canRemovePotions;
+			return _canUseOrRemovePotions;
 		}
 		set
 		{
-			_canRemovePotions = value;
-			this.CanRemovePotionsChanged?.Invoke();
+			_canUseOrRemovePotions = value;
+			this.CanUseOrRemovePotionsChanged?.Invoke();
 		}
 	}
 
@@ -239,7 +243,7 @@ public class Player
 
 	public event Action? GoldChanged;
 
-	public event Action? CanRemovePotionsChanged;
+	public event Action? CanUseOrRemovePotionsChanged;
 
 	public bool HasEventPet()
 	{
@@ -262,7 +266,7 @@ public class Player
 		BaseOrbSlotCount = orbSlotCount;
 		RelicGrabBag = sharedRelicGrabBag;
 		UnlockState = unlockState;
-		PlayerRng = new PlayerRngSet(0u);
+		PlayerRng = new PlayerRngSet(0uL);
 		PlayerOdds = new PlayerOddsSet(PlayerRng);
 		DiscoveredCards = discoveredCards ?? new List<ModelId>();
 		DiscoveredEnemies = discoveredEnemies ?? new List<ModelId>();
@@ -323,7 +327,7 @@ public class Player
 
 	public void InitializeSeed(string seed)
 	{
-		PlayerRng = new PlayerRngSet((uint)(StringHelper.GetDeterministicHashCode(seed) + _runState.GetPlayerSlotIndex(this)));
+		PlayerRng = new PlayerRngSet(StringHelper.GetDeterministicHashCode(seed) + (ulong)_runState.GetPlayerSlotIndex(this));
 		PlayerOdds = new PlayerOddsSet(PlayerRng);
 	}
 

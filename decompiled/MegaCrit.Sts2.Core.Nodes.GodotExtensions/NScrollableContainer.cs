@@ -407,7 +407,7 @@ public class NScrollableContainer : Control
 
 	private void ProcessGuiFocus(Control focusedControl)
 	{
-		if (_content != null && IsVisibleInTree() && NControllerManager.Instance.IsUsingController && !(focusedControl is NDropdownItem) && _content.IsAncestorOf(focusedControl))
+		if (_content != null && IsVisibleInTree() && NControllerManager.Instance.IsUsingDirectionalNavigation && !(focusedControl is NDropdownItem) && _content.IsAncestorOf(focusedControl))
 		{
 			float num = _content.GlobalPosition.Y - focusedControl.GlobalPosition.Y;
 			float value = num + ScrollViewportSize * 0.5f;
@@ -427,18 +427,17 @@ public class NScrollableContainer : Control
 		float num = _paddingTop + _targetDragPosY;
 		if (!Mathf.IsEqualApprox(_content.Position.Y, num))
 		{
-			float y = Mathf.Lerp(_content.Position.Y, num, (float)delta * 15f);
+			float a = Mathf.Sign(_content.Position.Y - num);
+			float num2 = Mathf.Lerp(_content.Position.Y, num, (float)delta * 15f);
+			float b = Mathf.Sign(num2 - num);
+			if (Math.Abs(num2 - num) < 0.5f || !Mathf.IsEqualApprox(a, b))
+			{
+				num2 = num;
+			}
 			Control? content = _content;
 			Vector2 position = _content.Position;
-			position.Y = y;
+			position.Y = num2;
 			content.Position = position;
-			if (Mathf.Abs(_content.Position.Y - num) < 0.5f)
-			{
-				Control? content2 = _content;
-				position = _content.Position;
-				position.Y = num;
-				content2.Position = position;
-			}
 			if (!_scrollbarPressed && ScrollLimitBottom < 0f)
 			{
 				Scrollbar.SetValueWithoutAnimation(Mathf.Clamp((_content.Position.Y - _paddingTop) / ScrollLimitBottom, 0f, 1f) * 100f);

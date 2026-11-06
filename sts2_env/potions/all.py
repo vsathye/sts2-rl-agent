@@ -125,3 +125,5 @@ _r(FOUL_POTION_ID,        E,  AT, S)
 _r("GlowwaterPotion",     E,  CO, S)
 _r("PotionShapedRock",    T,  CO, AE)
 _r("DeprecatedPotion",    N,  CO, AE)
+
+_r("Ambergris", E, AT, AP)

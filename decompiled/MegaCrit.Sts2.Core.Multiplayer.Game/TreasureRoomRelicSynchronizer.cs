@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using MegaCrit.Sts2.Core.Context;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Entities.Relics;
 using MegaCrit.Sts2.Core.Entities.TreasureRelicPicking;
@@ -17,7 +16,6 @@ using MegaCrit.Sts2.Core.Random;
 using MegaCrit.Sts2.Core.Rooms;
 using MegaCrit.Sts2.Core.Runs;
 using MegaCrit.Sts2.Core.Runs.History;
-using MegaCrit.Sts2.Core.Unlocks;
 
 namespace MegaCrit.Sts2.Core.Multiplayer.Game;
 
@@ -107,7 +105,7 @@ public class TreasureRoomRelicSynchronizer
 			if (Hook.ShouldGenerateTreasure(runState, player))
 			{
 				RelicRarity rarity = RelicFactory.RollRarity(_rng);
-				RelicModel item = TryGetRelicForTutorial(runState.UnlockState) ?? _sharedGrabBag.PullFromFront(rarity, runState) ?? RelicFactory.FallbackRelic;
+				RelicModel item = TryGetRelicForTutorial(player) ?? _sharedGrabBag.PullFromFront(rarity, runState) ?? RelicFactory.FallbackRelic;
 				_currentRelics.Add(item);
 			}
 		}
@@ -160,7 +158,8 @@ public class TreasureRoomRelicSynchronizer
 		}
 		if (_currentRelics == null)
 		{
-			throw new InvalidOperationException("Attempted to pick relic while relic picking is not active!");
+			_logger.Warn("Attempted to pick relic while relic picking is not active!");
+			return;
 		}
 		_predictedVote = new PlayerVote
 		{
@@ -341,11 +340,12 @@ public class TreasureRoomRelicSynchronizer
 	/// If treasure room rarity should be forced because the player is currently playing a tutorial run, this returns
 	/// a non-null rarity. Otherwise, the rarity is randomized.
 	/// </summary>
-	private RelicModel? TryGetRelicForTutorial(UnlockState unlockState)
+	private RelicModel? TryGetRelicForTutorial(Player player)
 	{
-		if (unlockState.NumberOfRuns == 0 && LocalContext.GetMe(_playerCollection).RunState.MapPointHistory.SelectMany((IReadOnlyList<MapPointHistoryEntry> l) => l).Count((MapPointHistoryEntry p) => p.HasRoomOfType(RoomType.Treasure)) == 1)
+		if (_playerCollection.Players.Count == 1 && player.UnlockState.NumberOfRuns == 0 && player.RunState.MapPointHistory.SelectMany((IReadOnlyList<MapPointHistoryEntry> l) => l).Count((MapPointHistoryEntry p) => p.HasRoomOfType(RoomType.Treasure)) == 1 && player.RelicGrabBag.Contains(ModelDb.Relic<Gorget>()))
 		{
 			Log.Info("Forcing specific relic because it's the player's first treasure chest ever");
+			player.RelicGrabBag.Remove<Gorget>();
 			_sharedGrabBag.Remove<Gorget>();
 			return ModelDb.Relic<Gorget>();
 		}

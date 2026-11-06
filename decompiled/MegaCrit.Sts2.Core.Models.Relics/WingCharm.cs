@@ -19,7 +19,7 @@ public sealed class WingCharm : RelicModel
 
 	protected override IEnumerable<DynamicVar> CanonicalVars => new global::_003C_003Ez__ReadOnlySingleElementList<DynamicVar>(new DynamicVar("SwiftAmount", 1m));
 
-	protected override IEnumerable<IHoverTip> ExtraHoverTips => HoverTipFactory.FromEnchantment<Swift>(base.DynamicVars["SwiftAmount"].IntValue);
+	protected override IEnumerable<IHoverTip> ExtraHoverTips => HoverTipFactory.FromEnchantment<MegaCrit.Sts2.Core.Models.Enchantments.Swift>(base.DynamicVars["SwiftAmount"].IntValue);
 
 	public override bool TryModifyCardRewardOptionsLate(Player player, List<CardCreationResult> cardRewards, CardCreationOptions options)
 	{
@@ -27,7 +27,7 @@ public sealed class WingCharm : RelicModel
 		{
 			return false;
 		}
-		Swift canonicalSwift = ModelDb.Enchantment<Swift>();
+		MegaCrit.Sts2.Core.Models.Enchantments.Swift canonicalSwift = ModelDb.Enchantment<MegaCrit.Sts2.Core.Models.Enchantments.Swift>();
 		List<CardCreationResult> list = cardRewards.Where((CardCreationResult r) => canonicalSwift.CanEnchant(r.Card)).ToList();
 		if (list.Count == 0)
 		{
@@ -39,7 +39,7 @@ public sealed class WingCharm : RelicModel
 			return false;
 		}
 		CardModel card = base.Owner.RunState.CloneCard(cardCreationResult.Card);
-		CardCmd.Enchant<Swift>(card, base.DynamicVars["SwiftAmount"].BaseValue);
+		CardCmd.Enchant<MegaCrit.Sts2.Core.Models.Enchantments.Swift>(card, base.DynamicVars["SwiftAmount"].BaseValue);
 		cardCreationResult.ModifyCard(card, this);
 		return true;
 	}

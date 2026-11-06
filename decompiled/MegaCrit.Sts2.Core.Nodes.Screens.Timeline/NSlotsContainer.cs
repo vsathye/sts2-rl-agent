@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Threading.Tasks;
@@ -198,7 +199,7 @@ public class NSlotsContainer : Control
 
 	private void ProcessGuiFocus(Control focusedControl)
 	{
-		if (IsVisibleInTree() && NControllerManager.Instance.IsUsingController && IsAncestorOf(focusedControl))
+		if (IsVisibleInTree() && NControllerManager.Instance.IsUsingDirectionalNavigation && IsAncestorOf(focusedControl))
 		{
 			float x = _whatsMoved.GlobalPosition.X - focusedControl.GetParent<Control>().GlobalPosition.X;
 			_targetPosition = new Vector2(x, _targetPosition.Y);
@@ -238,7 +239,13 @@ public class NSlotsContainer : Control
 
 	public override void _Process(double delta)
 	{
+		float a = Mathf.Sign(_whatsMoved.Position.X - _targetPosition.X);
 		_whatsMoved.Position = _whatsMoved.Position.Lerp(_targetPosition, (float)delta * 20f);
+		float b = Mathf.Sign(_whatsMoved.Position.X - _targetPosition.X);
+		if (Math.Abs(_whatsMoved.Position.X - _targetPosition.X) < 0.5f || !Mathf.IsEqualApprox(a, b))
+		{
+			_whatsMoved.Position = _targetPosition;
+		}
 		if (!_isDragging)
 		{
 			float num = _targetPosition.X;

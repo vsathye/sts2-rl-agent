@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.RestSite;
+using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Multiplayer.Game;
 using MegaCrit.Sts2.Core.Nodes;
@@ -103,6 +104,10 @@ public static class PreloadManager
 
 	public static async Task LoadRoomCombatAssets(EncounterModel encounter, IRunState runState)
 	{
+		if (!encounter.HaveMonstersBeenGenerated)
+		{
+			throw new InvalidOperationException($"Monsters must be generated before preloading combat assets for encounter {encounter.Id}.");
+		}
 		await LoadRoomAssets("Combat Room", GetCombatAssetPaths(encounter, runState));
 	}
 
@@ -173,7 +178,7 @@ public static class PreloadManager
 	private static AssetLoadingSession LoadAssets(IEnumerable<string> assetPaths, string name)
 	{
 		AssetLoadingSession assetLoadingSession = Cache.CreateSession(name, assetPaths);
-		NAssetLoader.Instance.LoadInTheBackground(assetLoadingSession);
+		TaskHelper.RunSafely(NAssetLoader.Instance.LoadInTheBackground(assetLoadingSession));
 		return assetLoadingSession;
 	}
 

@@ -61,7 +61,7 @@ public class CardRarityOdds : AbstractOdds
 
 	/// <summary>
 	/// Roll for what rarity of card should be generated.
-	/// Using this will NOT modify the odds of future generated card rarities.
+	/// Using this will modify the odds of future generated card rarities.
 	/// Use for things like encounter rewards.
 	/// </summary>
 	/// <param name="type">Odds type to roll for.</param>
@@ -97,12 +97,13 @@ public class CardRarityOdds : AbstractOdds
 	{
 		float num = _rng.NextFloat();
 		float num2 = GetBaseOdds(type, CardRarity.Rare) + offset;
+		float baseOdds = GetBaseOdds(type, CardRarity.Uncommon);
 		Log.Info($"Card rarity: Rolled {num}, need < {num2} for rare (offset = {offset})");
 		if (num < num2)
 		{
 			return CardRarity.Rare;
 		}
-		if (num < GetBaseOdds(type, CardRarity.Uncommon) + num2)
+		if (num < baseOdds + num2)
 		{
 			return CardRarity.Uncommon;
 		}
@@ -118,12 +119,14 @@ public class CardRarityOdds : AbstractOdds
 	/// <returns>What rarity a generated card should be.</returns>
 	public CardRarity RollWithBaseOdds(CardRarityOddsType type)
 	{
+		float baseOdds = GetBaseOdds(type, CardRarity.Rare);
+		float baseOdds2 = GetBaseOdds(type, CardRarity.Uncommon);
 		float num = _rng.NextFloat();
-		if (num < GetBaseOdds(type, CardRarity.Rare))
+		if (num < baseOdds)
 		{
 			return CardRarity.Rare;
 		}
-		if (num < GetBaseOdds(type, CardRarity.Uncommon))
+		if (num < baseOdds2 + baseOdds)
 		{
 			return CardRarity.Uncommon;
 		}

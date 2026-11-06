@@ -181,7 +181,7 @@ public class MegaRichTextLabel : RichTextLabel
 
 	private Vector2 _lastAdjustedSize;
 
-	private static readonly AbstractMegaRichTextEffect[] _textEffects = new AbstractMegaRichTextEffect[13]
+	private static readonly AbstractMegaRichTextEffect[] _textEffects = new AbstractMegaRichTextEffect[14]
 	{
 		new RichTextAqua(),
 		new RichTextBlue(),
@@ -194,6 +194,7 @@ public class MegaRichTextLabel : RichTextLabel
 		new RichTextPink(),
 		new RichTextPurple(),
 		new RichTextRed(),
+		new RichTextScramble(),
 		new RichTextSine(),
 		new RichTextThinkyDots()
 	};

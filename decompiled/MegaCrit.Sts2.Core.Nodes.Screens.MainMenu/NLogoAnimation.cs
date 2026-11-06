@@ -161,8 +161,12 @@ public class NLogoAnimation : Control, IScreenContext
 		await this.AwaitProcessFrame();
 		while (true)
 		{
-			MegaTrackEntry? current = _spineSprite.GetAnimationState().GetCurrent(0);
-			if (current == null || current.IsComplete())
+			bool flag;
+			using (MegaTrackEntry megaTrackEntry = _spineSprite.GetAnimationState().GetCurrent(0))
+			{
+				flag = megaTrackEntry != null && !megaTrackEntry.IsComplete();
+			}
+			if (!flag)
 			{
 				break;
 			}

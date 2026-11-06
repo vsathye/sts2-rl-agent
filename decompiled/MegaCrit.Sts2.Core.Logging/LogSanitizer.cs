@@ -25,7 +25,7 @@ public static class LogSanitizer
 	[GeneratedCode("System.Text.RegularExpressions.Generator", "9.0.12.31616")]
 	private static Regex SteamIdRegex()
 	{
-		return _003CRegexGenerator_g_003EFACC081AAF3D765EFF87A82C4FBB77F6FD3EA759AA2D03D993988F88E97CC0B5B__SteamIdRegex_4.Instance;
+		return _003CRegexGenerator_g_003EFDF0533EE0711AEDB383B6CD4472EB7858DDC4C8D92DA17B11D90839AAF25C6DD__SteamIdRegex_4.Instance;
 	}
 
 	public static string Sanitize(string text)

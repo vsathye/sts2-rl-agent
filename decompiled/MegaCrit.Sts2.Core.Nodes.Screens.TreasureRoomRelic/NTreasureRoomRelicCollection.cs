@@ -105,6 +105,11 @@ public class NTreasureRoomRelicCollection : Control, IScreenContext
 		public static readonly StringName DefaultFocusedControl = "DefaultFocusedControl";
 
 		/// <summary>
+		/// Cached name for the '_relicContainer' field.
+		/// </summary>
+		public static readonly StringName _relicContainer = "_relicContainer";
+
+		/// <summary>
 		/// Cached name for the '_fightBackstop' field.
 		/// </summary>
 		public static readonly StringName _fightBackstop = "_fightBackstop";
@@ -143,6 +148,8 @@ public class NTreasureRoomRelicCollection : Control, IScreenContext
 	}
 
 	private const ulong _noSelectionTimeMsec = 200uL;
+
+	private Control _relicContainer;
 
 	private Control _fightBackstop;
 
@@ -186,9 +193,9 @@ public class NTreasureRoomRelicCollection : Control, IScreenContext
 	{
 		_fightBackstop = GetNode<Control>("%FightBackstop");
 		_hands = GetNode<NHandImageCollection>("%HandsContainer");
-		Control node = GetNode<Control>("Container");
-		SingleplayerRelicHolder = node.GetNode<NTreasureRoomRelicHolder>("%SingleplayerRelicHolder");
-		foreach (NTreasureRoomRelicHolder item in node.GetChildren().OfType<NTreasureRoomRelicHolder>())
+		_relicContainer = GetNode<Control>("Container");
+		SingleplayerRelicHolder = _relicContainer.GetNode<NTreasureRoomRelicHolder>("%SingleplayerRelicHolder");
+		foreach (NTreasureRoomRelicHolder item in _relicContainer.GetChildren().OfType<NTreasureRoomRelicHolder>())
 		{
 			if (item != SingleplayerRelicHolder)
 			{
@@ -247,10 +254,7 @@ public class NTreasureRoomRelicCollection : Control, IScreenContext
 			SingleplayerRelicHolder.Initialize(currentRelics[0], _runState);
 			SingleplayerRelicHolder.Visible = true;
 			SingleplayerRelicHolder.Index = 0;
-			SingleplayerRelicHolder.Connect(NClickableControl.SignalName.Released, Callable.From<NTreasureRoomRelicHolder>(delegate
-			{
-				PickRelic(SingleplayerRelicHolder);
-			}));
+			SingleplayerRelicHolder.Connect(NClickableControl.SignalName.Released, Callable.From<NTreasureRoomRelicHolder>(PickRelic));
 			int num = 1;
 			List<NTreasureRoomRelicHolder> list = new List<NTreasureRoomRelicHolder>(num);
 			CollectionsMarshal.SetCount(list, num);
@@ -267,45 +271,42 @@ public class NTreasureRoomRelicCollection : Control, IScreenContext
 			}
 		}
 		SingleplayerRelicHolder.Visible = false;
-		for (int num2 = 0; num2 < _multiplayerHolders.Count; num2++)
+		for (int i = 0; i < _multiplayerHolders.Count; i++)
 		{
-			NTreasureRoomRelicHolder holder = _multiplayerHolders[num2];
-			if (num2 < currentRelics.Count)
+			NTreasureRoomRelicHolder nTreasureRoomRelicHolder = _multiplayerHolders[i];
+			if (i < currentRelics.Count)
 			{
-				holder.Visible = true;
-				holder.Relic.Model = currentRelics[num2];
-				holder.Initialize(currentRelics[num2], _runState);
+				nTreasureRoomRelicHolder.Visible = true;
+				nTreasureRoomRelicHolder.Relic.Model = currentRelics[i];
+				nTreasureRoomRelicHolder.Initialize(currentRelics[i], _runState);
 			}
 			else
 			{
-				holder.Visible = false;
+				nTreasureRoomRelicHolder.Visible = false;
 			}
-			holder.Index = num2;
-			holder.Connect(NClickableControl.SignalName.Released, Callable.From<NTreasureRoomRelicHolder>(delegate
-			{
-				PickRelic(holder);
-			}));
-			_holdersInUse.Add(holder);
-			holder.VoteContainer.RefreshPlayerVotes();
+			nTreasureRoomRelicHolder.Index = i;
+			nTreasureRoomRelicHolder.Connect(NClickableControl.SignalName.Released, Callable.From<NTreasureRoomRelicHolder>(PickRelic));
+			_holdersInUse.Add(nTreasureRoomRelicHolder);
+			nTreasureRoomRelicHolder.VoteContainer.RefreshPlayerVotes();
 		}
-		for (int num3 = 0; num3 < _holdersInUse.Count; num3++)
+		for (int j = 0; j < _holdersInUse.Count; j++)
 		{
-			_holdersInUse[num3].SetFocusMode(FocusModeEnum.All);
-			_holdersInUse[num3].FocusNeighborTop = _holdersInUse[num3].GetPath();
-			_holdersInUse[num3].FocusNeighborBottom = _holdersInUse[num3].GetPath();
-			NTreasureRoomRelicHolder nTreasureRoomRelicHolder = _holdersInUse[num3];
+			_holdersInUse[j].SetFocusMode(FocusModeEnum.All);
+			_holdersInUse[j].FocusNeighborTop = _holdersInUse[j].GetPath();
+			_holdersInUse[j].FocusNeighborBottom = _holdersInUse[j].GetPath();
+			NTreasureRoomRelicHolder nTreasureRoomRelicHolder2 = _holdersInUse[j];
 			NodePath path;
-			if (num3 <= 0)
+			if (j <= 0)
 			{
 				List<NTreasureRoomRelicHolder> holdersInUse = _holdersInUse;
 				path = holdersInUse[holdersInUse.Count - 1].GetPath();
 			}
 			else
 			{
-				path = _holdersInUse[num3 - 1].GetPath();
+				path = _holdersInUse[j - 1].GetPath();
 			}
-			nTreasureRoomRelicHolder.FocusNeighborLeft = path;
-			_holdersInUse[num3].FocusNeighborRight = ((num3 < _holdersInUse.Count - 1) ? _holdersInUse[num3 + 1].GetPath() : _holdersInUse[0].GetPath());
+			nTreasureRoomRelicHolder2.FocusNeighborLeft = path;
+			_holdersInUse[j].FocusNeighborRight = ((j < _holdersInUse.Count - 1) ? _holdersInUse[j + 1].GetPath() : _holdersInUse[0].GetPath());
 		}
 		if (currentRelics.Count == 2)
 		{
@@ -368,14 +369,12 @@ public class NTreasureRoomRelicCollection : Control, IScreenContext
 	/// <summary>
 	/// Animates in the relic collection.
 	/// </summary>
-	/// <param name="chestVisual">Chest visual to fade out.</param>
-	public void AnimIn(Node chestVisual)
+	public void AnimIn()
 	{
 		base.Visible = true;
 		base.Modulate = Colors.Transparent;
 		Tween tween = CreateTween().SetParallel();
 		tween.TweenProperty(this, "modulate", Colors.White, 0.4);
-		tween.TweenProperty(chestVisual, "modulate", StsColors.halfTransparentWhite, 0.4);
 		if (_isEmptyChest)
 		{
 			LocalContext.GetMe(_runState)?.Relics.OfType<SilverCrucible>().FirstOrDefault()?.Flash();
@@ -408,13 +407,11 @@ public class NTreasureRoomRelicCollection : Control, IScreenContext
 	/// <summary>
 	/// Animates out the relic collection, after relic picking is done.
 	/// </summary>
-	/// <param name="chestVisual">Chest visual to fade back in.</param>
-	public void AnimOut(Node chestVisual)
+	public void AnimOut()
 	{
 		base.Modulate = Colors.White;
 		Tween tween = CreateTween().Parallel();
 		tween.TweenProperty(this, "modulate", StsColors.transparentWhite, 0.3);
-		tween.TweenProperty(chestVisual, "modulate", Colors.White, 0.3);
 		tween.TweenCallback(Callable.From(() => base.Visible = false));
 		NRun.Instance.ScreenStateTracker.SetIsInSharedRelicPickingScreen(isInSharedRelicPicking: false);
 	}
@@ -436,7 +433,7 @@ public class NTreasureRoomRelicCollection : Control, IScreenContext
 	{
 		foreach (NTreasureRoomRelicHolder item in _holdersInUse)
 		{
-			item.SetFocusMode(FocusModeEnum.None);
+			item.Disable();
 		}
 		_relicPickingBeganTaskCompletionSource.SetResult();
 		foreach (Player player in _runState.Players)
@@ -461,7 +458,9 @@ public class NTreasureRoomRelicCollection : Control, IScreenContext
 			}
 			if (result.type == RelicPickingResultType.FoughtOver)
 			{
-				holder.ZIndex = 1;
+				Node parent = _fightBackstop.GetParent();
+				holder.Reparent(parent);
+				parent.MoveChildSafely(holder, _fightBackstop.GetIndex() + 1);
 				_fightBackstop.Visible = true;
 				Tween tween = CreateTween();
 				tween.TweenProperty(holder, "global_position", (_fightBackstop.Size - holder.Size) * 0.5f, 0.25).SetTrans(Tween.TransitionType.Back).SetEase(Tween.EaseType.In);
@@ -474,7 +473,6 @@ public class NTreasureRoomRelicCollection : Control, IScreenContext
 				tween.TweenProperty(_fightBackstop, "modulate:a", 0f, 0.25);
 				await tween.AwaitFinished(_cts.Token);
 				_fightBackstop.Visible = false;
-				holder.ZIndex = 0;
 			}
 			else if (result.type != RelicPickingResultType.Skipped)
 			{
@@ -496,7 +494,6 @@ public class NTreasureRoomRelicCollection : Control, IScreenContext
 		{
 			NTreasureRoomRelicHolder nTreasureRoomRelicHolder = _holdersInUse.First((NTreasureRoomRelicHolder h) => h.Relic.Model == result2.relic);
 			RelicModel relic = result2.relic.ToMutable();
-			nTreasureRoomRelicHolder.Disable();
 			if (result2.type != RelicPickingResultType.Skipped)
 			{
 				TaskHelper.RunSafely(RelicCmd.Obtain(relic, result2.player));
@@ -546,14 +543,8 @@ public class NTreasureRoomRelicCollection : Control, IScreenContext
 		{
 			new PropertyInfo(Variant.Type.Bool, "isEnabled", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false)
 		}, null));
-		list.Add(new MethodInfo(MethodName.AnimIn, new PropertyInfo(Variant.Type.Nil, "", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false), MethodFlags.Normal, new List<PropertyInfo>
-		{
-			new PropertyInfo(Variant.Type.Object, "chestVisual", PropertyHint.None, "", PropertyUsageFlags.Default, new StringName("Node"), exported: false)
-		}, null));
-		list.Add(new MethodInfo(MethodName.AnimOut, new PropertyInfo(Variant.Type.Nil, "", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false), MethodFlags.Normal, new List<PropertyInfo>
-		{
-			new PropertyInfo(Variant.Type.Object, "chestVisual", PropertyHint.None, "", PropertyUsageFlags.Default, new StringName("Node"), exported: false)
-		}, null));
+		list.Add(new MethodInfo(MethodName.AnimIn, new PropertyInfo(Variant.Type.Nil, "", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false), MethodFlags.Normal, null, null));
+		list.Add(new MethodInfo(MethodName.AnimOut, new PropertyInfo(Variant.Type.Nil, "", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false), MethodFlags.Normal, null, null));
 		list.Add(new MethodInfo(MethodName.PickRelic, new PropertyInfo(Variant.Type.Nil, "", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false), MethodFlags.Normal, new List<PropertyInfo>
 		{
 			new PropertyInfo(Variant.Type.Object, "holder", PropertyHint.None, "", PropertyUsageFlags.Default, new StringName("Control"), exported: false)
@@ -602,15 +593,15 @@ public class NTreasureRoomRelicCollection : Control, IScreenContext
 			ret = default(godot_variant);
 			return true;
 		}
-		if (method == MethodName.AnimIn && args.Count == 1)
+		if (method == MethodName.AnimIn && args.Count == 0)
 		{
-			AnimIn(VariantUtils.ConvertTo<Node>(in args[0]));
+			AnimIn();
 			ret = default(godot_variant);
 			return true;
 		}
-		if (method == MethodName.AnimOut && args.Count == 1)
+		if (method == MethodName.AnimOut && args.Count == 0)
 		{
-			AnimOut(VariantUtils.ConvertTo<Node>(in args[0]));
+			AnimOut();
 			ret = default(godot_variant);
 			return true;
 		}
@@ -685,6 +676,11 @@ public class NTreasureRoomRelicCollection : Control, IScreenContext
 			SingleplayerRelicHolder = VariantUtils.ConvertTo<NTreasureRoomRelicHolder>(in value);
 			return true;
 		}
+		if (name == PropertyName._relicContainer)
+		{
+			_relicContainer = VariantUtils.ConvertTo<Control>(in value);
+			return true;
+		}
 		if (name == PropertyName._fightBackstop)
 		{
 			_fightBackstop = VariantUtils.ConvertTo<Control>(in value);
@@ -732,6 +728,11 @@ public class NTreasureRoomRelicCollection : Control, IScreenContext
 			value = VariantUtils.CreateFrom<Control>(DefaultFocusedControl);
 			return true;
 		}
+		if (name == PropertyName._relicContainer)
+		{
+			value = VariantUtils.CreateFrom(in _relicContainer);
+			return true;
+		}
 		if (name == PropertyName._fightBackstop)
 		{
 			value = VariantUtils.CreateFrom(in _fightBackstop);
@@ -774,6 +775,7 @@ public class NTreasureRoomRelicCollection : Control, IScreenContext
 	internal static List<PropertyInfo> GetGodotPropertyList()
 	{
 		List<PropertyInfo> list = new List<PropertyInfo>();
+		list.Add(new PropertyInfo(Variant.Type.Object, PropertyName._relicContainer, PropertyHint.None, "", PropertyUsageFlags.ScriptVariable, exported: false));
 		list.Add(new PropertyInfo(Variant.Type.Object, PropertyName._fightBackstop, PropertyHint.None, "", PropertyUsageFlags.ScriptVariable, exported: false));
 		list.Add(new PropertyInfo(Variant.Type.Object, PropertyName._fightLabel, PropertyHint.None, "", PropertyUsageFlags.ScriptVariable, exported: false));
 		list.Add(new PropertyInfo(Variant.Type.Object, PropertyName._emptyVfxTween, PropertyHint.None, "", PropertyUsageFlags.ScriptVariable, exported: false));
@@ -791,6 +793,7 @@ public class NTreasureRoomRelicCollection : Control, IScreenContext
 	{
 		base.SaveGodotObjectData(info);
 		info.AddProperty(PropertyName.SingleplayerRelicHolder, Variant.From<NTreasureRoomRelicHolder>(SingleplayerRelicHolder));
+		info.AddProperty(PropertyName._relicContainer, Variant.From(in _relicContainer));
 		info.AddProperty(PropertyName._fightBackstop, Variant.From(in _fightBackstop));
 		info.AddProperty(PropertyName._fightLabel, Variant.From(in _fightLabel));
 		info.AddProperty(PropertyName._emptyVfxTween, Variant.From(in _emptyVfxTween));
@@ -808,29 +811,33 @@ public class NTreasureRoomRelicCollection : Control, IScreenContext
 		{
 			SingleplayerRelicHolder = value.As<NTreasureRoomRelicHolder>();
 		}
-		if (info.TryGetProperty(PropertyName._fightBackstop, out var value2))
+		if (info.TryGetProperty(PropertyName._relicContainer, out var value2))
 		{
-			_fightBackstop = value2.As<Control>();
+			_relicContainer = value2.As<Control>();
 		}
-		if (info.TryGetProperty(PropertyName._fightLabel, out var value3))
+		if (info.TryGetProperty(PropertyName._fightBackstop, out var value3))
 		{
-			_fightLabel = value3.As<MegaLabel>();
+			_fightBackstop = value3.As<Control>();
 		}
-		if (info.TryGetProperty(PropertyName._emptyVfxTween, out var value4))
+		if (info.TryGetProperty(PropertyName._fightLabel, out var value4))
 		{
-			_emptyVfxTween = value4.As<Tween>();
+			_fightLabel = value4.As<MegaLabel>();
 		}
-		if (info.TryGetProperty(PropertyName._hands, out var value5))
+		if (info.TryGetProperty(PropertyName._emptyVfxTween, out var value5))
 		{
-			_hands = value5.As<NHandImageCollection>();
+			_emptyVfxTween = value5.As<Tween>();
 		}
-		if (info.TryGetProperty(PropertyName._openedTicks, out var value6))
+		if (info.TryGetProperty(PropertyName._hands, out var value6))
 		{
-			_openedTicks = value6.As<ulong>();
+			_hands = value6.As<NHandImageCollection>();
 		}
-		if (info.TryGetProperty(PropertyName._isEmptyChest, out var value7))
+		if (info.TryGetProperty(PropertyName._openedTicks, out var value7))
 		{
-			_isEmptyChest = value7.As<bool>();
+			_openedTicks = value7.As<ulong>();
+		}
+		if (info.TryGetProperty(PropertyName._isEmptyChest, out var value8))
+		{
+			_isEmptyChest = value8.As<bool>();
 		}
 	}
 }

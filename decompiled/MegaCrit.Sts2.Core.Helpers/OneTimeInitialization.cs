@@ -58,7 +58,7 @@ public static class OneTimeInitialization
 		}
 		await ModManager.Initialize(new ModManagerFileIo(), SaveManager.Instance.SettingsSave.ModSettings, ReleaseInfoManager.Instance.SemVer);
 		UserDataPathProvider.IsRunningModded = ModManager.IsRunningModded();
-		SentryService.DisableGdExtensionIfModded();
+		SentryService.DisableSentryIfModded();
 	}
 
 	/// <summary>
@@ -77,6 +77,7 @@ public static class OneTimeInitialization
 		ResourceLoader.AddResourceFormatLoader(_atlasResourceLoader, atFront: true);
 		AtlasManager.LoadEssentialAtlases();
 		LocManager.Initialize();
+		AssemblyInfo.Init();
 		ModelDb.Init();
 		ModelIdSerializationCache.Init();
 		ModelDb.InitIds();

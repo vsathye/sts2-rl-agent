@@ -241,7 +241,7 @@ public class NInspectRelicScreen : Control, IScreenContext
 
 	public static string[] AssetPaths => new string[1] { _scenePath };
 
-	public Control? DefaultFocusedControl => null;
+	public Control DefaultFocusedControl => this;
 
 	public static NInspectRelicScreen? Create()
 	{
@@ -324,7 +324,7 @@ public class NInspectRelicScreen : Control, IScreenContext
 
 	public override void _Input(InputEvent inputEvent)
 	{
-		if (!IsVisibleInTree() || NDevConsole.Instance.Visible)
+		if (!IsVisibleInTree() || NDevConsole.IsConsoleVisible)
 		{
 			return;
 		}

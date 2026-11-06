@@ -46,4 +46,10 @@ public class PrefsSave : ISaveSchema
 
 	[JsonPropertyName("show_mp_drawings")]
 	public bool ShowMultiplayerDrawings { get; set; } = true;
+
+	[JsonPropertyName("bestiary_actions_preferred")]
+	public bool IsBestiaryActionsPreferred { get; set; } = true;
+
+	[JsonPropertyName("keyboard_mode")]
+	public bool KeyboardMode { get; set; }
 }

@@ -881,11 +881,11 @@ def devour_life_card(card: CardInstance, combat: CombatState, target: Creature |
 
 @register_effect(CardId.EIDOLON)
 def eidolon(card: CardInstance, combat: CombatState, target: Creature | None) -> None:
-    exhausted_count = len(combat.hand)
-    for hand_card in list(combat.hand):
-        combat.exhaust_card(hand_card)
-    if exhausted_count >= 9:
-        combat.apply_power_to(_owner(card, combat), PowerId.INTANGIBLE, 1)
+    owner = _owner(card, combat)
+    state = combat.combat_player_state_for(owner)
+    for item in list(state.exhaust):
+        if "ethereal" in item.keywords and "unplayable" not in item.keywords:
+            combat.auto_play_card(item)
 
 
 @register_effect(CardId.END_OF_DAYS)
@@ -1015,11 +1015,11 @@ def sacrifice(card: CardInstance, combat: CombatState, target: Creature | None) 
     osty = combat.get_osty(owner)
     if osty is None or not osty.is_alive:
         return
-    # C# Sacrifice.cs: CalculatedBlockVar.WithMultiplier(Osty.MaxHp * 2) with
-    # CalculationBaseVar(0) / CalculationExtraVar(1): block = base + extra * (MaxHp * 2).
+    # C# Sacrifice.cs: CalculatedBlockVar.WithMultiplier(Osty.MaxHp * 3) with
+    # CalculationBaseVar(0) / CalculationExtraVar(1): block = base + extra * (MaxHp * 3).
     calc_base = card.effect_vars.get("calc_base", 0)
     calc_extra = card.effect_vars.get("calc_extra", 1)
-    block_gain = calc_base + calc_extra * osty.max_hp * 2
+    block_gain = calc_base + calc_extra * osty.max_hp * 3
     combat.kill_osty(_owner(card, combat))
     _gain_resolved_block(owner, block_gain, combat)
 
@@ -1364,10 +1364,17 @@ def make_reap(upgraded: bool = False) -> CardInstance:
 
 def make_reave(upgraded: bool = False) -> CardInstance:
     return CardInstance(
-        card_id=CardId.REAVE, cost=1, card_type=CardType.ATTACK,
-        target_type=TargetType.ANY_ENEMY, rarity=CardRarity.COMMON,
-        base_damage=11 if upgraded else 9, upgraded=upgraded,
-        effect_vars={"cards": 1}, instance_id=_get_next_id(),
+        card_id=CardId.REAVE,
+        cost=1,
+        card_type=CardType.ATTACK,
+        target_type=TargetType.ANY_ENEMY,
+        rarity=CardRarity.COMMON,
+        base_damage=13 if upgraded else 10,
+        upgraded=upgraded,
+        effect_vars={'cards': 1, 'damage': 13 if upgraded else 10},
+        instance_id=_get_next_id(),
+        keywords=frozenset([]),
+        star_cost=0,
     )
 
 
@@ -1514,7 +1521,7 @@ def make_necro_mastery(upgraded: bool = False) -> CardInstance:
 
 def make_sacrifice(upgraded: bool = False) -> CardInstance:
     kw = frozenset({"retain"})
-    # C# Sacrifice.cs: CalculationBaseVar(0), CalculationExtraVar(1); block = 0 + 1 * (Osty.MaxHp * 2).
+    # C# Sacrifice.cs: CalculationBaseVar(0), CalculationExtraVar(1); block = 0 + 1 * (Osty.MaxHp * 3).
     # OnUpgrade: EnergyCost.UpgradeBy(-1).
     return CardInstance(
         card_id=CardId.SACRIFICE, cost=0 if upgraded else 1,
@@ -1527,11 +1534,16 @@ def make_sacrifice(upgraded: bool = False) -> CardInstance:
 
 def make_legion_of_bone(upgraded: bool = False) -> CardInstance:
     return CardInstance(
-        card_id=CardId.LEGION_OF_BONE, cost=2, card_type=CardType.SKILL,
-        target_type=TargetType.ALL_ALLIES, rarity=CardRarity.UNCOMMON,
-        upgraded=upgraded, keywords=frozenset({"exhaust"}),
-        effect_vars={"summon": 8 if upgraded else 6},
+        card_id=CardId.LEGION_OF_BONE,
+        cost=2,
+        card_type=CardType.SKILL,
+        target_type=TargetType.ALL_ALLIES,
+        rarity=CardRarity.UNCOMMON,
+        upgraded=upgraded,
+        keywords=frozenset([]),
+        effect_vars={'summon': 8 if upgraded else 6},
         instance_id=_get_next_id(),
+        star_cost=0,
     )
 
 
@@ -1690,7 +1702,7 @@ def make_soul_storm(upgraded: bool = False) -> CardInstance:
     card = create_reference_card(CardId.SOUL_STORM, upgraded=upgraded, allow_generation=True)
     card.base_damage = 10 if upgraded else 9
     card.effect_vars["calc_base"] = 9
-    card.effect_vars["extra_damage"] = 3 if upgraded else 2
+    card.effect_vars["extra_damage"] = 6 if upgraded else 4
     return card
 
 
@@ -1711,7 +1723,7 @@ def make_the_scythe(upgraded: bool = False) -> CardInstance:
     # OnUpgrade: Increase.UpgradeValueBy(1m) -> 5. Upgrade does not change base damage.
     card = create_reference_card(CardId.THE_SCYTHE, upgraded=upgraded, allow_generation=True)
     card.base_damage = 13
-    card.effect_vars["increase"] = 5 if upgraded else 4
+    card.effect_vars["increase"] = 7 if upgraded else 5
     return card
 
 

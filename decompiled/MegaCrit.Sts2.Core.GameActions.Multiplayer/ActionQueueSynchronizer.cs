@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using MegaCrit.Sts2.Core.Entities.Multiplayer;
 using MegaCrit.Sts2.Core.Entities.Players;
+using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.Logging;
 using MegaCrit.Sts2.Core.Multiplayer.Game;
 using MegaCrit.Sts2.Core.Multiplayer.Messages.Game;
@@ -84,9 +85,17 @@ public class ActionQueueSynchronizer
 		}
 		ActionSynchronizerCombatState combatState2 = CombatState;
 		CombatState = combatState;
-		if (combatState2 == ActionSynchronizerCombatState.NotInCombat)
+		bool flag = (uint)combatState2 <= 1u;
+		bool flag2 = flag;
+		bool flag3 = flag2;
+		if (flag3)
 		{
-			_logger.Debug($"Combat state was previously {combatState2}. Signaling queues that combat has begun");
+			bool flag4 = (uint)(combatState - 2) <= 2u;
+			flag3 = flag4;
+		}
+		if (flag3)
+		{
+			_logger.Debug($"Combat becomes {combatState} from {combatState2}. Signaling queues that combat has begun");
 			_actionQueueSet.CombatStarted();
 		}
 		switch (combatState)
@@ -100,6 +109,13 @@ public class ActionQueueSynchronizer
 				item.Cancel();
 			}
 			_requestedActionsWaitingForPlayerTurn.Clear();
+			break;
+		case ActionSynchronizerCombatState.PreCombatSetup:
+			if (combatState2 == ActionSynchronizerCombatState.NotInCombat)
+			{
+				_logger.Debug($"Combat state becomes {combatState}. Allowing non-combat actions to execute, but not combat actions.");
+				_actionQueueSet.SetUpForCombat();
+			}
 			break;
 		case ActionSynchronizerCombatState.PlayPhase:
 			_logger.Debug($"Combat state becomes {combatState}. Requesting {_requestedActionsWaitingForPlayerTurn.Count} actions and unpausing action queues");
@@ -367,10 +383,10 @@ public class ActionQueueSynchronizer
 		if (action == null)
 		{
 			action = new GenericHookGameAction(id, ownerId, gameActionType);
-			action.ExecutionStartedTask.ContinueWith(delegate
+			TaskHelper.RunSafely(action.ExecutionStartedTask.ContinueWith(delegate
 			{
 				HookActionStarted(action);
-			});
+			}));
 			_hookActions.Add(action);
 		}
 		else

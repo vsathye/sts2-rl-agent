@@ -48,6 +48,12 @@ public abstract class AbstractModel : IComparable<AbstractModel>
 	/// </summary>
 	public int EntrySortingId { get; private set; }
 
+	/// <summary>
+	/// Is this a mock model used only for testing?
+	/// Overridden to return true in mock model subclasses.
+	/// </summary>
+	public virtual bool IsMock => false;
+
 	public virtual bool PreviewOutsideOfCombat => false;
 
 	/// <summary>
@@ -70,11 +76,14 @@ public abstract class AbstractModel : IComparable<AbstractModel>
 	protected AbstractModel()
 	{
 		Type type = GetType();
-		if (ModelDb.Contains(type))
+		ModelId id = ModelDb.GetId(type);
+		AbstractModel byIdOrNull = ModelDb.GetByIdOrNull<AbstractModel>(id);
+		if (byIdOrNull != null)
 		{
-			throw new DuplicateModelException(type);
+			string message = $"ModelDb already contains ID {id} mapped to type {byIdOrNull.GetType()}, but you are trying to map it to type {type}. Possible causes:\n - You have called a constructor on an AbstractModel. Use ModelDb instead.\n - There is a conflict in mod content names.";
+			throw new DuplicateModelException(message);
 		}
-		Id = ModelDb.GetId(type);
+		Id = id;
 	}
 
 	public void InitId(ModelId id)
@@ -329,8 +338,13 @@ public abstract class AbstractModel : IComparable<AbstractModel>
 	/// like Expose.
 	/// Combat-only hook.
 	/// </summary>
-	/// <param name="creature">Creature that gained block.</param>
-	public virtual Task AfterBlockBroken(Creature creature)
+	/// <param name="choiceContext">The context that is signalled in the event of a player choice.</param>
+	/// <param name="target">Creature whose block was broken.</param>
+	/// <param name="breaker">
+	/// Creature who broke target's block.
+	/// Null if no creature was involved in the breaking, like if it was removed by a power.
+	/// </param>
+	public virtual Task AfterBlockBroken(PlayerChoiceContext choiceContext, Creature target, Creature? breaker)
 	{
 		return Task.CompletedTask;
 	}
@@ -504,6 +518,18 @@ public abstract class AbstractModel : IComparable<AbstractModel>
 	/// </summary>
 	/// <param name="room">The room where the combat ended.</param>
 	public virtual Task AfterCombatEnd(CombatRoom room)
+	{
+		return Task.CompletedTask;
+	}
+
+	/// <summary>
+	/// Runs before the combat rewards are offered to the player.
+	/// Note: This may sound like a combat-only hook, but the rewards are relevant to non-combat models (like a relic
+	/// that adds a bonus reward every few combats).
+	/// </summary>
+	/// <param name="rewards">The set of rewards about to be offered.</param>
+	/// <param name="room">The room where the combat ended.</param>
+	public virtual Task BeforeCombatRewardOffered(RewardsSet rewards, CombatRoom room)
 	{
 		return Task.CompletedTask;
 	}
@@ -831,9 +857,8 @@ public abstract class AbstractModel : IComparable<AbstractModel>
 	/// Runs after the result pile of a played card was modified.
 	/// </summary>
 	/// <param name="card">Card whose result pile was modified.</param>
-	/// <param name="pileType">Final pile type that the card will be put in.</param>
-	/// <param name="position">Final position in the pile that the card will be put in.</param>
-	public virtual Task AfterModifyingCardPlayResultPileOrPosition(CardModel card, PileType pileType, CardPilePosition position)
+	/// <param name="cardLocation">Final location that the card will be put in.</param>
+	public virtual Task AfterModifyingCardPlayResultLocation(CardModel card, CardLocation cardLocation)
 	{
 		return Task.CompletedTask;
 	}
@@ -1482,12 +1507,11 @@ public abstract class AbstractModel : IComparable<AbstractModel>
 	/// True when played automatically by an effect like <see cref="T:MegaCrit.Sts2.Core.Models.Powers.MayhemPower" />.
 	/// </param>
 	/// <param name="resources">Info about the resources used when playing this card.</param>
-	/// <param name="pileType">The type of pile that the card will currently be put in.</param>
-	/// <param name="position">The position that the card will currently be put into in pileType.</param>
-	/// <returns>The new type of pile that this card should be put in, and the position it should have.</returns>
-	public virtual (PileType, CardPilePosition) ModifyCardPlayResultPileTypeAndPosition(CardModel card, bool isAutoPlay, ResourceInfo resources, PileType pileType, CardPilePosition position)
+	/// <param name="cardLocation">The result location for the card.</param>
+	/// <returns>The new location where the card will be placed after play.</returns>
+	public virtual CardLocation ModifyCardPlayResultLocation(CardModel card, bool isAutoPlay, ResourceInfo resources, CardLocation cardLocation)
 	{
-		return (pileType, position);
+		return cardLocation;
 	}
 
 	/// <summary>
@@ -1548,8 +1572,11 @@ public abstract class AbstractModel : IComparable<AbstractModel>
 	/// <param name="props">ValueProp for damage.</param>
 	/// <param name="dealer">Creature who will deal the damage.</param>
 	/// <param name="cardSource">Card that will be dealing the damage.</param>
+	/// <param name="cardPlay">The object which represents a card play, or null if this damage is not part of card play.
+	/// Note that cardSource is set both when previewing AND when the card is played, but this is only set when the card
+	/// is played.</param>
 	/// <returns>Amount of damage to be added.</returns>
-	public virtual decimal ModifyDamageAdditive(Creature? target, decimal amount, ValueProp props, Creature? dealer, CardModel? cardSource)
+	public virtual decimal ModifyDamageAdditive(Creature? target, decimal amount, ValueProp props, Creature? dealer, CardModel? cardSource, CardPlay? cardPlay)
 	{
 		return 0m;
 	}
@@ -1561,8 +1588,11 @@ public abstract class AbstractModel : IComparable<AbstractModel>
 	/// <param name="props">ValueProp for damage.</param>
 	/// <param name="dealer">Creature who will deal the damage.</param>
 	/// <param name="cardSource">Card that will be dealing the damage.</param>
+	/// <param name="cardPlay">The object which represents a card play, or null if this damage is not part of card play.
+	/// Note that cardSource is set both when previewing AND when the card is played, but this is only set when the card
+	/// is played.</param>
 	/// <returns></returns>
-	public virtual decimal ModifyDamageCap(Creature? target, ValueProp props, Creature? dealer, CardModel? cardSource)
+	public virtual decimal ModifyDamageCap(Creature? target, ValueProp props, Creature? dealer, CardModel? cardSource, CardPlay? cardPlay)
 	{
 		return decimal.MaxValue;
 	}
@@ -1576,8 +1606,11 @@ public abstract class AbstractModel : IComparable<AbstractModel>
 	/// <param name="props">ValueProp for damage.</param>
 	/// <param name="dealer">Creature who will deal the damage.</param>
 	/// <param name="cardSource">Card that will be dealing the damage.</param>
+	/// <param name="cardPlay">The object which represents a card play, or null if this damage is not part of card play.
+	/// Note that cardSource is set both when previewing AND when the card is played, but this is only set when the card
+	/// is played.</param>
 	/// <returns>Amount that the damage should be multiplied by.</returns>
-	public virtual decimal ModifyDamageMultiplicative(Creature? target, decimal amount, ValueProp props, Creature? dealer, CardModel? cardSource)
+	public virtual decimal ModifyDamageMultiplicative(Creature? target, decimal amount, ValueProp props, Creature? dealer, CardModel? cardSource, CardPlay? cardPlay)
 	{
 		return 1m;
 	}

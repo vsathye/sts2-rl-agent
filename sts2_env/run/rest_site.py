@@ -154,11 +154,11 @@ class LiftOption(RestSiteOption):
 
 
 class CookOption(RestSiteOption):
-    """Remove 2 cards, gain +9 Max HP."""
+    """Remove 2 cards, gain +5 Max HP."""
 
     OPTION_ID = "COOK"
     CARD_COUNT = 2
-    MAX_HP = 9
+    MAX_HP = 5
 
     def __init__(self, has_enough_removable: bool = True) -> None:
         super().__init__(

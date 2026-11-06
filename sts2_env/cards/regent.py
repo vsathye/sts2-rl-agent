@@ -241,8 +241,7 @@ def guiding_star(card: CardInstance, combat: CombatState, target: Creature | Non
     # an immediate draw of 2 (upgraded 3), not a next-turn draw power.
     assert target is not None
     _deal_damage_single(card, combat, target)
-    cards = card.effect_vars.get("cards", 2)
-    combat._draw_cards(cards)
+    combat.apply_power_to(_owner(card, combat), PowerId.DRAW_CARDS_NEXT_TURN, card.effect_vars.get("cards", 2))
 
 
 @register_effect(CardId.HIDDEN_CACHE)
@@ -323,11 +322,16 @@ def make_alignment(upgraded: bool = False) -> CardInstance:
     """C# Alignment: cost 0, Skill, Uncommon, Self, CanonicalStarCost 3;
     OnUpgrade: Energy.UpgradeValueBy(1)."""
     return CardInstance(
-        card_id=CardId.ALIGNMENT, cost=0, card_type=CardType.SKILL,
-        target_type=TargetType.SELF, rarity=CardRarity.UNCOMMON,
-        star_cost=3, upgraded=upgraded,
-        effect_vars={"energy": 3 if upgraded else 2},
+        card_id=CardId.ALIGNMENT,
+        cost=0,
+        card_type=CardType.SKILL,
+        target_type=TargetType.SELF,
+        rarity=CardRarity.UNCOMMON,
+        star_cost=2,
+        upgraded=upgraded,
+        effect_vars={'energy': 3 if upgraded else 2},
         instance_id=_get_next_id(),
+        keywords=frozenset([]),
     )
 
 
@@ -1136,10 +1140,17 @@ def make_collision_course(upgraded: bool = False) -> CardInstance:
     """C# CollisionCourse: DamageVar(11); OnUpgrade: Damage.UpgradeValueBy(4)
     (CollisionCourse.cs:17-36)."""
     return CardInstance(
-        card_id=CardId.COLLISION_COURSE, cost=0, card_type=CardType.ATTACK,
-        target_type=TargetType.ANY_ENEMY, rarity=CardRarity.COMMON,
-        base_damage=15 if upgraded else 11, upgraded=upgraded,
+        card_id=CardId.COLLISION_COURSE,
+        cost=0,
+        card_type=CardType.ATTACK,
+        target_type=TargetType.ANY_ENEMY,
+        rarity=CardRarity.COMMON,
+        base_damage=14 if upgraded else 10,
+        upgraded=upgraded,
         instance_id=_get_next_id(),
+        keywords=frozenset([]),
+        star_cost=0,
+        effect_vars={'damage': 14 if upgraded else 10},
     )
 
 
@@ -1178,12 +1189,17 @@ def make_glow(upgraded: bool = False) -> CardInstance:
 
 def make_guiding_star(upgraded: bool = False) -> CardInstance:
     return CardInstance(
-        card_id=CardId.GUIDING_STAR, cost=1, card_type=CardType.ATTACK,
-        target_type=TargetType.ANY_ENEMY, rarity=CardRarity.COMMON,
-        base_damage=13 if upgraded else 12, upgraded=upgraded,
-        star_cost=2,
-        effect_vars={"cards": 3 if upgraded else 2},
+        card_id=CardId.GUIDING_STAR,
+        cost=1,
+        card_type=CardType.ATTACK,
+        target_type=TargetType.ANY_ENEMY,
+        rarity=CardRarity.COMMON,
+        base_damage=13 if upgraded else 12,
+        upgraded=upgraded,
+        star_cost=1,
+        effect_vars={'cards': 3 if upgraded else 2, 'damage': 13 if upgraded else 12},
         instance_id=_get_next_id(),
+        keywords=frozenset([]),
     )
 
 
@@ -1222,11 +1238,16 @@ def make_refine_blade(upgraded: bool = False) -> CardInstance:
     """C# RefineBlade: ForgeVar(9), EnergyVar(1);
     OnUpgrade: Forge.UpgradeValueBy(4) (RefineBlade.cs:14-36)."""
     return CardInstance(
-        card_id=CardId.REFINE_BLADE, cost=1, card_type=CardType.SKILL,
-        target_type=TargetType.SELF, rarity=CardRarity.COMMON,
+        card_id=CardId.REFINE_BLADE,
+        cost=1,
+        card_type=CardType.SKILL,
+        target_type=TargetType.SELF,
+        rarity=CardRarity.COMMON,
         upgraded=upgraded,
-        effect_vars={"forge": 13 if upgraded else 9, "energy": 1},
+        effect_vars={'forge': 12 if upgraded else 8, 'energy': 1},
         instance_id=_get_next_id(),
+        keywords=frozenset([]),
+        star_cost=0,
     )
 
 
@@ -1246,11 +1267,16 @@ def make_spoils_of_battle(upgraded: bool = False) -> CardInstance:
     """C# SpoilsOfBattle: ForgeVar(5), CardsVar(2);
     OnUpgrade: Forge.UpgradeValueBy(3) (SpoilsOfBattle.cs:13-34)."""
     return CardInstance(
-        card_id=CardId.SPOILS_OF_BATTLE, cost=1, card_type=CardType.SKILL,
-        target_type=TargetType.SELF, rarity=CardRarity.COMMON,
+        card_id=CardId.SPOILS_OF_BATTLE,
+        cost=1,
+        card_type=CardType.SKILL,
+        target_type=TargetType.SELF,
+        rarity=CardRarity.COMMON,
         upgraded=upgraded,
-        effect_vars={"forge": 8 if upgraded else 5, "cards": 2},
+        effect_vars={'forge': 9 if upgraded else 6, 'cards': 2},
         instance_id=_get_next_id(),
+        keywords=frozenset([]),
+        star_cost=0,
     )
 
 
@@ -1399,11 +1425,16 @@ def make_hidden_cache(upgraded: bool = False) -> CardInstance:
 
 def make_resonance(upgraded: bool = False) -> CardInstance:
     return CardInstance(
-        card_id=CardId.RESONANCE, cost=1, card_type=CardType.SKILL,
-        target_type=TargetType.ALL_ENEMIES, rarity=CardRarity.UNCOMMON,
-        upgraded=upgraded, star_cost=3,
-        effect_vars={"strength": 2 if upgraded else 1},
+        card_id=CardId.RESONANCE,
+        cost=1,
+        card_type=CardType.SKILL,
+        target_type=TargetType.ALL_ENEMIES,
+        rarity=CardRarity.UNCOMMON,
+        upgraded=upgraded,
+        star_cost=2,
+        effect_vars={'strength': 2 if upgraded else 1},
         instance_id=_get_next_id(),
+        keywords=frozenset([]),
     )
 
 

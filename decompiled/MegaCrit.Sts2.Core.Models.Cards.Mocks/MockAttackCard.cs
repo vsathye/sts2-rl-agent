@@ -6,6 +6,7 @@ using MegaCrit.Sts2.Core.Commands.Builders;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
+using MegaCrit.Sts2.Core.Models.Monsters;
 using MegaCrit.Sts2.Core.ValueProps;
 
 namespace MegaCrit.Sts2.Core.Models.Cards.Mocks;
@@ -89,7 +90,7 @@ public sealed class MockAttackCard : MockCardModel
 	{
 		if (_mockSelfHpLoss > 0)
 		{
-			await CreatureCmd.Damage(choiceContext, base.Owner.Creature, _mockSelfHpLoss, ValueProp.Unblockable | ValueProp.Unpowered | ValueProp.Move, this);
+			await CreatureCmd.Damage(choiceContext, base.Owner.Creature, _mockSelfHpLoss, ValueProp.Unblockable | ValueProp.Unpowered | ValueProp.Move, this, cardPlay);
 		}
 		if (base.DynamicVars.Block.BaseValue > 0m)
 		{
@@ -97,7 +98,18 @@ public sealed class MockAttackCard : MockCardModel
 		}
 		int hitCount = (base.EnergyCost.CostsX ? ResolveEnergyXValue() : ((!HasStarCostX) ? _hitCount : ResolveStarXValue()));
 		AttackCommand attackCommand = DamageCmd.Attack(_fromOsty ? base.DynamicVars.OstyDamage.BaseValue : base.DynamicVars.Damage.BaseValue).WithHitCount(hitCount);
-		attackCommand = ((!_fromOsty) ? attackCommand.FromCard(this) : attackCommand.FromOsty(base.Owner.Osty, this));
+		if (_fromOsty)
+		{
+			if (Osty.CheckMissingWithAnim(base.Owner))
+			{
+				return;
+			}
+			attackCommand = attackCommand.FromOsty(base.Owner.Osty, this, cardPlay);
+		}
+		else
+		{
+			attackCommand = attackCommand.FromCard(this, cardPlay);
+		}
 		switch (_targetingType)
 		{
 		case TargetType.AnyEnemy:

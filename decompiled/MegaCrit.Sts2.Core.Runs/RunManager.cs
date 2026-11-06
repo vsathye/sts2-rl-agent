@@ -51,9 +51,23 @@ public class RunManager : IRunLobbyListener
 {
 	private long _startTime;
 
-	private long _prevRunTime;
+	/// <summary>
+	/// previous session's run time before reload
+	/// </summary>
+	private long _prevSessionRunTime;
 
-	private long _sessionStartTime;
+	/// <summary>
+	/// Accumulated run time not spent in the pause menu
+	/// </summary>
+	private long _activeRunTime;
+
+	/// <summary>
+	/// When the current active run time began
+	/// Which is either the start of the session OR the time from when you last closed the pause menu
+	/// </summary>
+	private long _startOfCurrentActiveRunTime;
+
+	private bool _isPaused;
 
 	private bool _runHistoryWasUploaded;
 
@@ -116,6 +130,35 @@ public class RunManager : IRunLobbyListener
 
 	public bool IsAbandoned { get; private set; }
 
+	public bool IsPaused
+	{
+		get
+		{
+			return _isPaused;
+		}
+		set
+		{
+			_isPaused = value;
+			RunState state = State;
+			if (state == null)
+			{
+				return;
+			}
+			IReadOnlyList<Player> players = state.Players;
+			if (players != null && players.Count == 1)
+			{
+				if (_isPaused)
+				{
+					_activeRunTime += DateTimeOffset.UtcNow.ToUnixTimeSeconds() - _startOfCurrentActiveRunTime;
+				}
+				else
+				{
+					_startOfCurrentActiveRunTime = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+				}
+			}
+		}
+	}
+
 	public RunHistory? History { get; set; }
 
 	public INetGameService NetService { get; private set; }
@@ -176,7 +219,19 @@ public class RunManager : IRunLobbyListener
 			{
 				return WinTime;
 			}
-			return DateTimeOffset.UtcNow.ToUnixTimeSeconds() - _sessionStartTime + _prevRunTime;
+			if (IsPaused)
+			{
+				RunState state = State;
+				if (state != null)
+				{
+					IReadOnlyList<Player> players = state.Players;
+					if (players != null && players.Count == 1)
+					{
+						return _activeRunTime + _prevSessionRunTime;
+					}
+				}
+			}
+			return DateTimeOffset.UtcNow.ToUnixTimeSeconds() - _startOfCurrentActiveRunTime + _activeRunTime + _prevSessionRunTime;
 		}
 	}
 
@@ -216,6 +271,10 @@ public class RunManager : IRunLobbyListener
 
 	public event Action? ActEntered;
 
+	public event Func<Task>? TestFadeOut;
+
+	public event Func<Task>? TestFadeIn;
+
 	private RunManager()
 	{
 	}
@@ -240,9 +299,14 @@ public class RunManager : IRunLobbyListener
 			throw new InvalidOperationException("State is already set.");
 		}
 		State = state;
-		INetGameService netService = new NetSingleplayerGameService();
-		InitializeShared(netService, new PeerInputSynchronizer(netService), shouldSave, dailyTime, DateTimeOffset.UtcNow.ToUnixTimeSeconds(), 0L, 0L, 0);
-		InitializeRunLobby(netService, state);
+		INetGameService netGameService = new NetSingleplayerGameService();
+		InitializeShared(netGameService, new PeerInputSynchronizer(netGameService), shouldSave, dailyTime, DateTimeOffset.UtcNow.ToUnixTimeSeconds(), 0L, 0L, 0);
+		IEnumerable<RunLobbyPlayer> players = new global::_003C_003Ez__ReadOnlySingleElementList<RunLobbyPlayer>(new RunLobbyPlayer
+		{
+			id = netGameService.NetId,
+			isModded = netGameService.LocalVersion.IsModded()
+		});
+		InitializeRunLobby(netGameService, state, players);
 		InitializeNewRun();
 		GenerateRooms();
 	}
@@ -269,7 +333,12 @@ public class RunManager : IRunLobbyListener
 		}
 		State = state;
 		InitializeShared(lobby.NetService, lobby.InputSynchronizer, shouldSave, dailyTime, DateTimeOffset.UtcNow.ToUnixTimeSeconds(), 0L, 0L, 0);
-		InitializeRunLobby(lobby.NetService, state);
+		IEnumerable<RunLobbyPlayer> players = lobby.Players.Select((StartRunLobbyPlayer p) => new RunLobbyPlayer
+		{
+			id = p.id,
+			isModded = p.isModded
+		});
+		InitializeRunLobby(lobby.NetService, state, players);
 		InitializeNewRun();
 		GenerateRooms();
 	}
@@ -289,13 +358,15 @@ public class RunManager : IRunLobbyListener
 			throw new InvalidOperationException("State is already set.");
 		}
 		State = state;
-		if (TestMode.IsOff)
+		await SaveManager.Instance.IncrementNumReloads(save, NetGameType.Singleplayer);
+		INetGameService netGameService = new NetSingleplayerGameService();
+		InitializeShared(netGameService, new PeerInputSynchronizer(netGameService), shouldSave: true, save.DailyTime, save.StartTime, save.RunTime, save.WinTime, save.NumReloads);
+		IEnumerable<RunLobbyPlayer> players = new global::_003C_003Ez__ReadOnlySingleElementList<RunLobbyPlayer>(new RunLobbyPlayer
 		{
-			await SaveManager.Instance.IncrementNumReloads(save, isMultiplayer: false);
-		}
-		INetGameService netService = new NetSingleplayerGameService();
-		InitializeShared(netService, new PeerInputSynchronizer(netService), shouldSave: true, save.DailyTime, save.StartTime, save.RunTime, save.WinTime, save.NumReloads);
-		InitializeRunLobby(netService, state);
+			id = netGameService.NetId,
+			isModded = netGameService.LocalVersion.IsModded()
+		});
+		InitializeRunLobby(netGameService, state, players);
 		InitializeSavedRun(save);
 	}
 
@@ -317,12 +388,14 @@ public class RunManager : IRunLobbyListener
 		}
 		State = state;
 		SerializableRun save = lobby.Run;
-		if (lobby.NetService.Type == NetGameType.Host && TestMode.IsOff)
-		{
-			await SaveManager.Instance.IncrementNumReloads(save, isMultiplayer: true);
-		}
+		await SaveManager.Instance.IncrementNumReloads(save, lobby.NetService.Type);
 		InitializeShared(lobby.NetService, lobby.InputSynchronizer, shouldSave: true, save.DailyTime, save.StartTime, save.RunTime, save.WinTime, save.NumReloads);
-		InitializeRunLobby(lobby.NetService, state);
+		IEnumerable<RunLobbyPlayer> players = lobby.Players.Select((LoadRunLobbyPlayer p) => new RunLobbyPlayer
+		{
+			id = p.id,
+			isModded = p.isModded
+		});
+		InitializeRunLobby(lobby.NetService, state, players);
 		InitializeSavedRun(save);
 	}
 
@@ -336,7 +409,8 @@ public class RunManager : IRunLobbyListener
 	/// The replay also contains the serialized version of the run. This may contain extra data that's not part of the
 	/// deserialized RunState.
 	/// </param>
-	public void SetUpReplay(RunState state, CombatReplay replay)
+	/// <param name="playerIdToLoad">The player ID to pretend that we are. UI will be displayed for this player.</param>
+	public void SetUpReplay(RunState state, CombatReplay replay, ulong playerIdToLoad)
 	{
 		if (State != null)
 		{
@@ -344,10 +418,14 @@ public class RunManager : IRunLobbyListener
 		}
 		State = state;
 		SerializableRun serializableRun = replay.serializableRun;
-		ulong netId = serializableRun.Players[0].NetId;
-		NetReplayGameService netService = new NetReplayGameService(netId);
+		NetReplayGameService netService = new NetReplayGameService(playerIdToLoad);
 		InitializeShared(netService, new PeerInputSynchronizer(netService), shouldSave: true, serializableRun.DailyTime, serializableRun.StartTime, serializableRun.RunTime, serializableRun.WinTime, serializableRun.NumReloads);
-		InitializeRunLobby(netService, state);
+		IEnumerable<RunLobbyPlayer> players = state.Players.Select((Player p) => new RunLobbyPlayer
+		{
+			id = p.NetId,
+			isModded = netService.LocalVersion.IsModded()
+		});
+		InitializeRunLobby(netService, state, players);
 		InitializeSavedRun(serializableRun);
 	}
 
@@ -373,7 +451,12 @@ public class RunManager : IRunLobbyListener
 		}
 		State = state;
 		InitializeShared(gameService, new PeerInputSynchronizer(gameService), shouldSave, null, DateTimeOffset.UtcNow.ToUnixTimeSeconds(), 0L, 0L, 0);
-		InitializeRunLobby(gameService, state);
+		IEnumerable<RunLobbyPlayer> players = state.Players.Select((Player p) => new RunLobbyPlayer
+		{
+			id = p.NetId,
+			isModded = gameService.LocalVersion.IsModded()
+		});
+		InitializeRunLobby(gameService, state, players);
 		CombatStateSynchronizer.IsDisabled = disableCombatStateSync;
 		InitializeNewRun();
 	}
@@ -387,16 +470,7 @@ public class RunManager : IRunLobbyListener
 		NetService = netService;
 		ulong netId = NetService.NetId;
 		ChecksumTracker = new ChecksumTracker(NetService, State);
-		ChecksumTracker checksumTracker = ChecksumTracker;
-		bool flag = !TestMode.IsOn;
-		bool flag2 = flag;
-		if (flag2)
-		{
-			NetGameType type = NetService.Type;
-			bool flag3 = (uint)(type - 2) <= 2u;
-			flag2 = flag3;
-		}
-		checksumTracker.IsEnabled = flag2;
+		ChecksumTracker.IsEnabled = !TestMode.IsOn;
 		RunLocationTargetedBuffer = new RunLocationTargetedMessageBuffer(NetService);
 		FlavorSynchronizer = new FlavorSynchronizer(NetService, State, netId);
 		ActionQueueSet = new ActionQueueSet(State.Players);
@@ -405,10 +479,9 @@ public class RunManager : IRunLobbyListener
 		PlayerChoiceSynchronizer = new PlayerChoiceSynchronizer(NetService, State);
 		MapSelectionSynchronizer = new MapSelectionSynchronizer(NetService, ActionQueueSynchronizer, State);
 		ActChangeSynchronizer = new ActChangeSynchronizer(State);
-		EventSynchronizer = new EventSynchronizer(RunLocationTargetedBuffer, NetService, State, netId, State.Rng.Seed);
+		EventSynchronizer = new EventSynchronizer(RunLocationTargetedBuffer, NetService, State, State, netId, State.Rng.Seed);
 		RewardSynchronizer = new RewardSynchronizer(RunLocationTargetedBuffer, NetService, State, netId);
 		RewardsSetSynchronizer = new RewardsSetSynchronizer(RunLocationTargetedBuffer, NetService, State, netId);
-		RestSiteSynchronizer = new RestSiteSynchronizer(RunLocationTargetedBuffer, NetService, State, netId);
 		OneOffSynchronizer = new OneOffSynchronizer(RunLocationTargetedBuffer, NetService, State, netId);
 		TreasureRoomRelicSynchronizer = new TreasureRoomRelicSynchronizer(State, netId, ActionQueueSynchronizer, State.SharedRelicGrabBag, State.Rng.TreasureRoomRelics);
 		CombatReplayWriter = new CombatReplayWriter(PlayerChoiceSynchronizer, RewardsSetSynchronizer, ActionQueueSet, ActionQueueSynchronizer, ChecksumTracker);
@@ -421,22 +494,24 @@ public class RunManager : IRunLobbyListener
 		ShouldSave = shouldSave;
 		DailyTime = dailyTime;
 		_startTime = startTime;
-		_prevRunTime = runTime;
+		_prevSessionRunTime = runTime;
+		_activeRunTime = 0L;
 		WinTime = winTime;
 		_numReloads = numReloads;
-		_sessionStartTime = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+		_startOfCurrentActiveRunTime = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
 		InputSynchronizer = inputSynchronizer;
 		HoveredModelTracker = new HoveredModelTracker(InputSynchronizer, State);
 	}
 
-	private void InitializeRunLobby(INetGameService netService, RunState state)
+	private void InitializeRunLobby(INetGameService netService, RunState state, IEnumerable<RunLobbyPlayer> players)
 	{
 		if (netService.Type.IsMultiplayer())
 		{
-			RunLobby = new RunLobby(state.GameMode, netService, this, state, state.Players.Select((Player p) => p.NetId));
+			RunLobby = new RunLobby(state.GameMode, netService, this, state, players);
 			RunLobby.RemotePlayerDisconnected += RemotePlayerDisconnected;
 		}
 		CombatStateSynchronizer = new CombatStateSynchronizer(NetService, RunLobby, state);
+		RestSiteSynchronizer = new RestSiteSynchronizer(RunLocationTargetedBuffer, NetService, state, NetService.NetId, RunLobby);
 	}
 
 	/// <summary>
@@ -860,7 +935,6 @@ public class RunManager : IRunLobbyListener
 				NRun.Instance.GlobalUi.MapScreen.IsTraveling = false;
 			}
 			AfterMapLocationChanged();
-			await FadeIn();
 		}
 	}
 
@@ -954,11 +1028,38 @@ public class RunManager : IRunLobbyListener
 	/// <summary>
 	/// Helper to call the universal "enter the room" fade in vfx.
 	/// </summary>
-	private async Task FadeIn(bool showTransition = true)
+	public async Task FadeIn(bool showTransition = true)
 	{
-		if (!TestMode.IsOn)
+		if (TestMode.IsOn)
+		{
+			Task task = this.TestFadeIn?.Invoke();
+			if (task != null)
+			{
+				await task;
+			}
+		}
+		else
 		{
 			await NGame.Instance.Transition.RoomFadeIn(showTransition);
+		}
+	}
+
+	/// <summary>
+	/// Helper to call the universal "exit the room" fade out vfx.
+	/// </summary>
+	public async Task FadeOut()
+	{
+		if (TestMode.IsOn)
+		{
+			Task task = this.TestFadeOut?.Invoke();
+			if (task != null)
+			{
+				await task;
+			}
+		}
+		else
+		{
+			await NGame.Instance.Transition.RoomFadeOut();
 		}
 	}
 
@@ -991,6 +1092,8 @@ public class RunManager : IRunLobbyListener
 	{
 		using (new NetLoadingHandle(NetService))
 		{
+			ClearScreens();
+			await ExitCurrentRooms();
 			CombatStateSynchronizer.StartSync();
 			if (model is EncounterModel encounterModel)
 			{
@@ -1042,7 +1145,6 @@ public class RunManager : IRunLobbyListener
 			{
 				CombatReplayWriter.RecordInitialState(ToSave(null));
 			}
-			ClearScreens();
 			State.AppendToMapPointHistory(pointType, roomType, model?.Id);
 			NRun.Instance?.GlobalUi.TopBar.RoomIcon.DebugSetMapPointTypeOverride(pointType);
 			if (State.Map is MockSinglePointActMap mockSinglePointActMap)
@@ -1185,10 +1287,7 @@ public class RunManager : IRunLobbyListener
 		{
 			if (fadeToBlack)
 			{
-				if (TestMode.IsOff)
-				{
-					await NGame.Instance.Transition.RoomFadeOut();
-				}
+				await FadeOut();
 				ClearScreens();
 			}
 			await CombatStateSynchronizer.WaitForSync();
@@ -1219,13 +1318,9 @@ public class RunManager : IRunLobbyListener
 				AbstractRoom currentRoom = State.CurrentRoom;
 				if (currentRoom != null && currentRoom.IsVictoryRoom)
 				{
-					await WinRun();
-					return;
+					throw new InvalidOperationException("EnterNextAct called at victory room! WinRun should be called instead");
 				}
-				if (TestMode.IsOff)
-				{
-					await NGame.Instance.Transition.RoomFadeOut();
-				}
+				await FadeOut();
 				ClearScreens();
 				await EnterRoom(new EventRoom(ModelDb.Event<TheArchitect>()));
 				await FadeIn();
@@ -1237,12 +1332,10 @@ public class RunManager : IRunLobbyListener
 		}
 	}
 
-	private async Task WinRun()
+	public async Task WinRun()
 	{
 		if (State != null)
 		{
-			EventRoom eventRoom = (EventRoom)State.CurrentRoom;
-			((TheArchitect)eventRoom.LocalMutableEvent).TriggerVictory();
 			OnEnded(isVictory: true);
 			await GuaranteeKillAllPlayers();
 		}
@@ -1254,10 +1347,7 @@ public class RunManager : IRunLobbyListener
 		{
 			return;
 		}
-		if (TestMode.IsOff)
-		{
-			await NGame.Instance.Transition.RoomFadeOut();
-		}
+		await FadeOut();
 		using (new NetLoadingHandle(NetService))
 		{
 			ClearScreens();
@@ -1276,8 +1366,8 @@ public class RunManager : IRunLobbyListener
 			{
 				await EnterRoomInternal(new MapRoom());
 				this.ActEntered?.Invoke();
-				await FadeIn(doTransition);
 			}
+			await FadeIn(doTransition);
 			await Hook.AfterActEntered(State);
 		}
 	}
@@ -1418,7 +1508,9 @@ public class RunManager : IRunLobbyListener
 		await GuaranteeKillAllPlayers();
 		if (NetService.Type == NetGameType.Client)
 		{
-			NErrorPopup nErrorPopup = NErrorPopup.Create(new NetErrorInfo(NetError.HostAbandoned, selfInitiated: false));
+			NetErrorInfo info = new NetErrorInfo(NetError.HostAbandoned, selfInitiated: false);
+			info.SetModdedFlagIfModded(RunLobby);
+			NErrorPopup nErrorPopup = NErrorPopup.Create(info);
 			if (nErrorPopup != null)
 			{
 				NModalContainer.Instance.Add(nErrorPopup);
@@ -1442,12 +1534,24 @@ public class RunManager : IRunLobbyListener
 		}
 	}
 
-	private void StateDiverged(NetFullCombatState state)
+	private void StateDiverged(ulong divergedFrom, NetFullCombatState state)
 	{
-		if (NetService.Type != NetGameType.Replay)
+		if (NetService.Type == NetGameType.Replay)
+		{
+			return;
+		}
+		if (NetService.Type == NetGameType.Client)
 		{
 			Log.Info("Abandoning run and returning to main menu because our state diverged from host's");
 			WriteReplay(stopRecording: false);
+			return;
+		}
+		NetErrorInfo info = new NetErrorInfo(NetError.StateDivergence, selfInitiated: true);
+		info.SetModdedFlagIfModded(RunLobby);
+		NErrorPopup nErrorPopup = NErrorPopup.Create(info);
+		if (nErrorPopup != null)
+		{
+			NModalContainer.Instance?.Add(nErrorPopup);
 		}
 	}
 
@@ -1503,9 +1607,11 @@ public class RunManager : IRunLobbyListener
 		}
 		finally
 		{
+			NHotkeyManager.Instance?.ClearHotkeys();
 			IsCleaningUp = false;
 			LocalContext.NetId = null;
 			State = null;
+			DailyTime = null;
 		}
 	}
 
@@ -1647,6 +1753,7 @@ public class RunManager : IRunLobbyListener
 
 	public void LocalPlayerDisconnected(NetErrorInfo info)
 	{
+		info.SetModdedFlagIfModded(RunLobby);
 		foreach (Player player in State.Players)
 		{
 			if (!LocalContext.IsMe(player))
@@ -1667,6 +1774,7 @@ public class RunManager : IRunLobbyListener
 
 	private async Task ReturnToMainMenuWithError(NetErrorInfo info)
 	{
+		info.SetModdedFlagIfModded(RunLobby);
 		NCapstoneContainer.Instance?.Close();
 		NMapScreen.Instance?.Close(animateOut: false);
 		if (TestMode.IsOff)

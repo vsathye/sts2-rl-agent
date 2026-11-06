@@ -743,7 +743,7 @@ def should_draw(combat: CombatState, drawing_owner: Creature, from_hand_draw: bo
 
 def should_take_extra_turn(combat: CombatState) -> bool:
     """Return whether the player should immediately take another turn."""
-    for owner, relic in _iter_relic_listeners(combat):
+    for owner, relic, _is_relic in _iter_hook_listeners(combat):
         result = relic.should_take_extra_turn(owner, combat)
         if result is True:
             return True
@@ -1109,6 +1109,6 @@ def fire_after_combat_end(combat: CombatState) -> None:
 
 
 def fire_after_taking_extra_turn(combat: CombatState) -> None:
-    for owner, relic in _iter_relic_listeners(combat):
+    for owner, relic, _is_relic in _iter_hook_listeners(combat):
         if relic.should_take_extra_turn(owner, combat):
             relic.after_taking_extra_turn(owner, combat)

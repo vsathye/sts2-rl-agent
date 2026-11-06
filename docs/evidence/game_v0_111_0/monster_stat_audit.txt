@@ -1,0 +1,3 @@
+C# monsters: 117; mapped to Python: 69
+HP values compared: 68; damage/count consts compared: 169
+HP mismatches: 0; const mismatches: 0; unmapped C# monsters: 48

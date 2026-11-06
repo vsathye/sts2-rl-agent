@@ -70,11 +70,6 @@ public class NControllerCardPlay : NCardPlay
 		/// Cached name for the 'OnCancelPlayCard' method.
 		/// </summary>
 		public new static readonly StringName OnCancelPlayCard = "OnCancelPlayCard";
-
-		/// <summary>
-		/// Cached name for the 'Cleanup' method.
-		/// </summary>
-		public new static readonly StringName Cleanup = "Cleanup";
 	}
 
 	/// <summary>
@@ -161,12 +156,12 @@ public class NControllerCardPlay : NCardPlay
 			EmitSignal(SignalName.Confirmed);
 			GetViewport()?.SetInputAsHandled();
 		}
-		if (inputEventAction.IsActionPressed(MegaInput.cancel) || inputEventAction.IsActionPressed(MegaInput.topPanel))
+		if (inputEventAction.IsActionPressed(MegaInput.cancel) || inputEventAction.IsActionPressed(MegaInput.pauseAndBack) || inputEventAction.IsActionPressed(MegaInput.topPanel))
 		{
 			EmitSignal(SignalName.Canceled);
-			if (inputEvent.IsActionPressed(MegaInput.cancel))
+			if (inputEvent.IsActionPressed(MegaInput.cancel) || inputEventAction.IsActionPressed(MegaInput.pauseAndBack))
 			{
-				GetViewport().SetInputAsHandled();
+				GetViewport()?.SetInputAsHandled();
 			}
 		}
 	}
@@ -246,7 +241,7 @@ public class NControllerCardPlay : NCardPlay
 		_signalsConnected = true;
 		try
 		{
-			instance.StartTargeting(targetType, base.CardNode, TargetMode.Controller, () => !GodotObject.IsInstanceValid(this) || !NControllerManager.Instance.IsUsingController, null);
+			instance.StartTargeting(targetType, base.CardNode, TargetMode.Controller, () => !GodotObject.IsInstanceValid(this) || !NControllerManager.Instance.IsUsingDirectionalNavigation, null);
 			NCombatRoom.Instance.RestrictControllerNavigation(list2.Select((NCreature n) => n.Hitbox));
 			NCreature nCreature = list2.First();
 			if (NCombatRoom.Instance.LastTargetedCreature != null && NCombatRoom.Instance.LastTargetedCreature.IsHittable)
@@ -306,22 +301,13 @@ public class NControllerCardPlay : NCardPlay
 			NCombatRoom.Instance.EnableControllerNavigation();
 			TryPlayCard(null);
 		}));
-		Connect(SignalName.Canceled, Callable.From(delegate
-		{
-			NCombatRoom.Instance.EnableControllerNavigation();
-			CancelPlayCard();
-		}));
+		Connect(SignalName.Canceled, Callable.From(base.CancelPlayCard));
 	}
 
 	protected override void OnCancelPlayCard()
 	{
+		NCombatRoom.Instance.EnableControllerNavigation();
 		base.Holder.TryGrabFocus();
-	}
-
-	protected override void Cleanup(bool isFinished)
-	{
-		base.Cleanup(isFinished);
-		NCombatRoom.Instance.Ui.Hand.DefaultFocusedControl.TryGrabFocus();
 	}
 
 	/// <summary>
@@ -332,7 +318,7 @@ public class NControllerCardPlay : NCardPlay
 	[EditorBrowsable(EditorBrowsableState.Never)]
 	internal new static List<MethodInfo> GetGodotMethodList()
 	{
-		List<MethodInfo> list = new List<MethodInfo>(8);
+		List<MethodInfo> list = new List<MethodInfo>(7);
 		list.Add(new MethodInfo(MethodName._Input, new PropertyInfo(Variant.Type.Nil, "", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false), MethodFlags.Normal, new List<PropertyInfo>
 		{
 			new PropertyInfo(Variant.Type.Object, "inputEvent", PropertyHint.None, "", PropertyUsageFlags.Default, new StringName("InputEvent"), exported: false)
@@ -346,10 +332,6 @@ public class NControllerCardPlay : NCardPlay
 		list.Add(new MethodInfo(MethodName.DisconnectTargetingSignals, new PropertyInfo(Variant.Type.Nil, "", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false), MethodFlags.Normal, null, null));
 		list.Add(new MethodInfo(MethodName.MultiCreatureTargeting, new PropertyInfo(Variant.Type.Nil, "", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false), MethodFlags.Normal, null, null));
 		list.Add(new MethodInfo(MethodName.OnCancelPlayCard, new PropertyInfo(Variant.Type.Nil, "", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false), MethodFlags.Normal, null, null));
-		list.Add(new MethodInfo(MethodName.Cleanup, new PropertyInfo(Variant.Type.Nil, "", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false), MethodFlags.Normal, new List<PropertyInfo>
-		{
-			new PropertyInfo(Variant.Type.Bool, "isFinished", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false)
-		}, null));
 		return list;
 	}
 
@@ -398,12 +380,6 @@ public class NControllerCardPlay : NCardPlay
 			ret = default(godot_variant);
 			return true;
 		}
-		if (method == MethodName.Cleanup && args.Count == 1)
-		{
-			Cleanup(VariantUtils.ConvertTo<bool>(in args[0]));
-			ret = default(godot_variant);
-			return true;
-		}
 		return base.InvokeGodotClassMethod(in method, args, out ret);
 	}
 
@@ -448,10 +424,6 @@ public class NControllerCardPlay : NCardPlay
 			return true;
 		}
 		if (method == MethodName.OnCancelPlayCard)
-		{
-			return true;
-		}
-		if (method == MethodName.Cleanup)
 		{
 			return true;
 		}

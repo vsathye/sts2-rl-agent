@@ -106,11 +106,6 @@ public abstract class EncounterModel : AbstractModel
 	/// </summary>
 	public LocString? CustomRewardDescription => LocString.GetIfExists("encounters", base.Id.Entry + ".customRewardDescription");
 
-	/// <summary>
-	/// Is this an encounter that's used for debugging, testing, etc.?
-	/// </summary>
-	public virtual bool IsDebugEncounter => false;
-
 	public virtual IEnumerable<EncounterTag> Tags => Array.Empty<EncounterTag>();
 
 	/// <summary>
@@ -265,7 +260,7 @@ public abstract class EncounterModel : AbstractModel
 		}
 		if (_rng == null)
 		{
-			uint seed = (uint)((int)runState.Rng.Seed + runState.TotalFloor + StringHelper.GetDeterministicHashCode(base.Id.Entry));
+			ulong seed = (ulong)((long)runState.Rng.Seed + (long)runState.TotalFloor) + StringHelper.GetDeterministicHashCode(base.Id.Entry);
 			_rng = new Rng(seed);
 		}
 		_monstersWithSlots = GenerateMonsters();
@@ -350,7 +345,7 @@ public abstract class EncounterModel : AbstractModel
 	public void DebugRandomizeRng()
 	{
 		AssertMutable();
-		_rng = new Rng((uint)(DateTime.UtcNow - DateTime.UnixEpoch).TotalSeconds);
+		_rng = new Rng((ulong)(DateTime.UtcNow - DateTime.UnixEpoch).TotalSeconds);
 	}
 
 	/// <summary>

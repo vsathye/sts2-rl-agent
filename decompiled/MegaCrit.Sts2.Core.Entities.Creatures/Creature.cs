@@ -6,6 +6,7 @@ using Godot;
 using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Entities.Powers;
+using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.Hooks;
 using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Models;
@@ -446,7 +447,7 @@ public class Creature
 	{
 		bool flag = CurrentHp > 0 && amount >= (decimal)CurrentHp;
 		int currentHp = CurrentHp;
-		int num = (int)Math.Min(amount, 999999999m);
+		int num = (int)Math.Clamp(amount, 0m, 999999999m);
 		CurrentHp = Math.Max(CurrentHp - num, 0);
 		return new DamageResult(this, props)
 		{
@@ -546,11 +547,15 @@ public class Creature
 	public void PrepareForNextTurn(IEnumerable<Creature> targets, bool rollNewMove = true)
 	{
 		Creature[] targets2 = targets.ToArray();
-		if (rollNewMove)
+		if (rollNewMove && Monster.MoveStateMachine != null)
 		{
 			Monster.RollMove(targets2);
 		}
-		NCombatRoom.Instance?.GetCreatureNode(this)?.RefreshIntents();
+		NCreature nCreature = NCombatRoom.Instance?.GetCreatureNode(this);
+		if (nCreature != null)
+		{
+			TaskHelper.RunSafely(nCreature.RefreshIntents());
+		}
 	}
 
 	public bool HasPower<T>() where T : PowerModel
@@ -767,6 +772,19 @@ public class Creature
 			obj = instance.GetCreatureNode(this);
 		}
 		return (NCreature?)obj;
+	}
+
+	/// <summary>
+	/// Sets the visibility of this creature's node. No-op if the node doesn't exist (e.g. test mode, or combat ended
+	/// and the node was freed).
+	/// </summary>
+	public void SetNodeVisible(bool visible)
+	{
+		NCreature creatureNode = GetCreatureNode();
+		if (creatureNode != null)
+		{
+			creatureNode.Visible = visible;
+		}
 	}
 
 	public Control? GetVfxContainer()

@@ -131,7 +131,7 @@ public class CardReward : Reward
 	public CardReward(IEnumerable<CardModel> cardsToOffer, CardCreationSource source, Player player, CardCreationOptions rerollOptions, PlayerChoiceSynchronizer? synchronizer = null)
 		: base(player)
 	{
-		Options = new CardCreationOptions(Array.Empty<CardModel>(), source, CardRarityOddsType.Uniform).WithFlags(CardCreationFlags.NoCardPoolModifications | CardCreationFlags.NoCardModelModifications | CardCreationFlags.IsCardReward);
+		Options = new CardCreationOptions(Array.Empty<CardPoolModel>(), source, CardRarityOddsType.Uniform).WithFlags(CardCreationFlags.NoCardPoolModifications | CardCreationFlags.NoCardModelModifications | CardCreationFlags.IsCardReward);
 		RerollOptions = rerollOptions;
 		_cardsWereManuallySet = true;
 		_cards = cardsToOffer.Select((CardModel c) => new CardCreationResult(c)).ToList();
@@ -172,11 +172,11 @@ public class CardReward : Reward
 		}
 		if (relic.TryModifyCardRewardOptions(base.Player, _cards, Options))
 		{
-			relic.AfterModifyingRewards();
+			TaskHelper.RunSafely(relic.AfterModifyingRewards());
 		}
 		if (relic.TryModifyCardRewardOptionsLate(base.Player, _cards, Options))
 		{
-			relic.AfterModifyingRewards();
+			TaskHelper.RunSafely(relic.AfterModifyingRewards());
 		}
 	}
 
@@ -211,7 +211,6 @@ public class CardReward : Reward
 					}
 					if (selection.Value.alternative != null)
 					{
-						obtainedCard = null;
 						num = _cards.Count + cardRewardOption.FirstIndex((CardRewardAlternative r) => r == selection.Value.alternative);
 					}
 					else
@@ -335,8 +334,7 @@ public class CardReward : Reward
 	{
 		if (Options.CardPools.Count <= 0)
 		{
-			string text = ((Options.CustomCardPool == null) ? "NULL" : string.Join(",", Options.CustomCardPool));
-			throw new NotImplementedException("Tried to serialize a CardReward without any card pools! This is not currently supported. Custom card pool is: " + text);
+			throw new NotImplementedException("Tried to serialize a CardReward without any card pools! This is not currently supported.");
 		}
 		if (Options.CardPoolFilter != null)
 		{

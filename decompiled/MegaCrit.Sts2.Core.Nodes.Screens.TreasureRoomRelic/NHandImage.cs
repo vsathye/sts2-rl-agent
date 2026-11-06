@@ -63,6 +63,11 @@ public class NHandImage : Control
 		public static readonly StringName SetFrozenForRelicAwards = "SetFrozenForRelicAwards";
 
 		/// <summary>
+		/// Cached name for the 'GetFrozenPosition' method.
+		/// </summary>
+		public static readonly StringName GetFrozenPosition = "GetFrozenPosition";
+
+		/// <summary>
 		/// Cached name for the 'DoFightMove' method.
 		/// </summary>
 		public static readonly StringName DoFightMove = "DoFightMove";
@@ -96,11 +101,6 @@ public class NHandImage : Control
 		/// Cached name for the 'SetSkipped' method.
 		/// </summary>
 		public static readonly StringName SetSkipped = "SetSkipped";
-
-		/// <summary>
-		/// Cached name for the 'SetAnimateInProgress' method.
-		/// </summary>
-		public static readonly StringName SetAnimateInProgress = "SetAnimateInProgress";
 
 		/// <summary>
 		/// Cached name for the '_Process' method.
@@ -254,8 +254,8 @@ public class NHandImage : Control
 	}
 
 	/// <summary>
-	/// If true: Z-indexes hand to 1 so that they appear above the fight backdrop, modulates them to white regardless of
-	/// whether they belong to the local player, and adjusts their pivot in preparation for throwing RPS moves.
+	/// If true: Modulates them to white regardless of whether they belong to the local player and adjusts their pivot
+	/// in preparation for throwing RPS moves.
 	/// If false: undoes all the above.
 	/// </summary>
 	/// <param name="inFight"></param>
@@ -266,7 +266,6 @@ public class NHandImage : Control
 		{
 			_textureRect.PivotOffset = _fightingPivot;
 			base.Modulate = Colors.White;
-			base.ZIndex = 1;
 			return;
 		}
 		_textureRect.PivotOffset = _pointingPivot;
@@ -274,7 +273,10 @@ public class NHandImage : Control
 		{
 			base.Modulate = new Color(0.5f, 0.5f, 0.5f, 0.5f);
 		}
-		base.ZIndex = 0;
+		else
+		{
+			base.Modulate = Colors.White;
+		}
 	}
 
 	/// <summary>
@@ -286,14 +288,19 @@ public class NHandImage : Control
 		if (frozenForRelicAwards)
 		{
 			_state = State.Frozen;
-			Rect2 viewportRect = GetViewportRect();
-			Vector2 vector = Vector2.Down.Rotated(base.Rotation);
-			_desiredPosition = viewportRect.Size / 2f + viewportRect.Size * vector * 0.1667f;
+			_desiredPosition = GetFrozenPosition();
 		}
 		else
 		{
 			_state = State.None;
 		}
+	}
+
+	private Vector2 GetFrozenPosition()
+	{
+		Rect2 viewportRect = GetViewportRect();
+		Vector2 vector = Vector2.Down.Rotated(base.Rotation);
+		return viewportRect.Size / 2f + viewportRect.Size * vector * 0.1667f;
 	}
 
 	/// <summary>
@@ -398,6 +405,10 @@ public class NHandImage : Control
 			_handAnimateInProgress = v;
 		}), 0f, 1f, 0.6000000238418579).SetTrans(Tween.TransitionType.Expo).SetEase(Tween.EaseType.Out);
 		IsShown = true;
+		if (_state == State.Frozen)
+		{
+			_desiredPosition = GetFrozenPosition();
+		}
 	}
 
 	/// <summary>
@@ -469,16 +480,6 @@ public class NHandImage : Control
 		SetTextureToFightMove(RelicPickingFightMove.Rock);
 	}
 
-	/// <summary>
-	/// Sets the progress of the slide-in animation, from 0 to 1.
-	/// This should be used when the treasure room is opened for the first time, so that the hands do not immediately
-	/// spawn on-screen.
-	/// </summary>
-	public void SetAnimateInProgress(float animateInProgress)
-	{
-		_handAnimateInProgress = animateInProgress;
-	}
-
 	public override void _Process(double delta)
 	{
 		Vector2 size = GetViewportRect().Size;
@@ -541,6 +542,7 @@ public class NHandImage : Control
 		{
 			new PropertyInfo(Variant.Type.Bool, "frozenForRelicAwards", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false)
 		}, null));
+		list.Add(new MethodInfo(MethodName.GetFrozenPosition, new PropertyInfo(Variant.Type.Vector2, "", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false), MethodFlags.Normal, null, null));
 		list.Add(new MethodInfo(MethodName.DoFightMove, new PropertyInfo(Variant.Type.Object, "", PropertyHint.None, "", PropertyUsageFlags.Default, new StringName("Tween"), exported: false), MethodFlags.Normal, new List<PropertyInfo>
 		{
 			new PropertyInfo(Variant.Type.Int, "move", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false),
@@ -561,10 +563,6 @@ public class NHandImage : Control
 			new PropertyInfo(Variant.Type.Bool, "isDown", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false)
 		}, null));
 		list.Add(new MethodInfo(MethodName.SetSkipped, new PropertyInfo(Variant.Type.Nil, "", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false), MethodFlags.Normal, null, null));
-		list.Add(new MethodInfo(MethodName.SetAnimateInProgress, new PropertyInfo(Variant.Type.Nil, "", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false), MethodFlags.Normal, new List<PropertyInfo>
-		{
-			new PropertyInfo(Variant.Type.Float, "animateInProgress", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false)
-		}, null));
 		list.Add(new MethodInfo(MethodName._Process, new PropertyInfo(Variant.Type.Nil, "", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false), MethodFlags.Normal, new List<PropertyInfo>
 		{
 			new PropertyInfo(Variant.Type.Float, "delta", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false)
@@ -604,6 +602,11 @@ public class NHandImage : Control
 		{
 			SetFrozenForRelicAwards(VariantUtils.ConvertTo<bool>(in args[0]));
 			ret = default(godot_variant);
+			return true;
+		}
+		if (method == MethodName.GetFrozenPosition && args.Count == 0)
+		{
+			ret = VariantUtils.CreateFrom<Vector2>(GetFrozenPosition());
 			return true;
 		}
 		if (method == MethodName.DoFightMove && args.Count == 2)
@@ -647,12 +650,6 @@ public class NHandImage : Control
 			ret = default(godot_variant);
 			return true;
 		}
-		if (method == MethodName.SetAnimateInProgress && args.Count == 1)
-		{
-			SetAnimateInProgress(VariantUtils.ConvertTo<float>(in args[0]));
-			ret = default(godot_variant);
-			return true;
-		}
 		if (method == MethodName._Process && args.Count == 1)
 		{
 			_Process(VariantUtils.ConvertTo<double>(in args[0]));
@@ -686,6 +683,10 @@ public class NHandImage : Control
 		{
 			return true;
 		}
+		if (method == MethodName.GetFrozenPosition)
+		{
+			return true;
+		}
 		if (method == MethodName.DoFightMove)
 		{
 			return true;
@@ -711,10 +712,6 @@ public class NHandImage : Control
 			return true;
 		}
 		if (method == MethodName.SetSkipped)
-		{
-			return true;
-		}
-		if (method == MethodName.SetAnimateInProgress)
 		{
 			return true;
 		}
