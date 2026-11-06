@@ -1718,7 +1718,7 @@ class TrackingPower(PowerInstance):
                 return 1.0
         if target is None or not target.has_power(PowerId.WEAK):
             return 1.0
-        return float(self.amount)
+        return 1.0 + self.amount / 100.0
 
 
 # ---------------------------------------------------------------------------

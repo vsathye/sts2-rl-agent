@@ -273,10 +273,12 @@ def make_bloodletting(upgraded: bool = False) -> CardInstance:
         cost=0,
         card_type=CardType.SKILL,
         target_type=TargetType.SELF,
-        rarity=CardRarity.COMMON,
-        effect_vars={"hp_loss": 3, "energy": 3 if upgraded else 2},
+        rarity=CardRarity.UNCOMMON,
+        effect_vars={'hp_loss': 3, 'energy': 3 if upgraded else 2},
         upgraded=upgraded,
         instance_id=_get_next_id(),
+        keywords=frozenset([]),
+        star_cost=0,
     )
 
 
@@ -553,9 +555,11 @@ def make_setup_strike(upgraded: bool = False) -> CardInstance:
         target_type=TargetType.ANY_ENEMY,
         rarity=CardRarity.COMMON,
         base_damage=9 if upgraded else 7,
-        effect_vars={"strength": 3 if upgraded else 2},
+        effect_vars={'strength': 4 if upgraded else 3, 'damage': 9 if upgraded else 7},
         upgraded=upgraded,
         instance_id=_get_next_id(),
+        keywords=frozenset([]),
+        star_cost=0,
     )
 
 
@@ -937,11 +941,12 @@ def make_dominate(upgraded: bool = False) -> CardInstance:
         cost=1,
         card_type=CardType.SKILL,
         target_type=TargetType.ANY_ENEMY,
-        rarity=CardRarity.UNCOMMON,
-        effect_vars={"vulnerable": 2 if upgraded else 1, "strength_per_vulnerable": 1},
-        keywords=kw,
+        rarity=CardRarity.RARE,
+        effect_vars={'vulnerable': 2 if upgraded else 1, 'strength_per_vulnerable': 1},
+        keywords=frozenset(['exhaust']),
         upgraded=upgraded,
         instance_id=_get_next_id(),
+        star_cost=0,
     )
 
 
@@ -1015,26 +1020,29 @@ def make_evil_eye(upgraded: bool = False) -> CardInstance:
 # --- Expect a Fight ---
 @register_effect(CardId.EXPECT_A_FIGHT)
 def expect_a_fight(card: CardInstance, combat: CombatState, target: Creature | None) -> None:
-    # ExpectAFight.cs OnPlay: gain energy equal to the CalculatedVar multiplier
-    # (count of Attack cards in hand), then apply NoEnergyGainPower(1) to the
-    # owner's own creature — no more energy gain this side's turn.
+    # v0.111.0: block scales with nonnegative Strength.
     owner = _owner(card, combat)
-    state = combat.combat_player_state_for(owner)
-    attack_count = sum(1 for c in state.hand if c.is_attack) if state is not None else 0
-    combat.gain_energy(owner, attack_count)
-    combat.apply_power_to(owner, PowerId.NO_ENERGY_GAIN, 1)
+    amount = card.effect_vars["calc_base"] + card.effect_vars["calc_extra"] * max(0, owner.get_power_amount(PowerId.STRENGTH))
+    block = calculate_block(amount, owner, ValueProp.MOVE, combat, card_source=card)
+    before = owner.block
+    owner.gain_block(block)
+    if owner.block > before:
+        from sts2_env.core.hooks import fire_after_block_gained
+        fire_after_block_gained(owner, owner.block - before, combat, ValueProp.MOVE, combat.active_card_play_token)
 
 
 def make_expect_a_fight(upgraded: bool = False) -> CardInstance:
     return CardInstance(
         card_id=CardId.EXPECT_A_FIGHT,
-        cost=1 if upgraded else 2,
+        cost=3,
         card_type=CardType.SKILL,
         target_type=TargetType.SELF,
         rarity=CardRarity.UNCOMMON,
-        effect_vars={"energy": 0, "calc_base": 0, "calc_extra": 1},
+        effect_vars={'energy': 0, 'calc_base': 16 if upgraded else 15, 'calc_extra': 8 if upgraded else 5},
         upgraded=upgraded,
         instance_id=_get_next_id(),
+        keywords=frozenset([]),
+        star_cost=0,
     )
 
 
@@ -1123,11 +1131,7 @@ def make_flame_barrier(upgraded: bool = False) -> CardInstance:
 # --- Forgotten Ritual ---
 @register_effect(CardId.FORGOTTEN_RITUAL)
 def forgotten_ritual(card: CardInstance, combat: CombatState, target: Creature | None) -> None:
-    owner = _owner(card, combat)
-    if not combat.was_card_exhausted_this_turn(owner):
-        return
-    energy = card.effect_vars.get("energy", 3)
-    combat.gain_energy(owner, energy)
+    combat.gain_energy(_owner(card, combat), card.effect_vars.get("energy", 3))
 
 
 def make_forgotten_ritual(upgraded: bool = False) -> CardInstance:
@@ -1225,9 +1229,12 @@ def make_howl_from_beyond(upgraded: bool = False) -> CardInstance:
         card_type=CardType.ATTACK,
         target_type=TargetType.ALL_ENEMIES,
         rarity=CardRarity.UNCOMMON,
-        base_damage=21 if upgraded else 16,
+        base_damage=24 if upgraded else 18,
         upgraded=upgraded,
         instance_id=_get_next_id(),
+        keywords=frozenset([]),
+        star_cost=0,
+        effect_vars={'damage': 24 if upgraded else 18},
     )
 
 
@@ -1396,10 +1403,12 @@ def make_rampage(upgraded: bool = False) -> CardInstance:
         card_type=CardType.ATTACK,
         target_type=TargetType.ANY_ENEMY,
         rarity=CardRarity.UNCOMMON,
-        base_damage=9,
-        effect_vars={"increase": 9 if upgraded else 5},
+        base_damage=10,
+        effect_vars={'increase': 10 if upgraded else 5, 'damage': 10},
         upgraded=upgraded,
         instance_id=_get_next_id(),
+        keywords=frozenset([]),
+        star_cost=0,
     )
 
 
@@ -1590,11 +1599,13 @@ def make_taunt(upgraded: bool = False) -> CardInstance:
         cost=1,
         card_type=CardType.SKILL,
         target_type=TargetType.ANY_ENEMY,
-        rarity=CardRarity.UNCOMMON,
-        base_block=8 if upgraded else 7,
-        effect_vars={"vulnerable": 2 if upgraded else 1},
+        rarity=CardRarity.COMMON,
+        base_block=7 if upgraded else 6,
+        effect_vars={'vulnerable': 2 if upgraded else 1, 'block': 7 if upgraded else 6},
         upgraded=upgraded,
         instance_id=_get_next_id(),
+        keywords=frozenset([]),
+        star_cost=0,
     )
 
 
@@ -1810,10 +1821,12 @@ def make_colossus(upgraded: bool = False) -> CardInstance:
         card_type=CardType.SKILL,
         target_type=TargetType.SELF,
         rarity=CardRarity.UNCOMMON,
-        base_block=8 if upgraded else 5,
-        effect_vars={"colossus": 1},
+        base_block=7 if upgraded else 4,
+        effect_vars={'colossus': 1, 'block': 7 if upgraded else 4},
         upgraded=upgraded,
         instance_id=_get_next_id(),
+        keywords=frozenset([]),
+        star_cost=0,
     )
 
 
@@ -1866,9 +1879,11 @@ def make_crimson_mantle(upgraded: bool = False) -> CardInstance:
         card_type=CardType.POWER,
         target_type=TargetType.SELF,
         rarity=CardRarity.RARE,
-        effect_vars={"crimson_mantle_power": 10 if upgraded else 8},
+        effect_vars={'crimson_mantle_power': 10 if upgraded else 7},
         upgraded=upgraded,
         instance_id=_get_next_id(),
+        keywords=frozenset([]),
+        star_cost=0,
     )
 
 
@@ -1885,10 +1900,12 @@ def make_cruelty(upgraded: bool = False) -> CardInstance:
         cost=1,
         card_type=CardType.POWER,
         target_type=TargetType.SELF,
-        rarity=CardRarity.RARE,
-        effect_vars={"cruelty_power": 50 if upgraded else 25},
+        rarity=CardRarity.UNCOMMON,
+        effect_vars={'cruelty_power': 50 if upgraded else 25},
         upgraded=upgraded,
         instance_id=_get_next_id(),
+        keywords=frozenset([]),
+        star_cost=0,
     )
 
 
@@ -1924,9 +1941,11 @@ def make_demon_form(upgraded: bool = False) -> CardInstance:
         card_type=CardType.POWER,
         target_type=TargetType.SELF,
         rarity=CardRarity.RARE,
-        effect_vars={"strength": 3 if upgraded else 2},
+        effect_vars={'strength': 4 if upgraded else 3},
         upgraded=upgraded,
         instance_id=_get_next_id(),
+        keywords=frozenset([]),
+        star_cost=0,
     )
 
 
@@ -2062,10 +2081,12 @@ def make_mangle(upgraded: bool = False) -> CardInstance:
         card_type=CardType.ATTACK,
         target_type=TargetType.ANY_ENEMY,
         rarity=CardRarity.RARE,
-        base_damage=20 if upgraded else 15,
-        effect_vars={"strength_loss": 15 if upgraded else 10},
+        base_damage=26 if upgraded else 20,
+        effect_vars={'strength_loss': 15 if upgraded else 10, 'damage': 26 if upgraded else 20},
         upgraded=upgraded,
         instance_id=_get_next_id(),
+        keywords=frozenset([]),
+        star_cost=0,
     )
 
 
@@ -2138,10 +2159,12 @@ def make_pacts_end(upgraded: bool = False) -> CardInstance:
         card_type=CardType.ATTACK,
         target_type=TargetType.ALL_ENEMIES,
         rarity=CardRarity.RARE,
-        base_damage=23 if upgraded else 17,
-        effect_vars={"cards": 3},
+        base_damage=24 if upgraded else 18,
+        effect_vars={'cards': 3, 'damage': 24 if upgraded else 18},
         upgraded=upgraded,
         instance_id=_get_next_id(),
+        keywords=frozenset([]),
+        star_cost=0,
     )
 
 

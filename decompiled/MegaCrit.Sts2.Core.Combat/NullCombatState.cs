@@ -11,6 +11,8 @@ namespace MegaCrit.Sts2.Core.Combat;
 
 public class NullCombatState : ICombatState
 {
+	public static NullCombatState Instance { get; } = new NullCombatState();
+
 	public IRunState RunState => NullRunState.Instance;
 
 	public IReadOnlyList<Creature> Allies { get; } = Array.Empty<Creature>();
@@ -75,6 +77,8 @@ public class NullCombatState : ICombatState
 
 	public Creature CreateCreature(MonsterModel monster, CombatSide side, string? slot)
 	{
+		monster.AssertMutable();
+		monster.RunRng = NullRunState.Instance.Rng;
 		return new Creature(monster, side, slot);
 	}
 

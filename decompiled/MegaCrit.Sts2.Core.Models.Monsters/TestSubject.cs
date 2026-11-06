@@ -260,22 +260,19 @@ public sealed class TestSubject : MonsterModel
 		await Cmd.Wait(0.8f);
 		base.Creature.GetCreatureNode()?.SetDefaultScaleTo(1f + (float)Respawns * 0.1f, 0.1f);
 		await Cmd.Wait(1.15f);
-		if (base.Creature.CombatState != null)
+		base.Creature.GetPower<AdaptablePower>()?.DoRevive();
+		switch (Respawns)
 		{
-			base.Creature.GetPower<AdaptablePower>()?.DoRevive();
-			switch (Respawns)
-			{
-			case 1:
-				await Revive(SecondFormHp);
-				await PowerCmd.Apply<PainfulStabsPower>(new ThrowingPlayerChoiceContext(), base.Creature, 1m, base.Creature, null);
-				break;
-			case 2:
-				await Revive(ThirdFormHp);
-				await PowerCmd.Apply<NemesisPower>(new ThrowingPlayerChoiceContext(), base.Creature, 1m, base.Creature, null);
-				await PowerCmd.Remove<AdaptablePower>(base.Creature);
-				await PowerCmd.Remove<PainfulStabsPower>(base.Creature);
-				break;
-			}
+		case 1:
+			await Revive(SecondFormHp);
+			await PowerCmd.Apply<PainfulStabsPower>(new ThrowingPlayerChoiceContext(), base.Creature, 1m, base.Creature, null);
+			break;
+		case 2:
+			await Revive(ThirdFormHp);
+			await PowerCmd.Apply<NemesisPower>(new ThrowingPlayerChoiceContext(), base.Creature, 1m, base.Creature, null);
+			await PowerCmd.Remove<AdaptablePower>(base.Creature);
+			await PowerCmd.Remove<PainfulStabsPower>(base.Creature);
+			break;
 		}
 	}
 

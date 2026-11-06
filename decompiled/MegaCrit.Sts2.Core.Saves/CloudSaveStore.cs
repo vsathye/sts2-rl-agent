@@ -22,6 +22,8 @@ namespace MegaCrit.Sts2.Core.Saves;
 /// </summary>
 public class CloudSaveStore : ICloudSaveStore, ISaveStore
 {
+	private readonly CloudSyncFailureReporter _syncFailureReporter = new CloudSyncFailureReporter();
+
 	public ISaveStore LocalStore { get; }
 
 	public ICloudSaveStore CloudStore { get; }
@@ -329,7 +331,10 @@ public class CloudSaveStore : ICloudSaveStore, ISaveStore
 		catch (Exception ex)
 		{
 			Log.Warn("SteamRemoteStorage: Failed to sync " + path + " from cloud, skipping: " + ex.Message);
-			SentryService.CaptureException(ex);
+			if (_syncFailureReporter.ShouldReport(ex))
+			{
+				SentryService.CaptureException(ex);
+			}
 		}
 	}
 

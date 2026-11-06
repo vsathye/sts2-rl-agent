@@ -71,6 +71,11 @@ public class NRewardsScreen : Control, IOverlayScreen, IScreenContext
 		public static readonly StringName OnProceedButtonPressed = "OnProceedButtonPressed";
 
 		/// <summary>
+		/// Cached name for the 'BeforeRoomExit' method.
+		/// </summary>
+		public static readonly StringName BeforeRoomExit = "BeforeRoomExit";
+
+		/// <summary>
 		/// Cached name for the 'AfterOverlayOpened' method.
 		/// </summary>
 		public static readonly StringName AfterOverlayOpened = "AfterOverlayOpened";
@@ -222,6 +227,11 @@ public class NRewardsScreen : Control, IOverlayScreen, IScreenContext
 		public static readonly StringName _lastRewardFocused = "_lastRewardFocused";
 
 		/// <summary>
+		/// Cached name for the '_disableProceedForever' field.
+		/// </summary>
+		public static readonly StringName _disableProceedForever = "_disableProceedForever";
+
+		/// <summary>
 		/// Cached name for the '_isTerminal' field.
 		/// </summary>
 		public static readonly StringName _isTerminal = "_isTerminal";
@@ -278,6 +288,12 @@ public class NRewardsScreen : Control, IOverlayScreen, IScreenContext
 	private RewardsSet _rewardsSet;
 
 	/// <summary>
+	/// The proceed button is often disabled temporarily. Set this flag if it should never be re-enabled.
+	/// This is used when proceed is hit after a boss fight - the player shouldn't be able to re-press it.
+	/// </summary>
+	private bool _disableProceedForever;
+
+	/// <summary>
 	/// Whether this screen is the last thing you'll see in the current room.
 	///
 	/// See <see cref="M:MegaCrit.Sts2.Core.Runs.RunManager.ProceedFromTerminalRewardsScreen" /> for more info.
@@ -317,6 +333,10 @@ public class NRewardsScreen : Control, IOverlayScreen, IScreenContext
 		{
 			if (_rewardButtons.Count == 0)
 			{
+				if (_isTerminal && IsComplete)
+				{
+					return this;
+				}
 				return _rewardsContainer;
 			}
 			return _lastRewardFocused ?? _rewardButtons[0];
@@ -472,7 +492,7 @@ public class NRewardsScreen : Control, IOverlayScreen, IScreenContext
 		if (_rewardButtons.Count > 0 || _isTerminal)
 		{
 			TryEnableProceedButton();
-			if (!_rewardButtons.Except(_skippedRewardButtons).Any())
+			if (_proceedButton.IsEnabled && !_rewardButtons.Except(_skippedRewardButtons).Any())
 			{
 				_proceedButton.SetPulseState(isPulsing: true);
 			}
@@ -557,6 +577,7 @@ public class NRewardsScreen : Control, IOverlayScreen, IScreenContext
 				return;
 			}
 			_proceedButton.Disable();
+			_disableProceedForever = true;
 			if (RunManager.Instance.ActChangeSynchronizer.IsWaitingForOtherPlayers())
 			{
 				_waitingForOtherPlayersOverlay.Visible = true;
@@ -590,19 +611,36 @@ public class NRewardsScreen : Control, IOverlayScreen, IScreenContext
 		}
 	}
 
+	/// <summary>
+	/// Called when RewardsSetSynchronizer skips all rewards just before we exit the room.
+	/// If we're still showing rewards at that time, we must hide all rewards to prevent the player from clicking them
+	/// just before the transition blocks input.
+	/// </summary>
+	private void BeforeRoomExit()
+	{
+		_rewardButtons.Clear();
+		UpdateScreenState();
+		if (this.IsValid())
+		{
+			_proceedButton.Disable();
+		}
+	}
+
 	public void AfterOverlayOpened()
 	{
+		RunManager.Instance.RewardsSetSynchronizer.RewardsSkippedDuringRoomExit += BeforeRoomExit;
 	}
 
 	public void AfterOverlayClosed()
 	{
 		_proceedButton.Disable();
+		RunManager.Instance.RewardsSetSynchronizer.RewardsSkippedDuringRoomExit -= BeforeRoomExit;
 		this.QueueFreeSafely();
 	}
 
 	private void TryEnableProceedButton()
 	{
-		if ((!_skipDisallowed || !_proceedButton.IsSkip) && Hook.ShouldProceedToNextMapPoint(_runState) && !_proceedButton.IsEnabled)
+		if (!_disableProceedForever && (!_skipDisallowed || !_proceedButton.IsSkip) && Hook.ShouldProceedToNextMapPoint(_runState) && !_proceedButton.IsEnabled)
 		{
 			if (_isTerminal && _rewardButtons.Count == 0)
 			{
@@ -656,7 +694,7 @@ public class NRewardsScreen : Control, IOverlayScreen, IScreenContext
 
 	private void ProcessGuiFocus(Control focusedControl)
 	{
-		if (IsVisibleInTree() && CanScroll && NControllerManager.Instance.IsUsingController && _rewardButtons.Contains(focusedControl))
+		if (IsVisibleInTree() && CanScroll && NControllerManager.Instance.IsUsingDirectionalNavigation && _rewardButtons.Contains(focusedControl))
 		{
 			float value = 0f - focusedControl.Position.Y + _rewardContainerMask.Size.Y * 0.5f;
 			value = Mathf.Clamp(value, ScrollLimitBottom, 35f);
@@ -676,8 +714,10 @@ public class NRewardsScreen : Control, IOverlayScreen, IScreenContext
 	{
 		if (!_rewardsContainer.Position.IsEqualApprox(_targetDragPos))
 		{
+			float a = Mathf.Sign(_rewardsContainer.Position.Y - _targetDragPos.Y);
 			_rewardsContainer.Position = _rewardsContainer.Position.Lerp(_targetDragPos, Mathf.Clamp((float)delta * 15f, 0f, 1f));
-			if (_rewardsContainer.Position.DistanceTo(_targetDragPos) < 0.5f)
+			float b = Mathf.Sign(_rewardsContainer.Position.Y - _targetDragPos.Y);
+			if (Math.Abs(_rewardsContainer.Position.Y - _targetDragPos.Y) < 0.5f || !Mathf.IsEqualApprox(a, b))
 			{
 				_rewardsContainer.Position = _targetDragPos;
 			}
@@ -727,7 +767,7 @@ public class NRewardsScreen : Control, IOverlayScreen, IScreenContext
 	[EditorBrowsable(EditorBrowsableState.Never)]
 	internal static List<MethodInfo> GetGodotMethodList()
 	{
-		List<MethodInfo> list = new List<MethodInfo>(17);
+		List<MethodInfo> list = new List<MethodInfo>(18);
 		list.Add(new MethodInfo(MethodName._Ready, new PropertyInfo(Variant.Type.Nil, "", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false), MethodFlags.Normal, null, null));
 		list.Add(new MethodInfo(MethodName.RewardCollectedFrom, new PropertyInfo(Variant.Type.Nil, "", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false), MethodFlags.Normal, new List<PropertyInfo>
 		{
@@ -746,6 +786,7 @@ public class NRewardsScreen : Control, IOverlayScreen, IScreenContext
 		{
 			new PropertyInfo(Variant.Type.Object, "_", PropertyHint.None, "", PropertyUsageFlags.Default, new StringName("Control"), exported: false)
 		}, null));
+		list.Add(new MethodInfo(MethodName.BeforeRoomExit, new PropertyInfo(Variant.Type.Nil, "", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false), MethodFlags.Normal, null, null));
 		list.Add(new MethodInfo(MethodName.AfterOverlayOpened, new PropertyInfo(Variant.Type.Nil, "", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false), MethodFlags.Normal, null, null));
 		list.Add(new MethodInfo(MethodName.AfterOverlayClosed, new PropertyInfo(Variant.Type.Nil, "", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false), MethodFlags.Normal, null, null));
 		list.Add(new MethodInfo(MethodName.TryEnableProceedButton, new PropertyInfo(Variant.Type.Nil, "", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false), MethodFlags.Normal, null, null));
@@ -812,6 +853,12 @@ public class NRewardsScreen : Control, IOverlayScreen, IScreenContext
 		if (method == MethodName.OnProceedButtonPressed && args.Count == 1)
 		{
 			OnProceedButtonPressed(VariantUtils.ConvertTo<NButton>(in args[0]));
+			ret = default(godot_variant);
+			return true;
+		}
+		if (method == MethodName.BeforeRoomExit && args.Count == 0)
+		{
+			BeforeRoomExit();
 			ret = default(godot_variant);
 			return true;
 		}
@@ -909,6 +956,10 @@ public class NRewardsScreen : Control, IOverlayScreen, IScreenContext
 			return true;
 		}
 		if (method == MethodName.OnProceedButtonPressed)
+		{
+			return true;
+		}
+		if (method == MethodName.BeforeRoomExit)
 		{
 			return true;
 		}
@@ -1021,6 +1072,11 @@ public class NRewardsScreen : Control, IOverlayScreen, IScreenContext
 		if (name == PropertyName._lastRewardFocused)
 		{
 			_lastRewardFocused = VariantUtils.ConvertTo<Control>(in value);
+			return true;
+		}
+		if (name == PropertyName._disableProceedForever)
+		{
+			_disableProceedForever = VariantUtils.ConvertTo<bool>(in value);
 			return true;
 		}
 		if (name == PropertyName._isTerminal)
@@ -1137,6 +1193,11 @@ public class NRewardsScreen : Control, IOverlayScreen, IScreenContext
 			value = VariantUtils.CreateFrom(in _lastRewardFocused);
 			return true;
 		}
+		if (name == PropertyName._disableProceedForever)
+		{
+			value = VariantUtils.CreateFrom(in _disableProceedForever);
+			return true;
+		}
 		if (name == PropertyName._isTerminal)
 		{
 			value = VariantUtils.CreateFrom(in _isTerminal);
@@ -1172,6 +1233,7 @@ public class NRewardsScreen : Control, IOverlayScreen, IScreenContext
 		list.Add(new PropertyInfo(Variant.Type.Float, PropertyName.ScrollLimitBottom, PropertyHint.None, "", PropertyUsageFlags.ScriptVariable, exported: false));
 		list.Add(new PropertyInfo(Variant.Type.Object, PropertyName._fadeTween, PropertyHint.None, "", PropertyUsageFlags.ScriptVariable, exported: false));
 		list.Add(new PropertyInfo(Variant.Type.Object, PropertyName._lastRewardFocused, PropertyHint.None, "", PropertyUsageFlags.ScriptVariable, exported: false));
+		list.Add(new PropertyInfo(Variant.Type.Bool, PropertyName._disableProceedForever, PropertyHint.None, "", PropertyUsageFlags.ScriptVariable, exported: false));
 		list.Add(new PropertyInfo(Variant.Type.Bool, PropertyName._isTerminal, PropertyHint.None, "", PropertyUsageFlags.ScriptVariable, exported: false));
 		list.Add(new PropertyInfo(Variant.Type.Bool, PropertyName._skipDisallowed, PropertyHint.None, "", PropertyUsageFlags.ScriptVariable, exported: false));
 		list.Add(new PropertyInfo(Variant.Type.Bool, PropertyName.IsComplete, PropertyHint.None, "", PropertyUsageFlags.ScriptVariable, exported: false));
@@ -1199,6 +1261,7 @@ public class NRewardsScreen : Control, IOverlayScreen, IScreenContext
 		info.AddProperty(PropertyName._scrollbarPressed, Variant.From(in _scrollbarPressed));
 		info.AddProperty(PropertyName._fadeTween, Variant.From(in _fadeTween));
 		info.AddProperty(PropertyName._lastRewardFocused, Variant.From(in _lastRewardFocused));
+		info.AddProperty(PropertyName._disableProceedForever, Variant.From(in _disableProceedForever));
 		info.AddProperty(PropertyName._isTerminal, Variant.From(in _isTerminal));
 		info.AddProperty(PropertyName._skipDisallowed, Variant.From(in _skipDisallowed));
 		info.AddSignalEventDelegate(SignalName.Completed, backing_Completed);
@@ -1257,17 +1320,21 @@ public class NRewardsScreen : Control, IOverlayScreen, IScreenContext
 		{
 			_lastRewardFocused = value12.As<Control>();
 		}
-		if (info.TryGetProperty(PropertyName._isTerminal, out var value13))
+		if (info.TryGetProperty(PropertyName._disableProceedForever, out var value13))
 		{
-			_isTerminal = value13.As<bool>();
+			_disableProceedForever = value13.As<bool>();
 		}
-		if (info.TryGetProperty(PropertyName._skipDisallowed, out var value14))
+		if (info.TryGetProperty(PropertyName._isTerminal, out var value14))
 		{
-			_skipDisallowed = value14.As<bool>();
+			_isTerminal = value14.As<bool>();
 		}
-		if (info.TryGetSignalEventDelegate<CompletedEventHandler>(SignalName.Completed, out var value15))
+		if (info.TryGetProperty(PropertyName._skipDisallowed, out var value15))
 		{
-			backing_Completed = value15;
+			_skipDisallowed = value15.As<bool>();
+		}
+		if (info.TryGetSignalEventDelegate<CompletedEventHandler>(SignalName.Completed, out var value16))
+		{
+			backing_Completed = value16;
 		}
 	}
 

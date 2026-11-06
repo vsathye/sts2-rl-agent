@@ -151,6 +151,11 @@ public class NCard : Control, IPoolable
 		public static readonly StringName Reload = "Reload";
 
 		/// <summary>
+		/// Cached name for the 'UpdatePortrait' method.
+		/// </summary>
+		public static readonly StringName UpdatePortrait = "UpdatePortrait";
+
+		/// <summary>
 		/// Cached name for the 'UpdateTypePlaque' method.
 		/// </summary>
 		public static readonly StringName UpdateTypePlaque = "UpdateTypePlaque";
@@ -800,8 +805,7 @@ public class NCard : Control, IPoolable
 		{
 			return null;
 		}
-		CardPile? pile = card.Pile;
-		return ((pile != null) ? new PileType?(pile.Type) : overridePile) switch
+		return (overridePile ?? card.Pile?.Type) switch
 		{
 			PileType.None => null, 
 			PileType.Draw => null, 
@@ -866,6 +870,7 @@ public class NCard : Control, IPoolable
 		}
 		DisplayingPile = pileType;
 		Creature target = _previewTarget ?? Model.CurrentTarget;
+		UpdatePortrait();
 		UpdateTitleLabel();
 		UpdateEnergyCostVisuals(pileType);
 		UpdateStarCostVisuals(pileType);
@@ -1189,7 +1194,6 @@ public class NCard : Control, IPoolable
 		_ancientBanner.Visible = flag;
 		_banner.Visible = !flag;
 		_lock.Visible = Visibility == ModelVisibility.Locked;
-		Texture2D portrait = Model.Portrait;
 		if (Visibility != ModelVisibility.Visible)
 		{
 			if (_portraitBlurMaterial == null)
@@ -1232,24 +1236,33 @@ public class NCard : Control, IPoolable
 			_portrait.Material = null;
 			_ancientPortrait.Material = null;
 		}
-		if (Model.Rarity != CardRarity.Ancient)
-		{
-			_portrait.Texture = portrait;
-			_portraitBorder.Texture = Model.PortraitBorder;
-			_portraitBorder.Material = Model.BannerMaterial;
-			_frame.Texture = Model.Frame;
-			_banner.Material = Model.BannerMaterial;
-			_banner.Texture = Model.BannerTexture;
-		}
-		else
-		{
-			_ancientBorder.Texture = Model.AncientBorder;
-			_ancientTextBg.Texture = Model.AncientTextBg;
-			_ancientPortrait.Texture = portrait;
-			_banner.Material = null;
-		}
+		UpdatePortrait();
 		_frame.Material = Model.FrameMaterial;
 		ReloadOverlay();
+	}
+
+	private void UpdatePortrait()
+	{
+		if (Model != null)
+		{
+			Texture2D portrait = Model.Portrait;
+			if (Model.Rarity != CardRarity.Ancient)
+			{
+				_portrait.Texture = portrait;
+				_portraitBorder.Texture = Model.PortraitBorder;
+				_portraitBorder.Material = Model.BannerMaterial;
+				_frame.Texture = Model.Frame;
+				_banner.Material = Model.BannerMaterial;
+				_banner.Texture = Model.BannerTexture;
+			}
+			else
+			{
+				_ancientBorder.Texture = Model.AncientBorder;
+				_ancientTextBg.Texture = Model.AncientTextBg;
+				_ancientPortrait.Texture = portrait;
+				_banner.Material = null;
+			}
+		}
 	}
 
 	private void UpdateTypePlaque()
@@ -1522,7 +1535,7 @@ public class NCard : Control, IPoolable
 	[EditorBrowsable(EditorBrowsableState.Never)]
 	internal static List<MethodInfo> GetGodotMethodList()
 	{
-		List<MethodInfo> list = new List<MethodInfo>(35);
+		List<MethodInfo> list = new List<MethodInfo>(36);
 		list.Add(new MethodInfo(MethodName.OnInstantiated, new PropertyInfo(Variant.Type.Nil, "", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false), MethodFlags.Normal, null, null));
 		list.Add(new MethodInfo(MethodName._Ready, new PropertyInfo(Variant.Type.Nil, "", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false), MethodFlags.Normal, null, null));
 		list.Add(new MethodInfo(MethodName._EnterTree, new PropertyInfo(Variant.Type.Nil, "", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false), MethodFlags.Normal, null, null));
@@ -1583,6 +1596,7 @@ public class NCard : Control, IPoolable
 		}, null));
 		list.Add(new MethodInfo(MethodName.PlayRandomizeCostAnim, new PropertyInfo(Variant.Type.Nil, "", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false), MethodFlags.Normal, null, null));
 		list.Add(new MethodInfo(MethodName.Reload, new PropertyInfo(Variant.Type.Nil, "", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false), MethodFlags.Normal, null, null));
+		list.Add(new MethodInfo(MethodName.UpdatePortrait, new PropertyInfo(Variant.Type.Nil, "", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false), MethodFlags.Normal, null, null));
 		list.Add(new MethodInfo(MethodName.UpdateTypePlaque, new PropertyInfo(Variant.Type.Nil, "", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false), MethodFlags.Normal, null, null));
 		list.Add(new MethodInfo(MethodName.UpdateTypePlaqueSizeAndPosition, new PropertyInfo(Variant.Type.Nil, "", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false), MethodFlags.Normal, null, null));
 		list.Add(new MethodInfo(MethodName.UpdateTitleLabel, new PropertyInfo(Variant.Type.Nil, "", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false), MethodFlags.Normal, null, null));
@@ -1729,6 +1743,12 @@ public class NCard : Control, IPoolable
 		if (method == MethodName.Reload && args.Count == 0)
 		{
 			Reload();
+			ret = default(godot_variant);
+			return true;
+		}
+		if (method == MethodName.UpdatePortrait && args.Count == 0)
+		{
+			UpdatePortrait();
 			ret = default(godot_variant);
 			return true;
 		}
@@ -1923,6 +1943,10 @@ public class NCard : Control, IPoolable
 			return true;
 		}
 		if (method == MethodName.Reload)
+		{
+			return true;
+		}
+		if (method == MethodName.UpdatePortrait)
 		{
 			return true;
 		}

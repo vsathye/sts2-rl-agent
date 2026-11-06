@@ -832,8 +832,10 @@ public class NCombatRoom : Control, IScreenContext, IRoomWithProceedButton
 		foreach (NCreature creatureNode in _creatureNodes)
 		{
 			Control hitbox = creatureNode.Hitbox;
-			creatureNode.Hitbox.FocusMode = (FocusModeEnum)(whitelist.Contains(hitbox) ? 2 : 0);
-			creatureNode.Hitbox.FocusNeighborBottom = creatureNode.Hitbox.GetPath();
+			bool flag = whitelist.Contains(hitbox);
+			hitbox.FocusMode = (FocusModeEnum)(flag ? 2 : 0);
+			hitbox.FocusNeighborBottom = creatureNode.Hitbox.GetPath();
+			creatureNode.OrbManager?.SetFocusBehaviorRecursive((FocusBehaviorRecursiveEnum)(flag ? 0 : 1));
 		}
 		Ui.Hand.DisableControllerNavigation();
 	}
@@ -843,12 +845,17 @@ public class NCombatRoom : Control, IScreenContext, IRoomWithProceedButton
 	/// </summary>
 	public void EnableControllerNavigation()
 	{
+		if (!IsInsideTree())
+		{
+			return;
+		}
 		foreach (NCreature creatureNode in _creatureNodes)
 		{
 			if (!creatureNode.Entity.IsDead)
 			{
 				creatureNode.Hitbox.FocusMode = FocusModeEnum.All;
 				creatureNode.Hitbox.FocusNeighborBottom = Ui.Hand.CardHolderContainer.GetPath();
+				creatureNode.OrbManager?.SetFocusBehaviorRecursive(FocusBehaviorRecursiveEnum.Inherited);
 			}
 		}
 		UpdateCreatureNavigation();

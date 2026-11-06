@@ -404,7 +404,10 @@ public class NEventOptionButton : NButton
 		await Cmd.Wait(2.5f, _deathPreventionCancellation.Token, ignoreCombatEnd: true);
 		if (!_deathPreventionCancellation.IsCancellationRequested)
 		{
-			_deathPreventionVfx?.GoAway();
+			if (_deathPreventionVfx != null)
+			{
+				TaskHelper.RunSafely(_deathPreventionVfx.GoAway());
+			}
 			_deathPreventionVfx = null;
 		}
 	}

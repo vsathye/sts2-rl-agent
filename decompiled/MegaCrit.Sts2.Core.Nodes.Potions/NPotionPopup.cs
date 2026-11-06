@@ -93,6 +93,11 @@ public class NPotionPopup : Control
 		public static readonly StringName IsUsable = "IsUsable";
 
 		/// <summary>
+		/// Cached name for the 'IsMarkedForRemoval' property.
+		/// </summary>
+		public static readonly StringName IsMarkedForRemoval = "IsMarkedForRemoval";
+
+		/// <summary>
 		/// Cached name for the 'InACardSelectScreen' property.
 		/// </summary>
 		public static readonly StringName InACardSelectScreen = "InACardSelectScreen";
@@ -126,11 +131,6 @@ public class NPotionPopup : Control
 		/// Cached name for the '_tween' field.
 		/// </summary>
 		public static readonly StringName _tween = "_tween";
-
-		/// <summary>
-		/// Cached name for the 'IsMarkedForRemoval' field.
-		/// </summary>
-		public static readonly StringName IsMarkedForRemoval = "IsMarkedForRemoval";
 	}
 
 	/// <summary>
@@ -152,15 +152,15 @@ public class NPotionPopup : Control
 
 	private Tween? _tween;
 
-	public bool IsMarkedForRemoval;
-
 	private Player? _subscribedPlayer;
 
 	private PotionModel? Potion => _holder.Potion?.Model;
 
 	public bool IsUsable => _useButton.IsEnabled;
 
-	private static string ScenePath => SceneHelper.GetScenePath("/potions/potion_popup");
+	public bool IsMarkedForRemoval { get; private set; }
+
+	private static string ScenePath => SceneHelper.GetScenePath("potions/potion_popup");
 
 	public static IEnumerable<string> AssetPaths => new global::_003C_003Ez__ReadOnlySingleElementList<string>(ScenePath);
 
@@ -248,8 +248,8 @@ public class NPotionPopup : Control
 				throw new ArgumentOutOfRangeException("Usage");
 			}
 			_subscribedPlayer = Potion.Owner;
-			_subscribedPlayer.CanRemovePotionsChanged += RefreshButtons;
-			if (!Potion.Owner.CanRemovePotions)
+			_subscribedPlayer.CanUseOrRemovePotionsChanged += RefreshButtons;
+			if (!Potion.Owner.CanUseOrRemovePotions)
 			{
 				_useButton.Disable();
 				_discardButton.Disable();
@@ -345,7 +345,7 @@ public class NPotionPopup : Control
 				Remove();
 			}
 		}
-		else if (inputEvent.IsActionPressed(MegaInput.cancel))
+		else if (inputEvent.IsActionPressed(MegaInput.cancel) || inputEvent.IsActionPressed(MegaInput.pauseAndBack))
 		{
 			Remove();
 			GetViewport()?.SetInputAsHandled();
@@ -391,7 +391,7 @@ public class NPotionPopup : Control
 		CombatManager.Instance.PlayerUnendedTurn -= OnPlayerEndTurnStatusChanged;
 		if (_subscribedPlayer != null)
 		{
-			_subscribedPlayer.CanRemovePotionsChanged -= RefreshButtons;
+			_subscribedPlayer.CanUseOrRemovePotionsChanged -= RefreshButtons;
 		}
 		if (NOverlayStack.Instance != null)
 		{
@@ -448,7 +448,7 @@ public class NPotionPopup : Control
 		if (potion2 != null)
 		{
 			Player owner = potion2.Owner;
-			if (owner != null && !owner.CanRemovePotions)
+			if (owner != null && !owner.CanUseOrRemovePotions)
 			{
 				_useButton.Disable();
 				_discardButton.Disable();
@@ -608,6 +608,11 @@ public class NPotionPopup : Control
 	[EditorBrowsable(EditorBrowsableState.Never)]
 	protected override bool SetGodotClassPropertyValue(in godot_string_name name, in godot_variant value)
 	{
+		if (name == PropertyName.IsMarkedForRemoval)
+		{
+			IsMarkedForRemoval = VariantUtils.ConvertTo<bool>(in value);
+			return true;
+		}
 		if (name == PropertyName._holder)
 		{
 			_holder = VariantUtils.ConvertTo<NPotionHolder>(in value);
@@ -638,11 +643,6 @@ public class NPotionPopup : Control
 			_tween = VariantUtils.ConvertTo<Tween>(in value);
 			return true;
 		}
-		if (name == PropertyName.IsMarkedForRemoval)
-		{
-			IsMarkedForRemoval = VariantUtils.ConvertTo<bool>(in value);
-			return true;
-		}
 		return base.SetGodotClassPropertyValue(in name, in value);
 	}
 
@@ -654,6 +654,12 @@ public class NPotionPopup : Control
 		if (name == PropertyName.IsUsable)
 		{
 			from = IsUsable;
+			value = VariantUtils.CreateFrom(in from);
+			return true;
+		}
+		if (name == PropertyName.IsMarkedForRemoval)
+		{
+			from = IsMarkedForRemoval;
 			value = VariantUtils.CreateFrom(in from);
 			return true;
 		}
@@ -693,11 +699,6 @@ public class NPotionPopup : Control
 			value = VariantUtils.CreateFrom(in _tween);
 			return true;
 		}
-		if (name == PropertyName.IsMarkedForRemoval)
-		{
-			value = VariantUtils.CreateFrom(in IsMarkedForRemoval);
-			return true;
-		}
 		return base.GetGodotClassPropertyValue(in name, out value);
 	}
 
@@ -716,8 +717,8 @@ public class NPotionPopup : Control
 		list.Add(new PropertyInfo(Variant.Type.Object, PropertyName._discardButton, PropertyHint.None, "", PropertyUsageFlags.ScriptVariable, exported: false));
 		list.Add(new PropertyInfo(Variant.Type.Object, PropertyName._hoverTipBounds, PropertyHint.None, "", PropertyUsageFlags.ScriptVariable, exported: false));
 		list.Add(new PropertyInfo(Variant.Type.Object, PropertyName._tween, PropertyHint.None, "", PropertyUsageFlags.ScriptVariable, exported: false));
-		list.Add(new PropertyInfo(Variant.Type.Bool, PropertyName.IsMarkedForRemoval, PropertyHint.None, "", PropertyUsageFlags.ScriptVariable, exported: false));
 		list.Add(new PropertyInfo(Variant.Type.Bool, PropertyName.IsUsable, PropertyHint.None, "", PropertyUsageFlags.ScriptVariable, exported: false));
+		list.Add(new PropertyInfo(Variant.Type.Bool, PropertyName.IsMarkedForRemoval, PropertyHint.None, "", PropertyUsageFlags.ScriptVariable, exported: false));
 		list.Add(new PropertyInfo(Variant.Type.Bool, PropertyName.InACardSelectScreen, PropertyHint.None, "", PropertyUsageFlags.ScriptVariable, exported: false));
 		return list;
 	}
@@ -727,13 +728,13 @@ public class NPotionPopup : Control
 	protected override void SaveGodotObjectData(GodotSerializationInfo info)
 	{
 		base.SaveGodotObjectData(info);
+		info.AddProperty(PropertyName.IsMarkedForRemoval, Variant.From<bool>(IsMarkedForRemoval));
 		info.AddProperty(PropertyName._holder, Variant.From(in _holder));
 		info.AddProperty(PropertyName._popupContainer, Variant.From(in _popupContainer));
 		info.AddProperty(PropertyName._useButton, Variant.From(in _useButton));
 		info.AddProperty(PropertyName._discardButton, Variant.From(in _discardButton));
 		info.AddProperty(PropertyName._hoverTipBounds, Variant.From(in _hoverTipBounds));
 		info.AddProperty(PropertyName._tween, Variant.From(in _tween));
-		info.AddProperty(PropertyName.IsMarkedForRemoval, Variant.From(in IsMarkedForRemoval));
 	}
 
 	/// <inheritdoc />
@@ -741,33 +742,33 @@ public class NPotionPopup : Control
 	protected override void RestoreGodotObjectData(GodotSerializationInfo info)
 	{
 		base.RestoreGodotObjectData(info);
-		if (info.TryGetProperty(PropertyName._holder, out var value))
+		if (info.TryGetProperty(PropertyName.IsMarkedForRemoval, out var value))
 		{
-			_holder = value.As<NPotionHolder>();
+			IsMarkedForRemoval = value.As<bool>();
 		}
-		if (info.TryGetProperty(PropertyName._popupContainer, out var value2))
+		if (info.TryGetProperty(PropertyName._holder, out var value2))
 		{
-			_popupContainer = value2.As<Control>();
+			_holder = value2.As<NPotionHolder>();
 		}
-		if (info.TryGetProperty(PropertyName._useButton, out var value3))
+		if (info.TryGetProperty(PropertyName._popupContainer, out var value3))
 		{
-			_useButton = value3.As<NPotionPopupButton>();
+			_popupContainer = value3.As<Control>();
 		}
-		if (info.TryGetProperty(PropertyName._discardButton, out var value4))
+		if (info.TryGetProperty(PropertyName._useButton, out var value4))
 		{
-			_discardButton = value4.As<NPotionPopupButton>();
+			_useButton = value4.As<NPotionPopupButton>();
 		}
-		if (info.TryGetProperty(PropertyName._hoverTipBounds, out var value5))
+		if (info.TryGetProperty(PropertyName._discardButton, out var value5))
 		{
-			_hoverTipBounds = value5.As<Control>();
+			_discardButton = value5.As<NPotionPopupButton>();
 		}
-		if (info.TryGetProperty(PropertyName._tween, out var value6))
+		if (info.TryGetProperty(PropertyName._hoverTipBounds, out var value6))
 		{
-			_tween = value6.As<Tween>();
+			_hoverTipBounds = value6.As<Control>();
 		}
-		if (info.TryGetProperty(PropertyName.IsMarkedForRemoval, out var value7))
+		if (info.TryGetProperty(PropertyName._tween, out var value7))
 		{
-			IsMarkedForRemoval = value7.As<bool>();
+			_tween = value7.As<Tween>();
 		}
 	}
 }

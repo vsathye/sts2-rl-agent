@@ -131,6 +131,9 @@ public class PlayerMapPointHistoryEntry : IPacketSerializable
 	[JsonSerializeCondition(SerializationCondition.SaveIfNotCollectionEmptyOrNull)]
 	public List<ModelId> CompletedQuests { get; set; } = new List<ModelId>();
 
+	[JsonPropertyName("is_affected_by_fur_coat")]
+	public bool IsAffectedByFurCoat { get; set; }
+
 	/// <summary>
 	/// True if a thief took gold or cards from this player this combat and did not give them back.
 	/// </summary>
@@ -212,6 +215,7 @@ public class PlayerMapPointHistoryEntry : IPacketSerializable
 		writer.WriteModelEntriesInList(BoughtPotions);
 		writer.WriteModelEntriesInList(BoughtColorless);
 		writer.WriteModelEntriesInList(CompletedQuests);
+		writer.WriteBool(IsAffectedByFurCoat);
 	}
 
 	public void Deserialize(PacketReader reader)
@@ -271,6 +275,7 @@ public class PlayerMapPointHistoryEntry : IPacketSerializable
 		BoughtPotions = reader.ReadModelIdListAssumingType<PotionModel>();
 		BoughtColorless = reader.ReadModelIdListAssumingType<CardModel>();
 		CompletedQuests = reader.ReadModelIdListAssumingType<CardModel>();
+		IsAffectedByFurCoat = reader.ReadBool();
 	}
 
 	public PlayerMapPointHistoryEntry Anonymized()

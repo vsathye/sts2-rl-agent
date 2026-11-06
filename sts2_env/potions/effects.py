@@ -857,3 +857,11 @@ _ALL_EFFECTS: dict[str, object] = {
 
 for _pid, _fn in _ALL_EFFECTS.items():
     register_potion_effect(_pid, _fn)
+
+
+def _ambergris(combat, user, target):
+    recipient = target if target is not None else user
+    recipient.heal(recipient.max_hp // 2)
+    combat.apply_power_to(recipient, PowerId.AMBERGRIS, 1)
+
+register_potion_effect("Ambergris", _ambergris)

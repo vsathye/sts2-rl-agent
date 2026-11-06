@@ -40,11 +40,15 @@ public static class DailyRunUtility
 	/// Figures out whether we should upload a score to the passed leaderboard.
 	/// If any player in the run has already submitted a score, then this returns false.
 	/// </summary>
-	public static async Task<bool> ShouldUploadScore(ILeaderboardHandle? handle, IReadOnlyList<ulong> playerIdsInRun, CancellationToken cancelToken = default(CancellationToken))
+	public static async Task<bool> ShouldUploadScore(ILeaderboardHandle? handle, List<ulong> playerIdsInRun, CancellationToken cancelToken = default(CancellationToken))
 	{
 		if (handle == null)
 		{
 			return true;
+		}
+		if (playerIdsInRun != null && playerIdsInRun.Count == 1 && playerIdsInRun[0] == 1)
+		{
+			playerIdsInRun[0] = PlatformUtil.GetLocalPlayerId(LeaderboardManager.CurrentPlatform);
 		}
 		return (await LeaderboardManager.QueryLeaderboardForUsers(handle, playerIdsInRun, cancelToken)).Count <= 0;
 	}
@@ -61,5 +65,23 @@ public static class DailyRunUtility
 			return $"{dateTime.Year}_{dateTime.Month:D2}_{dateTime.Day:D2}_{playerCount}p";
 		}
 		return $"{dateTime.Year}_{dateTime.Month:D2}_{dateTime.Day:D2}_{playerCount}p_BETA";
+	}
+
+	/// <summary>
+	/// Returns the leaderboard day <paramref name="days" /> away from <paramref name="day" />, or null if that day
+	/// falls outside the representable <see cref="T:System.DateTimeOffset" /> range (e.g. the day before
+	/// <see cref="F:System.DateTimeOffset.MinValue" />). The daily leaderboard probes its neighbouring days and is paged one
+	/// day at a time, so the boundary arithmetic must not throw <see cref="T:System.ArgumentOutOfRangeException" />.
+	/// </summary>
+	public static DateTimeOffset? AddLeaderboardDays(DateTimeOffset day, int days)
+	{
+		try
+		{
+			return day + TimeSpan.FromDays(days);
+		}
+		catch (ArgumentOutOfRangeException)
+		{
+			return null;
+		}
 	}
 }

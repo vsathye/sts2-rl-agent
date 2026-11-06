@@ -9,6 +9,8 @@ from pathlib import Path
 import subprocess
 import time
 
+from sts2_env.game_version import simulator_identity
+
 import gymnasium as gym
 import numpy as np
 
@@ -109,7 +111,7 @@ def evaluate(config: EnvConfig, seeds: range, model=None) -> dict:
     finally:
         env.close()
     metric = "combat_win" if config.mode == "combat" else "curriculum_win"
-    return dict(config=asdict(config), policy="random" if model is None else "ppo",
+    return dict(simulator=simulator_identity(), config=asdict(config), policy="random" if model is None else "ppo",
                 episodes=rows, win_metric=metric,
                 win_rate=float(np.mean([r[metric] for r in rows])),
                 full_run_wins=sum(r["full_run_win"] for r in rows),
@@ -149,7 +151,7 @@ def train(args: argparse.Namespace, config: EnvConfig) -> None:
     eval_env = DummyVecEnv([lambda: Monitor(make_env(
         config, range(1_000_000, 1_000_000 + args.eval_episodes))())])
     try:
-        manifest = dict(config=asdict(config), arguments=vars(args),
+        manifest = dict(simulator=simulator_identity(), config=asdict(config), arguments=vars(args),
                         source_commit=subprocess.check_output(
                             ["git", "rev-parse", "HEAD"], text=True).strip(),
                         source_dirty=bool(subprocess.check_output(

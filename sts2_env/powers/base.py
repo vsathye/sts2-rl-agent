@@ -38,6 +38,12 @@ class PowerInstance:
         self.applier: Creature | None = None
         self.ignore_next_instance: bool = False
 
+    def should_take_extra_turn(self, owner, combat):
+        return None
+
+    def after_taking_extra_turn(self, owner, combat):
+        pass
+
     def consume_ignore_next_instance(self) -> bool:
         if not self.ignore_next_instance:
             return False

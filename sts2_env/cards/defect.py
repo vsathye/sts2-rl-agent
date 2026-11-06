@@ -829,17 +829,10 @@ def rocket_punch_after_card_generated_for_combat(
     generated_owner = getattr(generated_card, "owner", None)
     if owner is not None and generated_owner is not owner:
         return
-    # RocketPunch.cs AfterCardGeneratedForCombat: base.EnergyCost.SetUntilPlayed(0)
-    # — a LocalCostModifier(LocalCostType.Absolute, WhenPlayed) on RocketPunch
-    # itself (CardEnergyCost.cs:175), so RocketPunch costs 0 until it is next
-    # played, persisting across end-of-turn cleanup. Tracked with combat_vars
-    # markers (not _turn_cost_override, which end_of_turn_cleanup pops) and
-    # restored by rocket_punch_after_card_played below.
-    if "_until_played_cost" in card.combat_vars:
-        return
-    card.combat_vars["_until_played_cost"] = 0
-    card.combat_vars["_until_played_prev_cost"] = card.cost
-    card.cost = 0
+    if "_until_played_prev_cost" not in card.combat_vars:
+        card.combat_vars["_until_played_prev_cost"] = card.cost
+    card.cost = max(0, card.cost - 1)
+    card.combat_vars["_until_played_cost"] = card.cost
 
 
 @register_after_card_played_hook(CardId.ROCKET_PUNCH)
@@ -1140,11 +1133,9 @@ def hyperbeam(card: CardInstance, combat: CombatState, target: Creature | None) 
     for enemy in combat.hittable_enemies:
         dmg = calculate_damage(card.base_damage, _owner(card, combat), enemy, ValueProp.MOVE, combat)
         apply_damage(enemy, dmg, ValueProp.MOVE, combat, _owner(card, combat))
-    # Lose Focus
     combat.apply_power_to(
-        _owner(card, combat),
-        PowerId.FOCUS,
-        -card.effect_vars.get(HYPERBEAM_FOCUS_KEY, HYPERBEAM_FOCUS),
+        _owner(card, combat), PowerId.HYPERBEAM_FOCUS_DOWN,
+        card.effect_vars.get(HYPERBEAM_FOCUS_KEY, HYPERBEAM_FOCUS),
     )
 
 
@@ -1519,11 +1510,17 @@ def make_lightning_rod(upgraded: bool = False) -> CardInstance:
 
 def make_momentum_strike(upgraded: bool = False) -> CardInstance:
     return CardInstance(
-        card_id=CardId.MOMENTUM_STRIKE, cost=1, card_type=CardType.ATTACK,
-        target_type=TargetType.ANY_ENEMY, rarity=CardRarity.COMMON,
-        base_damage=MOMENTUM_STRIKE_UPGRADED_DAMAGE if upgraded else MOMENTUM_STRIKE_DAMAGE,
+        card_id=CardId.MOMENTUM_STRIKE,
+        cost=1,
+        card_type=CardType.ATTACK,
+        target_type=TargetType.ANY_ENEMY,
+        rarity=CardRarity.COMMON,
+        base_damage=15 if upgraded else 11,
         upgraded=upgraded,
         instance_id=_get_next_id(),
+        keywords=frozenset([]),
+        star_cost=0,
+        effect_vars={'damage': 15 if upgraded else 11},
     )
 
 
@@ -1750,12 +1747,17 @@ def make_loop() -> CardInstance:
 
 def make_null(upgraded: bool = False) -> CardInstance:
     return CardInstance(
-        card_id=CardId.NULL_CARD, cost=2, card_type=CardType.ATTACK,
-        target_type=TargetType.ANY_ENEMY, rarity=CardRarity.UNCOMMON,
-        base_damage=NULL_UPGRADED_DAMAGE if upgraded else NULL_DAMAGE,
-        effect_vars={NULL_WEAK_KEY: NULL_UPGRADED_WEAK if upgraded else NULL_WEAK},
+        card_id=CardId.NULL_CARD,
+        cost=2,
+        card_type=CardType.ATTACK,
+        target_type=TargetType.ANY_ENEMY,
+        rarity=CardRarity.UNCOMMON,
+        base_damage=13 if upgraded else 10,
+        effect_vars={NULL_WEAK_KEY: NULL_UPGRADED_WEAK if upgraded else NULL_WEAK, 'damage': 13 if upgraded else 10, 'weak': 2 if upgraded else 1},
         upgraded=upgraded,
         instance_id=_get_next_id(),
+        keywords=frozenset([]),
+        star_cost=0,
     )
 
 
@@ -1773,12 +1775,17 @@ def make_overclock(upgraded: bool = False) -> CardInstance:
 
 def make_refract(upgraded: bool = False) -> CardInstance:
     return CardInstance(
-        card_id=CardId.REFRACT, cost=3, card_type=CardType.ATTACK,
-        target_type=TargetType.ANY_ENEMY, rarity=CardRarity.UNCOMMON,
-        base_damage=12 if upgraded else 9,
-        effect_vars={REFRACT_REPEAT_KEY: REFRACT_REPEAT},
+        card_id=CardId.REFRACT,
+        cost=3,
+        card_type=CardType.ATTACK,
+        target_type=TargetType.ANY_ENEMY,
+        rarity=CardRarity.UNCOMMON,
+        base_damage=13 if upgraded else 10,
+        effect_vars={REFRACT_REPEAT_KEY: REFRACT_REPEAT, 'repeat': 2, 'damage': 13 if upgraded else 10},
         upgraded=upgraded,
         instance_id=_get_next_id(),
+        keywords=frozenset([]),
+        star_cost=0,
     )
 
 
@@ -1871,23 +1878,31 @@ def make_subroutine(upgraded: bool = False) -> CardInstance:
 
 def make_sunder() -> CardInstance:
     return CardInstance(
-        card_id=CardId.SUNDER, cost=3, card_type=CardType.ATTACK,
-        target_type=TargetType.ANY_ENEMY, rarity=CardRarity.UNCOMMON,
-        base_damage=24, effect_vars={"energy": 3}, instance_id=_get_next_id(),
+        card_id=CardId.SUNDER,
+        cost=3,
+        card_type=CardType.ATTACK,
+        target_type=TargetType.ANY_ENEMY,
+        rarity=CardRarity.UNCOMMON,
+        base_damage=26,
+        effect_vars={'energy': 3, 'damage': 26},
+        instance_id=_get_next_id(),
+        keywords=frozenset([]),
+        star_cost=0,
     )
 
 
 def make_synchronize(upgraded: bool = False) -> CardInstance:
     return CardInstance(
-        card_id=CardId.SYNCHRONIZE, cost=1, card_type=CardType.SKILL,
-        target_type=TargetType.SELF, rarity=CardRarity.UNCOMMON,
-        keywords=frozenset() if upgraded else frozenset({"exhaust"}),
-        effect_vars={
-            SYNCHRONIZE_CALC_BASE_KEY: SYNCHRONIZE_CALC_BASE,
-            SYNCHRONIZE_CALC_EXTRA_KEY: SYNCHRONIZE_FOCUS_PER_ORB_TYPE,
-        },
+        card_id=CardId.SYNCHRONIZE,
+        cost=1,
+        card_type=CardType.SKILL,
+        target_type=TargetType.SELF,
+        rarity=CardRarity.UNCOMMON,
+        keywords=frozenset([]),
+        effect_vars={SYNCHRONIZE_CALC_BASE_KEY: SYNCHRONIZE_CALC_BASE, SYNCHRONIZE_CALC_EXTRA_KEY: SYNCHRONIZE_FOCUS_PER_ORB_TYPE, 'calc_base': 0, 'calc_extra': 2 if upgraded else 1},
         upgraded=upgraded,
         instance_id=_get_next_id(),
+        star_cost=0,
     )
 
 
@@ -1923,13 +1938,16 @@ def make_tesla_coil(upgraded: bool = False) -> CardInstance:
 
 def make_thunder(upgraded: bool = False) -> CardInstance:
     return CardInstance(
-        card_id=CardId.THUNDER_CARD, cost=1, card_type=CardType.POWER,
-        target_type=TargetType.SELF, rarity=CardRarity.UNCOMMON,
-        effect_vars={
-            THUNDER_POWER_KEY: THUNDER_UPGRADED_POWER if upgraded else THUNDER_POWER
-        },
+        card_id=CardId.THUNDER_CARD,
+        cost=1,
+        card_type=CardType.POWER,
+        target_type=TargetType.SELF,
+        rarity=CardRarity.UNCOMMON,
+        effect_vars={THUNDER_POWER_KEY: THUNDER_UPGRADED_POWER if upgraded else THUNDER_POWER, 'thunder_power': 11 if upgraded else 8},
         upgraded=upgraded,
         instance_id=_get_next_id(),
+        keywords=frozenset([]),
+        star_cost=0,
     )
 
 
@@ -2065,12 +2083,17 @@ def make_helix_drill(upgraded: bool = False) -> CardInstance:
 
 def make_hyperbeam(upgraded: bool = False) -> CardInstance:
     return CardInstance(
-        card_id=CardId.HYPERBEAM, cost=2, card_type=CardType.ATTACK,
-        target_type=TargetType.ALL_ENEMIES, rarity=CardRarity.RARE,
-        base_damage=HYPERBEAM_UPGRADED_DAMAGE if upgraded else HYPERBEAM_DAMAGE,
-        effect_vars={HYPERBEAM_FOCUS_KEY: HYPERBEAM_FOCUS},
+        card_id=CardId.HYPERBEAM,
+        cost=2,
+        card_type=CardType.ATTACK,
+        target_type=TargetType.ALL_ENEMIES,
+        rarity=CardRarity.RARE,
+        base_damage=30 if upgraded else 24,
+        effect_vars={HYPERBEAM_FOCUS_KEY: HYPERBEAM_FOCUS, 'damage': 30 if upgraded else 24, 'focus_power': 3},
         upgraded=upgraded,
         instance_id=_get_next_id(),
+        keywords=frozenset([]),
+        star_cost=0,
     )
 
 
@@ -2087,10 +2110,16 @@ def make_ice_lance(upgraded: bool = False) -> CardInstance:
 
 def make_ignition(upgraded: bool = False) -> CardInstance:
     return CardInstance(
-        card_id=CardId.IGNITION, cost=1, card_type=CardType.SKILL,
-        target_type=TargetType.ANY_ALLY, rarity=CardRarity.RARE,
-        keywords=frozenset() if upgraded else frozenset({"exhaust"}),
-        upgraded=upgraded, instance_id=_get_next_id(),
+        card_id=CardId.IGNITION,
+        cost=1,
+        card_type=CardType.SKILL,
+        target_type=TargetType.ANY_ALLY,
+        rarity=CardRarity.UNCOMMON,
+        keywords=frozenset([]) if upgraded else frozenset(['exhaust']),
+        upgraded=upgraded,
+        instance_id=_get_next_id(),
+        star_cost=0,
+        effect_vars={},
     )
 
 
@@ -2161,11 +2190,17 @@ def make_reboot(upgraded: bool = False) -> CardInstance:
 
 def make_shatter(upgraded: bool = False) -> CardInstance:
     return CardInstance(
-        card_id=CardId.SHATTER, cost=1, card_type=CardType.ATTACK,
-        target_type=TargetType.ALL_ENEMIES, rarity=CardRarity.RARE,
-        base_damage=SHATTER_UPGRADED_DAMAGE if upgraded else SHATTER_DAMAGE,
+        card_id=CardId.SHATTER,
+        cost=1,
+        card_type=CardType.ATTACK,
+        target_type=TargetType.ALL_ENEMIES,
+        rarity=CardRarity.RARE,
+        base_damage=11 if upgraded else 7,
         upgraded=upgraded,
         instance_id=_get_next_id(),
+        keywords=frozenset(['exhaust']),
+        star_cost=0,
+        effect_vars={'damage': 11 if upgraded else 7},
     )
 
 
@@ -2207,11 +2242,16 @@ def make_supercritical(upgraded: bool = False) -> CardInstance:
 
 def make_trash_to_treasure(upgraded: bool = False) -> CardInstance:
     return CardInstance(
-        card_id=CardId.TRASH_TO_TREASURE, cost=1, card_type=CardType.POWER,
-        target_type=TargetType.SELF, rarity=CardRarity.RARE,
-        keywords=frozenset({"innate"}) if upgraded else frozenset(),
+        card_id=CardId.TRASH_TO_TREASURE,
+        cost=0 if upgraded else 1,
+        card_type=CardType.POWER,
+        target_type=TargetType.SELF,
+        rarity=CardRarity.RARE,
+        keywords=frozenset([]),
         upgraded=upgraded,
         instance_id=_get_next_id(),
+        star_cost=0,
+        effect_vars={},
     )
 
 
@@ -2231,16 +2271,16 @@ def make_voltaic(upgraded: bool = False) -> CardInstance:
 
 def make_biased_cognition(upgraded: bool = False) -> CardInstance:
     return CardInstance(
-        card_id=CardId.BIASED_COGNITION_CARD, cost=1, card_type=CardType.POWER,
-        target_type=TargetType.SELF, rarity=CardRarity.ANCIENT,
-        effect_vars={
-            BIASED_COGNITION_FOCUS_KEY: (
-                BIASED_COGNITION_UPGRADED_FOCUS if upgraded else BIASED_COGNITION_FOCUS
-            ),
-            BIASED_COGNITION_POWER_KEY: BIASED_COGNITION_POWER,
-        },
+        card_id=CardId.BIASED_COGNITION_CARD,
+        cost=1,
+        card_type=CardType.POWER,
+        target_type=TargetType.SELF,
+        rarity=CardRarity.ANCIENT,
+        effect_vars={BIASED_COGNITION_FOCUS_KEY: BIASED_COGNITION_UPGRADED_FOCUS if upgraded else BIASED_COGNITION_FOCUS, BIASED_COGNITION_POWER_KEY: BIASED_COGNITION_POWER, 'focus_power': 6 if upgraded else 5, 'biased_cognition_power': 1},
         upgraded=upgraded,
         instance_id=_get_next_id(),
+        keywords=frozenset([]),
+        star_cost=0,
     )
 
 

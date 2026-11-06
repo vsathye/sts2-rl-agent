@@ -53,6 +53,7 @@ _CARD_MODULES = (
     "sts2_env.cards.regent",
     "sts2_env.cards.colorless",
     "sts2_env.cards.status",
+    "sts2_env.cards.v111",
 )
 
 _COMBAT_GENERATION_EXCLUDED = frozenset({

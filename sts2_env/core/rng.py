@@ -22,80 +22,48 @@ def _to_uint32(value: int) -> int:
     return value & UINT_MASK
 
 
+UINT64_MASK = (1 << 64) - 1
+
+
 def deterministic_hash_code(text: str) -> int:
-    """Match StringHelper.GetDeterministicHashCode from the game."""
-    num = 352654597
-    num2 = num
-    for index in range(0, len(text), 2):
-        num = _to_int32(_to_int32(num << 5) + num)
-        num = _to_int32(num ^ ord(text[index]))
-        if index == len(text) - 1:
-            break
-        num2 = _to_int32(_to_int32(num2 << 5) + num2)
-        num2 = _to_int32(num2 ^ ord(text[index + 1]))
-    return _to_int32(num + _to_int32(num2 * 1_566_083_941))
+    """v0.111.0 StringHelper: xxHash64 of UTF-8, seed zero."""
+    import xxhash
+    return xxhash.xxh64_intdigest(text.encode("utf-8"), seed=0)
 
 
-class _DotNetCompatRandom:
-    """System.Random seeded implementation used by .NET for Random(int)."""
-
+class _MegaRandom:
+    """v0.111.0 Xoshiro256** with SplitMix64 initialization."""
     def __init__(self, seed: int):
-        self._seed_array = [0] * 56
-        self._inext = 0
-        self._inextp = 21
-        self._initialize(seed)
+        self.state = []
+        for _ in range(4):
+            seed = (seed + 0x9E3779B97F4A7C15) & UINT64_MASK
+            z = seed
+            z = ((z ^ (z >> 30)) * 0xBF58476D1CE4E5B9) & UINT64_MASK
+            z = ((z ^ (z >> 27)) * 0x94D049BB133111EB) & UINT64_MASK
+            self.state.append((z ^ (z >> 31)) & UINT64_MASK)
 
-    def _initialize(self, seed: int) -> None:
-        subtraction = INT_MAX if seed == INT_MIN else abs(seed)
-        mj = _to_int32(161_803_398 - subtraction)
-        self._seed_array[55] = mj
-        mk = 1
-        ii = 0
-        for i in range(1, 55):
-            ii += 21
-            if ii >= 55:
-                ii -= 55
-            self._seed_array[ii] = mk
-            mk = _to_int32(mj - mk)
-            if mk < 0:
-                mk += INT_MAX
-            mj = self._seed_array[ii]
-        for _ in range(1, 5):
-            for i in range(1, 56):
-                n = i + 30
-                if n >= 55:
-                    n -= 55
-                self._seed_array[i] = _to_int32(self._seed_array[i] - self._seed_array[1 + n])
-                if self._seed_array[i] < 0:
-                    self._seed_array[i] += INT_MAX
+    @staticmethod
+    def _rotl(x: int, k: int) -> int:
+        return ((x << k) | (x >> (64 - k))) & UINT64_MASK
 
     def internal_sample(self) -> int:
-        loc_inext = self._inext + 1
-        if loc_inext >= 56:
-            loc_inext = 1
-        loc_inextp = self._inextp + 1
-        if loc_inextp >= 56:
-            loc_inextp = 1
-
-        ret = _to_int32(self._seed_array[loc_inext] - self._seed_array[loc_inextp])
-        if ret == INT_MAX:
-            ret -= 1
-        if ret < 0:
-            ret += INT_MAX
-        self._seed_array[loc_inext] = ret
-        self._inext = loc_inext
-        self._inextp = loc_inextp
-        return ret
+        s0, s1, s2, s3 = self.state
+        result = (self._rotl((s1 * 5) & UINT64_MASK, 7) * 9) & UINT64_MASK
+        t = (s1 << 17) & UINT64_MASK
+        s2 ^= s0
+        s3 ^= s1
+        s1 ^= s2
+        s0 ^= s3
+        s2 ^= t
+        s3 = self._rotl(s3, 45)
+        self.state = [s0, s1, s2, s3]
+        return result
 
     def sample(self) -> float:
-        return self.internal_sample() * (1.0 / INT_MAX)
+        return (self.internal_sample() >> 11) * (2.0 ** -53)
 
     def get_sample_for_large_range(self) -> float:
-        result = self.internal_sample()
-        if self.internal_sample() % 2 == 0:
-            result = -result
-        value = result + (INT_MAX - 1)
-        return value / (2 * INT_MAX - 1)
+        return self.sample()
 
 
 class Rng:
@@ -103,16 +71,16 @@ class Rng:
 
     The public ``next_int(low, high)`` API keeps this project's inclusive
     upper bound convention, while the underlying sequence uses C#'s seeded
-    ``System.Random`` implementation.
+    ``MegaRandom`` xoshiro256** implementation.
     """
 
     def __init__(self, seed: int = 0, name: str | None = None, counter: int = 0):
-        self._base_seed = _to_uint32(seed)
+        self._base_seed = seed & UINT64_MASK
         if name is None:
             self._seed = self._base_seed
         else:
-            self._seed = _to_uint32(self._base_seed + _to_uint32(deterministic_hash_code(name)))
-        self._rng = _DotNetCompatRandom(_to_int32(self._seed))
+            self._seed = (self._base_seed + deterministic_hash_code(name)) & UINT64_MASK
+        self._rng = _MegaRandom(self._seed)
         self._counter = 0
         self.fast_forward_counter(counter)
 
@@ -161,8 +129,7 @@ class Rng:
 
     def next_float(self, upper: float = 1.0) -> float:
         """Return random float in [0, upper)."""
-        self._counter += 1
-        return self._rng.sample() * upper
+        return self.next_float_range(0.0, upper)
 
     def shuffle(self, lst: list) -> None:
         """In-place shuffle."""
@@ -192,7 +159,8 @@ class Rng:
         if low > high:
             raise ValueError("low must be <= high")
         self._counter += 1
-        return low + self._rng.sample() * (high - low)
+        import struct
+        return struct.unpack("f", struct.pack("f", low + self._rng.sample() * (high - low)))[0]
 
     def next_gaussian_int(self, mean: float, stddev: float, min_val: int, max_val: int) -> int:
         """Return a gaussian-distributed int in [min_val, max_val].
@@ -201,8 +169,8 @@ class Rng:
         until the result is within range) rather than clamping.
         """
         while True:
-            u1 = 1.0 - self._rng.sample()
-            u2 = 1.0 - self._rng.sample()
+            u1 = 1.0 - self.next_double()
+            u2 = 1.0 - self.next_double()
             z = math.sqrt(-2.0 * math.log(u1)) * math.sin(2.0 * math.pi * u2)
             val = round(mean + stddev * z)
             if min_val <= val <= max_val:
@@ -211,3 +179,21 @@ class Rng:
     def fork(self) -> Rng:
         """Create a child RNG with a derived seed."""
         return Rng(self.next_int(0, INT_MAX_EXCLUSIVE))
+
+    def next_double(self) -> float:
+        self._counter += 1
+        return self._rng.sample()
+
+    def next_unsigned_long(self) -> int:
+        self._counter += 1
+        return self._rng.internal_sample()
+
+    def to_serializable(self) -> dict:
+        return {"counter": self._counter, **{f"state{i}": n for i, n in enumerate(self._rng.state)}}
+
+    def load_from_serializable(self, saved: dict) -> None:
+        state = [int(saved[f"state{i}"]) for i in range(4)]
+        if any(n < 0 or n > UINT64_MASK for n in state) or not any(state):
+            raise ValueError("Invalid Xoshiro256 state")
+        self._rng.state = state
+        self._counter = int(saved["counter"])

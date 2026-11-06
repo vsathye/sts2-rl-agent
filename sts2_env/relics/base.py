@@ -339,6 +339,8 @@ class RelicId(Enum):
     PHIAL_HOLSTER = auto()
     SILKEN_TRESS = auto()
     WINGED_BOOTS = auto()
+    DOWSING_ROD = auto()
+    NEOWS_SACRIFICE = auto()
 
     # Special
     CIRCLET = auto()

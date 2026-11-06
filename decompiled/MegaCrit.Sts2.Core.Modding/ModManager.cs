@@ -15,6 +15,7 @@ using MegaCrit.Sts2.Core.Multiplayer.Transport.Steam;
 using MegaCrit.Sts2.Core.Platform;
 using MegaCrit.Sts2.Core.Platform.Steam;
 using MegaCrit.Sts2.Core.Saves;
+using MegaCrit.Sts2.Core.Saves.Managers;
 using MegaCrit.Sts2.Core.TestSupport;
 using Steamworks;
 
@@ -45,6 +46,13 @@ public static class ModManager
 	public static IReadOnlyList<Mod> Mods => _mods;
 
 	public static bool PlayerAgreedToModLoading => _settings?.PlayerAgreedToModLoading ?? false;
+
+	public static bool UnmoddedSavesWereCopied { get; private set; }
+
+	/// <summary>
+	/// Used only in test mode.
+	/// </summary>
+	public static Dictionary<string, Action> TestInitializers { get; } = new Dictionary<string, Action>();
 
 	/// <summary>
 	/// Called when a new mod is detected. Use this to display a warning at runtime if the user adds new mods.
@@ -99,7 +107,7 @@ public static class ModManager
 		}
 		if (SteamInitializer.Initialized)
 		{
-			await ReadSteamMods();
+			ReadSteamMods();
 		}
 		if (OS.IsDebugBuild())
 		{
@@ -110,6 +118,7 @@ public static class ModManager
 			State = ModManagerState.Initialized;
 			return;
 		}
+		await CheckSteamBranchSupport();
 		RemoveDisabledMods();
 		SortModList(_settings?.ModList ?? new List<SettingsSaveMod>());
 		foreach (Mod mod2 in _mods)
@@ -122,21 +131,35 @@ public static class ModManager
 			Log.Info($" --- RUNNING MODDED! --- Loaded {value} mods ({_mods.Count} total)");
 		}
 		State = ModManagerState.Initialized;
-		if (_settings == null)
+		bool flag = false;
+		if (_settings != null && _settings.PlayerAgreedToModLoading)
 		{
-			return;
+			List<SettingsSaveMod> list = new List<SettingsSaveMod>();
+			foreach (Mod mod in _mods)
+			{
+				SettingsSaveMod settingsSaveMod = new SettingsSaveMod(mod);
+				bool isEnabled = _settings.ModList.FirstOrDefault((SettingsSaveMod m) => m.Id == mod.manifest?.id)?.IsEnabled ?? true;
+				settingsSaveMod.IsEnabled = isEnabled;
+				list.Add(settingsSaveMod);
+			}
+			flag = _settings.ModList.Count == 0;
+			_settings.ModList = list;
 		}
-		List<SettingsSaveMod> list = new List<SettingsSaveMod>();
-		foreach (Mod mod in _mods)
+		else if (_settings != null)
 		{
-			SettingsSaveMod settingsSaveMod = new SettingsSaveMod(mod);
-			bool isEnabled = _settings.ModList.FirstOrDefault((SettingsSaveMod m) => m.Id == mod.manifest?.id)?.IsEnabled ?? true;
-			settingsSaveMod.IsEnabled = isEnabled;
-			list.Add(settingsSaveMod);
+			_settings.ModList = new List<SettingsSaveMod>();
 		}
-		_settings.ModList = list;
+		if (IsRunningModded() && flag)
+		{
+			Log.Info("Player is playing modded for the first time. Checking if we need to copy unmodded save files");
+			CopyUnmoddedSaveFilesIfNeeded(fileIo);
+		}
 	}
 
+	/// <summary>
+	/// This should only be called by tests.
+	/// Typically, ModManager is initialized once at the start of the game and never cleared.
+	/// </summary>
 	public static void ResetForTests()
 	{
 		if (TestMode.IsOff)
@@ -149,6 +172,7 @@ public static class ModManager
 		_fileIo = null;
 		_allowInitForTests = true;
 		_circularDependencies.Clear();
+		TestInitializers.Clear();
 	}
 
 	/// <summary>
@@ -293,12 +317,18 @@ public static class ModManager
 	}
 
 	/// <summary>
-	/// If the user has subscribed to a mod via Steam workshop and also has it in their local directory, we never want
-	/// to load the Steam mod. This is to help mod developers in development.
+	/// Sets mods in _mods to disabled for various reasons.
+	///
+	/// If it's disabled in settings.save, the mod is unconditionally disabled.
+	///
+	/// If the user has subscribed to a mod via Steam workshop and also has it in their local directory:
+	///  - Prefer the newer mod if it is the same version
+	///  - Otherwise, load the mod that has a greater version
+	/// This is to help mod developers in development.
 	/// </summary>
 	private static void RemoveDisabledMods()
 	{
-		HashSet<string> hashSet = new HashSet<string>();
+		Dictionary<string, Mod> dictionary = new Dictionary<string, Mod>();
 		foreach (Mod mod in _mods)
 		{
 			if (mod.manifest?.id != null)
@@ -311,15 +341,49 @@ public static class ModManager
 				}
 				else if (mod.modSource == ModSource.ModsDirectory)
 				{
-					hashSet.Add(mod.manifest.id);
+					dictionary.TryAdd(mod.manifest.id, mod);
 				}
 			}
 		}
 		foreach (Mod mod2 in _mods)
 		{
-			if (mod2.manifest?.id != null && mod2.modSource == ModSource.SteamWorkshop && mod2.state == ModLoadState.None && hashSet.Contains(mod2.manifest.id))
+			if (mod2.manifest?.id == null || mod2.modSource != ModSource.SteamWorkshop || mod2.state != ModLoadState.None || !dictionary.TryGetValue(mod2.manifest.id, out var value))
 			{
-				Log.Warn("Mod with ID " + mod2.manifest.id + " is loaded both via Steam and local mods directory. Disabling the Steam workshop version.");
+				continue;
+			}
+			SemanticVersion version = null;
+			SemanticVersion version2 = null;
+			if (value.manifest?.version != null)
+			{
+				SemanticVersion.TryFromString(value.manifest.version, out version);
+			}
+			if (mod2.manifest.version != null)
+			{
+				SemanticVersion.TryFromString(mod2.manifest.version, out version2);
+			}
+			if (version2 == null || version == null)
+			{
+				Log.Warn("Mod with ID " + mod2.manifest.id + " and unknown version is loaded both via Steam and local mods directory. Disabling the Steam workshop version.");
+				mod2.state = ModLoadState.DisabledDuplicate;
+				mod2.errors?.Clear();
+				continue;
+			}
+			int num = version2.CompareTo(version);
+			if (num == 0)
+			{
+				Log.Warn($"Mod with ID {mod2.manifest.id} and version {mod2.manifest.version} is loaded both via Steam and local mods directory. Disabling the Steam workshop version.");
+				mod2.state = ModLoadState.DisabledDuplicate;
+				mod2.errors?.Clear();
+			}
+			else if (num > 0)
+			{
+				Log.Warn($"Mod with ID {mod2.manifest.id} is loaded both via Steam and local mods directory. Steam version ({version2}) is greater than local version ({version}), so we are disabling the local version.");
+				value.state = ModLoadState.DisabledDuplicate;
+				value.errors?.Clear();
+			}
+			else
+			{
+				Log.Warn($"Mod with ID {mod2.manifest.id} is loaded both via Steam and local mods directory. Local version ({version}) is greater than steam version ({version2}), so we are disabling the Steam workshop version.");
 				mod2.state = ModLoadState.DisabledDuplicate;
 				mod2.errors?.Clear();
 			}
@@ -376,7 +440,14 @@ public static class ModManager
 			}
 			if (modManifest.id == null)
 			{
-				Log.Error("Mod manifest " + filename + " is missing the 'id' field! This is not allowed. The mod will not be loaded.");
+				if (modManifest.name == null && modManifest.author == null && modManifest.description == null && modManifest.version == null)
+				{
+					Log.Info("JSON file " + filename + " does not look like a mod manifest; skipping it.");
+				}
+				else
+				{
+					Log.Error("JSON file " + filename + " looks like a mod manifest but is missing the 'id' field! This is not allowed.");
+				}
 				return null;
 			}
 			return new Mod
@@ -424,20 +495,20 @@ public static class ModManager
 		return (IsSupported: false, MaxSupportedBranch: platformBranch);
 	}
 
-	private static async Task ReadSteamMods()
+	private static void ReadSteamMods()
 	{
-		uint subscribedItemCount = SteamUGC.GetNumSubscribedItems();
-		PublishedFileId_t[] workshopItems = new PublishedFileId_t[subscribedItemCount];
-		subscribedItemCount = SteamUGC.GetSubscribedItems(workshopItems, subscribedItemCount);
-		for (int i = 0; i < subscribedItemCount; i++)
+		uint numSubscribedItems = SteamUGC.GetNumSubscribedItems();
+		PublishedFileId_t[] array = new PublishedFileId_t[numSubscribedItems];
+		numSubscribedItems = SteamUGC.GetSubscribedItems(array, numSubscribedItems);
+		for (int i = 0; i < numSubscribedItems; i++)
 		{
-			PublishedFileId_t workshopItemId = workshopItems[i];
-			await TryReadModFromSteam(workshopItemId, null);
+			PublishedFileId_t workshopItemId = array[i];
+			TryReadModFromSteam(workshopItemId, null);
 		}
 		_steamItemInstalledCallback = Callback<ItemInstalled_t>.Create(OnSteamWorkshopItemInstalled);
 	}
 
-	private static async Task TryReadModFromSteam(PublishedFileId_t workshopItemId, List<Mod>? newMods)
+	private static void TryReadModFromSteam(PublishedFileId_t workshopItemId, List<Mod>? newMods)
 	{
 		if (!SteamUGC.GetItemInstallInfo(workshopItemId, out var punSizeOnDisk, out var pchFolder, 256u, out var punTimeStamp))
 		{
@@ -450,56 +521,82 @@ public static class ModManager
 			Log.Warn("Could not open Steam Workshop folder: " + pchFolder);
 			return;
 		}
-		List<Mod> loadedMods = new List<Mod>();
-		ReadModsInDirRecursive(pchFolder, ModSource.SteamWorkshop, loadedMods);
-		await CheckSteamBranchSupport(workshopItemId, loadedMods);
-		newMods?.AddRange(loadedMods);
+		List<Mod> list = new List<Mod>();
+		ReadModsInDirRecursive(pchFolder, ModSource.SteamWorkshop, list);
+		foreach (Mod item in list)
+		{
+			item.workshopId = workshopItemId.m_PublishedFileId;
+		}
+		newMods?.AddRange(list);
 	}
 
-	private static async Task CheckSteamBranchSupport(PublishedFileId_t workshopItemId, List<Mod> mods)
+	/// <summary>
+	/// Checks all workshop-based mods on whether they support the current steam branch or not.
+	/// If a given mod does not support the current steam branch, then it shows an error, but loading continues anyway.
+	/// </summary>
+	private static async Task CheckSteamBranchSupport()
 	{
-		UGCQueryHandle_t queryHandle = SteamUGC.CreateQueryUGCDetailsRequest(new PublishedFileId_t[1] { workshopItemId }, 1u);
+		PublishedFileId_t[] workshopMods = (from m in _mods
+			where m.workshopId.HasValue
+			select new PublishedFileId_t(m.workshopId.Value)).Distinct().ToArray();
+		if (workshopMods.Length == 0)
+		{
+			return;
+		}
+		UGCQueryHandle_t queryHandle = SteamUGC.CreateQueryUGCDetailsRequest(workshopMods, (uint)workshopMods.Length);
 		try
 		{
 			using SteamCallResult<SteamUGCQueryCompleted_t> callResult = new SteamCallResult<SteamUGCQueryCompleted_t>(SteamUGC.SendQueryUGCRequest(queryHandle), SteamInitializer.DisconnectToken);
 			SteamUGCQueryCompleted_t steamUGCQueryCompleted_t = await callResult.Task;
-			uint numSupportedGameVersions = SteamUGC.GetNumSupportedGameVersions(steamUGCQueryCompleted_t.m_handle, 0u);
-			List<(string, string)> list = new List<(string, string)>();
-			for (int i = 0; i < numSupportedGameVersions; i++)
+			if (steamUGCQueryCompleted_t.m_eResult != EResult.k_EResultOK)
 			{
-				if (SteamUGC.GetSupportedGameVersionData(steamUGCQueryCompleted_t.m_handle, 0u, (uint)i, out var pchGameBranchMin, out var pchGameBranchMax, 999u))
-				{
-					list.Add((pchGameBranchMin, pchGameBranchMax));
-				}
-			}
-			if (numSupportedGameVersions != 0 && list.Count == 0)
-			{
-				Log.Warn($"Steam reported {numSupportedGameVersions} supported game version range(s) for mod {workshopItemId.m_PublishedFileId} but none could be read; loading it without the branch check.");
-			}
-			PlatformBranch platformBranch = PlatformUtil.GetPlatformBranch();
-			var (flag, platformBranch2) = EvaluateBranchSupport(platformBranch, list);
-			if (flag)
-			{
+				Log.Warn($"Steam UGC branch-support query failed with {steamUGCQueryCompleted_t.m_eResult}; loading mods without the branch check.");
 				return;
 			}
-			foreach (Mod mod2 in mods)
+			for (uint num = 0u; num < workshopMods.Length; num++)
 			{
-				LocString locString = new LocString("main_menu_ui", "MOD_ERROR.STEAM_BRANCH_UNSUPPORTED");
-				locString.Add("id", mod2.manifest?.id ?? "<null>");
-				locString.Add("currentBranch", platformBranch.ToName());
-				locString.Add("supportedBranch", platformBranch2?.ToName() ?? "<null>");
-				Mod mod = mod2;
-				if (mod.errors == null)
+				PublishedFileId_t publishedFileId_t = workshopMods[num];
+				uint numSupportedGameVersions = SteamUGC.GetNumSupportedGameVersions(steamUGCQueryCompleted_t.m_handle, num);
+				List<(string, string)> list = new List<(string, string)>();
+				for (uint num2 = 0u; num2 < numSupportedGameVersions; num2++)
 				{
-					mod.errors = new List<LocString>();
+					if (SteamUGC.GetSupportedGameVersionData(steamUGCQueryCompleted_t.m_handle, num, num2, out var pchGameBranchMin, out var pchGameBranchMax, 999u))
+					{
+						list.Add((pchGameBranchMin, pchGameBranchMax));
+					}
 				}
-				mod2.errors.Add(locString);
-				Log.Error($"Tried to load mod with id {mod2.manifest?.id}, but the current Steam branch {platformBranch.ToName()} does not lie in the min/max steam branches the mod supports! Max supported: {platformBranch2?.ToName()}");
+				if (numSupportedGameVersions != 0 && list.Count == 0)
+				{
+					Log.Warn($"Steam reported {numSupportedGameVersions} supported game version range(s) for mod {publishedFileId_t.m_PublishedFileId} but none could be read; loading it without the branch check.");
+				}
+				PlatformBranch platformBranch = PlatformUtil.GetPlatformBranch();
+				var (flag, platformBranch2) = EvaluateBranchSupport(platformBranch, list);
+				if (flag)
+				{
+					continue;
+				}
+				foreach (Mod mod2 in _mods)
+				{
+					if (mod2.workshopId == publishedFileId_t.m_PublishedFileId)
+					{
+						LocString locString = new LocString("main_menu_ui", "MOD_ERROR.STEAM_BRANCH_UNSUPPORTED");
+						locString.Add("id", mod2.manifest?.id ?? "<null>");
+						locString.Add("currentBranch", platformBranch.ToName());
+						locString.Add("supportedBranch", platformBranch2?.ToName() ?? "<null>");
+						Mod mod = mod2;
+						if (mod.errors == null)
+						{
+							mod.errors = new List<LocString>();
+						}
+						mod2.errors.Add(locString);
+						Log.Error($"Tried to load mod with id {mod2.manifest?.id}, but the current Steam branch {platformBranch.ToName()} does not lie in the min/max steam branches the mod supports! Max supported: {platformBranch2?.ToName()}");
+					}
+				}
 			}
 		}
 		catch (Exception value)
 		{
-			Log.Warn($"Could not verify Steam branch support for mod {workshopItemId.m_PublishedFileId}; loading it without the check. {value}");
+			Log.Warn($"Could not verify Steam branch support for mods. Loading them anyways. Exception: {value}");
 		}
 		finally
 		{
@@ -509,22 +606,17 @@ public static class ModManager
 
 	private static void OnSteamWorkshopItemInstalled(ItemInstalled_t ev)
 	{
-		TaskHelper.RunSafely(OnSteamWorkshopItemInstalledAsync(ev));
-	}
-
-	private static async Task OnSteamWorkshopItemInstalledAsync(ItemInstalled_t ev)
-	{
 		if ((ulong)ev.m_unAppID.m_AppId != 2868840)
 		{
 			return;
 		}
 		Log.Info($"Detected new Steam Workshop item installation, id: {ev.m_nPublishedFileId.m_PublishedFileId}");
-		List<Mod> loadedMods = new List<Mod>();
-		await TryReadModFromSteam(ev.m_nPublishedFileId, loadedMods);
-		foreach (Mod item in loadedMods)
+		List<Mod> list = new List<Mod>();
+		TryReadModFromSteam(ev.m_nPublishedFileId, list);
+		foreach (Mod item in list)
 		{
 			item.state = ModLoadState.AddedAtRuntime;
-			ModManager.OnModDetected?.Invoke(item);
+			InvokeOnModDetected(item);
 		}
 	}
 
@@ -532,7 +624,7 @@ public static class ModManager
 	{
 		if (mod.state != ModLoadState.None)
 		{
-			ModManager.OnModDetected?.Invoke(mod);
+			InvokeOnModDetected(mod);
 			return;
 		}
 		Assembly assembly = null;
@@ -555,10 +647,9 @@ public static class ModManager
 			mod.version = version;
 		}
 		string modId = mod.manifest.id;
-		bool flag = _settings?.IsModDisabled(modId, mod.modSource) ?? false;
-		bool flag2 = _mods.Any((Mod m) => m.manifest?.id == modId && m.state == ModLoadState.Loaded);
-		bool flag3 = false;
-		bool flag4 = true;
+		bool flag = _mods.Any((Mod m) => m.manifest?.id == modId && m.state == ModLoadState.Loaded);
+		bool flag2 = false;
+		bool flag3 = true;
 		if (_gameVersion != null)
 		{
 			SemanticVersion version2;
@@ -568,11 +659,11 @@ public static class ModManager
 			}
 			else if (!SemanticVersion.TryFromString(mod.manifest.minGameVersion, out version2))
 			{
-				flag3 = true;
+				flag2 = true;
 			}
 			else
 			{
-				flag4 = _gameVersion.CompareTo(version2) >= 0;
+				flag3 = _gameVersion.CompareTo(version2) >= 0;
 			}
 		}
 		string value;
@@ -586,7 +677,7 @@ public static class ModManager
 			Log.Info("Skipping loading mod " + modId + ", user has not yet seen the mods warning");
 			mod.state = ModLoadState.Disabled;
 		}
-		else if (flag2)
+		else if (flag)
 		{
 			LocString locString = new LocString("main_menu_ui", "MOD_ERROR.DUPLICATE_ID");
 			locString.Add("id", modId);
@@ -603,7 +694,7 @@ public static class ModManager
 			Log.Error($"Tried to load mod with id {modId}, but it is part of a circular dependency chain: {value}!");
 			mod.state = ModLoadState.Failed;
 		}
-		else if (flag3)
+		else if (flag2)
 		{
 			LocString locString3 = new LocString("main_menu_ui", "MOD_ERROR.GAME_VERSION_INVALID");
 			locString3.Add("id", modId);
@@ -612,7 +703,7 @@ public static class ModManager
 			Log.Error($"Mod {mod.manifest.id} declares min game version {mod.manifest.minGameVersion} that can't be parsed! Assuming it is supported");
 			mod.state = ModLoadState.Failed;
 		}
-		else if (!flag4)
+		else if (!flag3)
 		{
 			LocString locString4 = new LocString("main_menu_ui", "MOD_ERROR.GAME_VERSION_UNSUPPORTED");
 			locString4.Add("id", modId);
@@ -696,14 +787,14 @@ public static class ModManager
 		if (mod.state != ModLoadState.None)
 		{
 			mod.errors = ((list.Count == 0) ? null : list);
-			ModManager.OnModDetected?.Invoke(mod);
+			InvokeOnModDetected(mod);
 			return;
 		}
 		try
 		{
-			bool flag5 = false;
+			bool flag4 = false;
 			string text2 = Path.Combine(mod.path, modId + ".dll");
-			if (mod.manifest.hasDll)
+			if (mod.manifest.hasDll && TestMode.IsOff)
 			{
 				if (_fileIo != null && _fileIo.FileExists(text2))
 				{
@@ -712,7 +803,7 @@ public static class ModManager
 					if (loadContext != null)
 					{
 						assembly = loadContext.LoadFromAssemblyPath(text2);
-						flag5 = true;
+						flag4 = true;
 					}
 				}
 				else
@@ -720,8 +811,12 @@ public static class ModManager
 					Log.Error($"Mod manifest for mod {mod.manifest.id} declares that it should load an assembly, but no assembly at path {text2} was found!");
 				}
 			}
+			else if (TestMode.IsOn && TestInitializers.ContainsKey(modId))
+			{
+				flag4 = true;
+			}
 			string text3 = Path.Combine(mod.path, modId + ".pck");
-			if (mod.manifest.hasPck)
+			if (mod.manifest.hasPck && TestMode.IsOff)
 			{
 				if (_fileIo != null && _fileIo.FileExists(text3))
 				{
@@ -730,21 +825,21 @@ public static class ModManager
 					{
 						throw new InvalidOperationException("Godot errored while loading PCK file " + modId + "!");
 					}
-					flag5 = true;
+					flag4 = true;
 				}
 				else
 				{
 					Log.Error($"Mod manifest for mod {mod.manifest.id} declares that it should load a PCK, but no PCK at path {text3} was found!");
 				}
 			}
-			if (!flag5)
+			if (!flag4)
 			{
 				Log.Warn("Neither a DLL nor a PCK was loaded for mod " + mod.manifest.id + ", something seems wrong!");
 			}
-			bool? flag6 = null;
-			if (assembly != null)
+			bool? flag5 = null;
+			if (TestMode.IsOff && assembly != null)
 			{
-				flag6 = true;
+				flag5 = true;
 				List<Type> list3 = (from t in assembly.GetTypes()
 					where t.GetCustomAttribute<ModInitializerAttribute>() != null
 					select t).ToList();
@@ -753,8 +848,8 @@ public static class ModManager
 					foreach (Type item in list3)
 					{
 						Log.Info($"Calling initializer method of type {item} for {assembly}");
-						bool flag7 = CallModInitializer(item);
-						flag6 = flag6.Value && flag7;
+						bool flag6 = CallModInitializer(item);
+						flag5 = flag5.Value && flag6;
 					}
 				}
 				else
@@ -768,21 +863,32 @@ public static class ModManager
 					catch (Exception value2)
 					{
 						Log.Error($"Exception caught while trying to run PatchAll on assembly {assembly}:\n{value2}");
-						flag6 = false;
+						flag5 = false;
 					}
 				}
 			}
-			if (flag6 == false)
+			else if (TestMode.IsOn && mod.manifest.hasDll)
+			{
+				flag5 = TestInitializers.TryGetValue(mod.manifest.id, out Action value3);
+				if (flag5.Value)
+				{
+					value3();
+				}
+			}
+			if (flag5 == false)
 			{
 				LocString locString10 = new LocString("main_menu_ui", "MOD_ERROR.ASSEMBLY_LOAD");
 				locString10.Add("id", mod.manifest.id);
 				list.Add(locString10);
 			}
 			Log.Info($"Finished mod initialization for '{mod.manifest.name}' ({modId}).");
+			if (assembly != null)
+			{
+				mod.assemblies.Add(assembly);
+			}
 			mod.state = ModLoadState.Loaded;
-			mod.assembly = assembly;
 			mod.errors = ((list.Count == 0) ? null : list);
-			ModManager.OnModDetected?.Invoke(mod);
+			InvokeOnModDetected(mod);
 		}
 		catch (Exception ex)
 		{
@@ -791,10 +897,33 @@ public static class ModManager
 			locString11.Add("exceptionType", ex.GetType().ToString());
 			locString11.Add("id", mod.manifest.id);
 			list.Add(locString11);
+			if (assembly != null)
+			{
+				mod.assemblies.Add(assembly);
+			}
 			mod.state = ModLoadState.Failed;
-			mod.assembly = assembly;
 			mod.errors = ((list.Count == 0) ? null : list);
-			ModManager.OnModDetected?.Invoke(mod);
+			InvokeOnModDetected(mod);
+		}
+	}
+
+	private static void InvokeOnModDetected(Mod mod)
+	{
+		Delegate[] array = ModManager.OnModDetected?.GetInvocationList() ?? Array.Empty<Delegate>();
+		foreach (Delegate obj in array)
+		{
+			try
+			{
+				obj.DynamicInvoke(mod);
+			}
+			catch (Exception value)
+			{
+				if (obj.Target?.GetType().Assembly == Assembly.GetExecutingAssembly())
+				{
+					throw;
+				}
+				Log.Error($"Exception emitted from {"OnModDetected"} delegate {obj}: {value}");
+			}
 		}
 	}
 
@@ -908,6 +1037,41 @@ public static class ModManager
 		ModManager.OnMetricsUpload?.Invoke(run, isVictory, localPlayerId);
 	}
 
+	/// <summary>
+	/// Associates an assembly with a mod.
+	/// If your mod creates types within a dynamic assembly, it must associate the assembly to the mod so that the types
+	/// within the mod are detected.
+	/// Each assembly must be associated with exactly one mod.
+	/// </summary>
+	public static void AssociateAssemblyWithMod(string modId, Assembly assembly)
+	{
+		Mod mod = _mods.FirstOrDefault(delegate(Mod m)
+		{
+			ModLoadState state = m.state;
+			return (uint)state <= 1u && m.manifest?.id == modId;
+		});
+		if (mod == null)
+		{
+			mod = _mods.FirstOrDefault((Mod m) => m.manifest?.id == modId);
+			if (mod != null)
+			{
+				Log.Warn($"Tried to associate assembly {assembly} with mod {modId} but its state is {mod.state}");
+			}
+			else
+			{
+				Log.Warn($"Tried to associate assembly {assembly} with mod {modId} but we couldn't find any such mod");
+			}
+			return;
+		}
+		Log.Info($"Associated assembly {assembly} with mod {modId}");
+		mod.assemblies.Add(assembly);
+		if (AssemblyInfo.ModMap != null)
+		{
+			Log.Error($"Assembly {assembly} was associated with mod {mod.manifest?.id} after {"AssemblyInfo"} has already been initialized. The types will not be included in multiplayer maps.");
+			AssemblyInfo.ModMap[assembly] = mod;
+		}
+	}
+
 	public static bool IsRunningModded()
 	{
 		return _mods.Any(delegate(Mod m)
@@ -943,5 +1107,76 @@ public static class ModManager
 	public static void Dispose()
 	{
 		_steamItemInstalledCallback?.Dispose();
+	}
+
+	public static void CopyUnmoddedSaveFilesIfNeeded(IModManagerFileIo fileIo)
+	{
+		string accountScopedBasePath = UserDataPathProvider.GetAccountScopedBasePath(null);
+		string accountScopedBasePath2 = UserDataPathProvider.GetAccountScopedBasePath("modded/");
+		string profileSavePath = ProfileSaveManager.GetProfileSavePath(false);
+		string profileSavePath2 = ProfileSaveManager.GetProfileSavePath(true);
+		if (fileIo.DirectoryExists(accountScopedBasePath2))
+		{
+			if (!fileIo.FileExists(accountScopedBasePath.PathJoin(profileSavePath2)))
+			{
+				Log.Info("Modded saves exist, but profile.save wasn't present. Copying profile.save from unmodded to modded");
+				Copy(fileIo, accountScopedBasePath, profileSavePath, profileSavePath2);
+			}
+			Log.Info("Modded saves exist. Skipping first-time save copy");
+			return;
+		}
+		if (!fileIo.FileExists(accountScopedBasePath.PathJoin(profileSavePath)))
+		{
+			Log.Info("Modded saves don't exist, but neither do unmodded saves. Skipping first-time copy");
+			return;
+		}
+		fileIo.MakeDirRecursive(accountScopedBasePath2);
+		Log.Info("Copying all unmodded saves to the modded save location. Base path: " + accountScopedBasePath);
+		Copy(fileIo, accountScopedBasePath, profileSavePath, profileSavePath2);
+		for (int i = 1; i <= 3; i++)
+		{
+			string progressPathForProfile = ProgressSaveManager.GetProgressPathForProfile(i, false);
+			string progressPathForProfile2 = ProgressSaveManager.GetProgressPathForProfile(i, true);
+			Copy(fileIo, accountScopedBasePath, progressPathForProfile, progressPathForProfile2);
+			string runSavePath = RunSaveManager.GetRunSavePath(i, "current_run.save", false);
+			string runSavePath2 = RunSaveManager.GetRunSavePath(i, "current_run.save", true);
+			Copy(fileIo, accountScopedBasePath, runSavePath, runSavePath2);
+			string runSavePath3 = RunSaveManager.GetRunSavePath(i, "current_run_mp.save", false);
+			string runSavePath4 = RunSaveManager.GetRunSavePath(i, "current_run_mp.save", true);
+			Copy(fileIo, accountScopedBasePath, runSavePath3, runSavePath4);
+			string prefsPath = PrefsSaveManager.GetPrefsPath(i, false);
+			string prefsPath2 = PrefsSaveManager.GetPrefsPath(i, true);
+			Copy(fileIo, accountScopedBasePath, prefsPath, prefsPath2);
+			string historyPath = RunHistorySaveManager.GetHistoryPath(i, false);
+			if (fileIo.DirectoryExists(accountScopedBasePath.PathJoin(historyPath)))
+			{
+				string historyPath2 = RunHistorySaveManager.GetHistoryPath(i, true);
+				fileIo.MakeDirRecursive(accountScopedBasePath.PathJoin(historyPath2));
+				string[] filesAt = fileIo.GetFilesAt(accountScopedBasePath.PathJoin(historyPath));
+				foreach (string file in filesAt)
+				{
+					string sourceFile = historyPath.PathJoin(file);
+					string targetFile = historyPath2.PathJoin(file);
+					Copy(fileIo, accountScopedBasePath, sourceFile, targetFile);
+				}
+			}
+		}
+		UnmoddedSavesWereCopied = true;
+	}
+
+	public static void Copy(IModManagerFileIo fileIo, string baseDir, string sourceFile, string targetFile)
+	{
+		string text = baseDir.PathJoin(sourceFile);
+		if (fileIo.FileExists(text))
+		{
+			string text2 = baseDir.PathJoin(targetFile);
+			Log.Info("Copying " + sourceFile + " -> " + targetFile);
+			fileIo.MakeDirRecursive(text2.GetBaseDir());
+			Error error = fileIo.CopyFile(text, text2);
+			if (error != Error.Ok)
+			{
+				Log.Error($"Error: {error}");
+			}
+		}
 	}
 }

@@ -7,10 +7,12 @@ using Godot.Bridge;
 using Godot.NativeInterop;
 using MegaCrit.Sts2.Core.Assets;
 using MegaCrit.Sts2.Core.Commands;
+using MegaCrit.Sts2.Core.Debug;
 using MegaCrit.Sts2.Core.Entities.Multiplayer;
 using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Logging;
+using MegaCrit.Sts2.Core.Multiplayer;
 using MegaCrit.Sts2.Core.Multiplayer.Connection;
 using MegaCrit.Sts2.Core.Multiplayer.Game;
 using MegaCrit.Sts2.Core.Nodes.CommonUi;
@@ -272,13 +274,13 @@ public class NJoinFriendScreen : NSubmenu
 
 	public async Task JoinGameAsync(IClientConnectionInitializer connInitializer)
 	{
-		if (_currentJoinFlow?.NetService?.IsConnected == true)
+		if (_currentJoinFlow?.NetService.IsConnected ?? false)
 		{
 			Log.Warn($"Tried to join game with connection {connInitializer} while we were already joining a game! Ignoring this attempt");
 			return;
 		}
 		_loadingOverlay.Visible = true;
-		_currentJoinFlow = new JoinFlow();
+		_currentJoinFlow = new JoinFlow(new NetClientGameService(PeerVersionInfo.LocalDefault()));
 		try
 		{
 			Log.Info($"Attempting to join game with connection initializer {connInitializer}");
@@ -335,33 +337,35 @@ public class NJoinFriendScreen : NSubmenu
 				{
 					NModalContainer.Instance.Add(nErrorPopup);
 				}
-				_currentJoinFlow.NetService?.Disconnect(NetError.RunInProgress);
+				_currentJoinFlow.NetService.Disconnect(NetError.RunInProgress);
 			}
-		}
-		catch (ClientConnectionFailedException ex)
-		{
-			Log.Error($"Received connection failed exception while joining game: {ex}");
-			NErrorPopup nErrorPopup2 = NErrorPopup.Create(ex.info);
-			if (nErrorPopup2 != null)
-			{
-				NModalContainer.Instance.Add(nErrorPopup2);
-			}
-			_currentJoinFlow.NetService?.Disconnect(ex.info.GetReason());
 		}
 		catch (OperationCanceledException)
 		{
 			Log.Warn("Joining was canceled by user");
 		}
-		catch (Exception ex3)
+		catch (Exception ex2)
 		{
-			Log.Error($"Received unexpected exception {ex3.GetType()} while joining game! Disconnecting with InternalError");
-			NErrorPopup nErrorPopup3 = NErrorPopup.Create(new NetErrorInfo(NetError.InternalError, selfInitiated: false));
-			if (nErrorPopup3 != null)
+			NetErrorInfo info;
+			if (ex2 is ClientConnectionFailedException ex3)
 			{
-				NModalContainer.Instance.Add(nErrorPopup3);
+				Log.Error($"Received connection failed exception while joining game: {ex3}");
+				info = ex3.info;
 			}
-			_currentJoinFlow.NetService?.Disconnect(NetError.InternalError);
-			throw;
+			else
+			{
+				Log.Error($"Received unexpected exception {ex2.GetType()} while joining game! Disconnecting with InternalError");
+				info = new NetErrorInfo(NetError.InternalError, selfInitiated: false);
+			}
+			NErrorPopup nErrorPopup2 = NErrorPopup.Create(info);
+			if (nErrorPopup2 != null)
+			{
+				NModalContainer.Instance.Add(nErrorPopup2);
+			}
+			if (info.GetReason() == NetError.InternalError)
+			{
+				SentryService.CaptureException(ex2);
+			}
 		}
 		finally
 		{

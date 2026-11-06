@@ -21,19 +21,19 @@ public class Ps4Config : ControllerConfig
 		},
 		{
 			"Up",
-			Controller.dPadNorth
+			Controller.dPadUp
 		},
 		{
 			"Down",
-			Controller.dPadSouth
+			Controller.dPadDown
 		},
 		{
 			"Left",
-			Controller.dPadWest
+			Controller.dPadLeft
 		},
 		{
 			"Right",
-			Controller.dPadEast
+			Controller.dPadRight
 		},
 		{
 			"Select",
@@ -69,14 +69,18 @@ public class Ps4Config : ControllerConfig
 		},
 		{
 			"Peek",
-			Controller.joystickPress
+			Controller.lStickPress
 		}
 	};
 
 	public override Dictionary<StringName, StringName> DefaultControllerInputMap => new Dictionary<StringName, StringName>
 	{
 		{
-			MegaInput.accept,
+			MegaInput.confirm,
+			Controller.faceButtonNorth
+		},
+		{
+			MegaInput.endTurn,
 			Controller.faceButtonNorth
 		},
 		{
@@ -113,23 +117,39 @@ public class Ps4Config : ControllerConfig
 		},
 		{
 			MegaInput.peek,
-			Controller.joystickPress
+			Controller.lStickPress
 		},
 		{
 			MegaInput.up,
-			Controller.dPadNorth
+			Controller.dPadUp
 		},
 		{
 			MegaInput.down,
-			Controller.dPadSouth
+			Controller.dPadDown
 		},
 		{
 			MegaInput.left,
-			Controller.dPadWest
+			Controller.dPadLeft
 		},
 		{
 			MegaInput.right,
-			Controller.dPadEast
+			Controller.dPadRight
+		},
+		{
+			MegaInput.altUp,
+			Controller.rStickUp
+		},
+		{
+			MegaInput.altDown,
+			Controller.rStickDown
+		},
+		{
+			MegaInput.altLeft,
+			Controller.rStickLeft
+		},
+		{
+			MegaInput.altRight,
+			Controller.rStickRight
 		},
 		{
 			MegaInput.pauseAndBack,

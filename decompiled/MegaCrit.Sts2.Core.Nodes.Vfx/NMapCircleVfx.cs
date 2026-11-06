@@ -7,8 +7,10 @@ using Godot.Bridge;
 using Godot.NativeInterop;
 using MegaCrit.Sts2.Core.Assets;
 using MegaCrit.Sts2.Core.Helpers;
+using MegaCrit.Sts2.Core.Map;
 using MegaCrit.Sts2.Core.Nodes.GodotExtensions;
 using MegaCrit.Sts2.Core.Random;
+using MegaCrit.Sts2.Core.Runs;
 using MegaCrit.Sts2.Core.TestSupport;
 
 namespace MegaCrit.Sts2.Core.Nodes.Vfx;
@@ -25,11 +27,6 @@ public class NMapCircleVfx : Control
 		/// Cached name for the '_Ready' method.
 		/// </summary>
 		public new static readonly StringName _Ready = "_Ready";
-
-		/// <summary>
-		/// Cached name for the 'Create' method.
-		/// </summary>
-		public static readonly StringName Create = "Create";
 	}
 
 	/// <summary>
@@ -65,14 +62,19 @@ public class NMapCircleVfx : Control
 
 	private bool _playAnim;
 
+	private MapCoord _mapCoord;
+
+	private IRunState _runState;
+
 	public static IEnumerable<string> AssetPaths => _textures.Append("res://scenes/vfx/map_circle_vfx.tscn");
 
 	public override void _Ready()
 	{
 		_image = GetNode<TextureRect>("TextureRect");
 		_image.Texture = PreloadManager.Cache.GetTexture2D(_textures[0]);
-		base.RotationDegrees = Rng.Chaotic.NextFloat(360f);
-		Vector2 vector = Vector2.One * Rng.Chaotic.NextFloat(0.85f, 0.9f);
+		Rng rng = new Rng((ulong)((long)_runState.Rng.Seed + (long)_mapCoord.row + 131L * (long)_mapCoord.row));
+		base.RotationDegrees = rng.NextFloat(360f);
+		Vector2 vector = Vector2.One * rng.NextFloat(0.85f, 0.9f);
 		if (_playAnim)
 		{
 			Tween tween = CreateTween().SetParallel();
@@ -102,7 +104,7 @@ public class NMapCircleVfx : Control
 		}
 	}
 
-	public static NMapCircleVfx? Create(bool playAnim)
+	public static NMapCircleVfx? Create(IRunState runState, MapCoord mapCoord, bool playAnim)
 	{
 		if (TestMode.IsOn)
 		{
@@ -110,6 +112,8 @@ public class NMapCircleVfx : Control
 		}
 		NMapCircleVfx nMapCircleVfx = PreloadManager.Cache.GetScene("res://scenes/vfx/map_circle_vfx.tscn").Instantiate<NMapCircleVfx>(PackedScene.GenEditState.Disabled);
 		nMapCircleVfx._playAnim = playAnim;
+		nMapCircleVfx._mapCoord = mapCoord;
+		nMapCircleVfx._runState = runState;
 		return nMapCircleVfx;
 	}
 
@@ -121,12 +125,8 @@ public class NMapCircleVfx : Control
 	[EditorBrowsable(EditorBrowsableState.Never)]
 	internal static List<MethodInfo> GetGodotMethodList()
 	{
-		List<MethodInfo> list = new List<MethodInfo>(2);
+		List<MethodInfo> list = new List<MethodInfo>(1);
 		list.Add(new MethodInfo(MethodName._Ready, new PropertyInfo(Variant.Type.Nil, "", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false), MethodFlags.Normal, null, null));
-		list.Add(new MethodInfo(MethodName.Create, new PropertyInfo(Variant.Type.Object, "", PropertyHint.None, "", PropertyUsageFlags.Default, new StringName("Control"), exported: false), MethodFlags.Normal | MethodFlags.Static, new List<PropertyInfo>
-		{
-			new PropertyInfo(Variant.Type.Bool, "playAnim", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false)
-		}, null));
 		return list;
 	}
 
@@ -140,24 +140,7 @@ public class NMapCircleVfx : Control
 			ret = default(godot_variant);
 			return true;
 		}
-		if (method == MethodName.Create && args.Count == 1)
-		{
-			ret = VariantUtils.CreateFrom<NMapCircleVfx>(Create(VariantUtils.ConvertTo<bool>(in args[0])));
-			return true;
-		}
 		return base.InvokeGodotClassMethod(in method, args, out ret);
-	}
-
-	[EditorBrowsable(EditorBrowsableState.Never)]
-	internal static bool InvokeGodotClassStaticMethod(in godot_string_name method, NativeVariantPtrArgs args, out godot_variant ret)
-	{
-		if (method == MethodName.Create && args.Count == 1)
-		{
-			ret = VariantUtils.CreateFrom<NMapCircleVfx>(Create(VariantUtils.ConvertTo<bool>(in args[0])));
-			return true;
-		}
-		ret = default(godot_variant);
-		return false;
 	}
 
 	/// <inheritdoc />
@@ -165,10 +148,6 @@ public class NMapCircleVfx : Control
 	protected override bool HasGodotClassMethod(in godot_string_name method)
 	{
 		if (method == MethodName._Ready)
-		{
-			return true;
-		}
-		if (method == MethodName.Create)
 		{
 			return true;
 		}

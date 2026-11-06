@@ -223,7 +223,7 @@ public class NAncientMapPoint : NMapPoint
 		if (IsInputAllowed())
 		{
 			AnimHover();
-			if (NControllerManager.Instance.IsUsingController)
+			if (NControllerManager.Instance.IsUsingDirectionalNavigation)
 			{
 				_controllerSelectionReticle.OnSelect();
 			}
@@ -233,11 +233,8 @@ public class NAncientMapPoint : NMapPoint
 	protected override void OnUnfocus()
 	{
 		base.OnUnfocus();
-		if (IsInputAllowed())
-		{
-			AnimUnhover();
-			_controllerSelectionReticle.OnDeselect();
-		}
+		AnimUnhover();
+		_controllerSelectionReticle.OnDeselect();
 	}
 
 	protected override void OnPress()

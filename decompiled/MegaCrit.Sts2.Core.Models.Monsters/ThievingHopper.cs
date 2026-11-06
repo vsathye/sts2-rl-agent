@@ -191,7 +191,8 @@ public sealed class ThievingHopper : MonsterModel
 			Node2D specialNode = creatureNode.GetSpecialNode<Node2D>("Visuals/SpineBoneNode");
 			if (specialNode != null && creatureNode2 != null)
 			{
-				specialNode.Position = Vector2.Right * (creatureNode2.GlobalPosition.X - creatureNode.GlobalPosition.X);
+				float num = 900f * creatureNode.Visuals.Scale.X;
+				specialNode.GlobalPosition = new Vector2(creatureNode2.GlobalPosition.X + num, specialNode.GlobalPosition.Y);
 			}
 		}
 		await CreatureCmd.TriggerAnim(base.Creature, "Steal", 0.25f);

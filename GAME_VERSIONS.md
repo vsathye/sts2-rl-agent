@@ -5,7 +5,23 @@ The simulator's parity target is the version recorded here.
 
 ---
 
-## Current snapshot: v0.107.1 (public branch)
+## Current reference: v0.111.0 (migration in progress)
+
+Verified from the user's Steam installation on 2026-11-04:
+
+- Steam build: **24724944**; release commit: **41cef1ea**.
+- Assembly: macOS arm64 `sts2.dll`; SHA-256:
+  `9cb4f1ad8c9f284aa8fec3122ffd6d780bbf543d875c817abdd12ff63fbf12b4`.
+- Decompiled using ilspycmd 9.1.0.7988 into `decompiled/`.
+- Machine-readable provenance: `docs/evidence/game_v0_111_0/reference_manifest.json`.
+
+**The reference has been updated; full simulator compatibility has not been
+established.** See `docs/V0_111_0_MIGRATION.md` for implementation and validation
+status. New RNG and card IDs make old checkpoints and seed outcomes incompatible.
+Training/evaluation artifacts now record a simulator revision; checkpoint evaluation
+rejects missing or mismatched identities. The real-game bridge remains unvalidated.
+
+## Previous snapshot: v0.107.1 (public branch)
 
 | Field | Value |
 |-------|-------|

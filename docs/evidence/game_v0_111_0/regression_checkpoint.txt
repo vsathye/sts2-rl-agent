@@ -1,0 +1,1251 @@
+........................................................................ [  1%]
+........................................................................ [  2%]
+........................................................................ [  4%]
+........................................................................ [  5%]
+........................................................................ [  7%]
+........................................................................ [  8%]
+........................................................................ [ 10%]
+........................................................................ [ 11%]
+...................FFFFF.FFFFFFF.FFFF................................... [ 13%]
+........................................................................ [ 14%]
+........................................................................ [ 16%]
+........................................................................ [ 17%]
+........................................................................ [ 19%]
+........................................................................ [ 20%]
+........................................................................ [ 21%]
+........................................................................ [ 23%]
+.............................................F...F...................F.. [ 24%]
+....................................................................F... [ 26%]
+......................F..........F...............................FFF...F [ 27%]
+F....................................................F.................. [ 29%]
+........................................................................ [ 30%]
+......................F.........F...........F........................... [ 32%]
+.F.........F.............FF...........F..........F..........FF..F....F.. [ 33%]
+..............F..............F..........F...............F.F...F......... [ 35%]
+.......................F................................................ [ 36%]
+......F..........................F.F.................................... [ 38%]
+........................................................................ [ 39%]
+........................................................................ [ 40%]
+........................................................................ [ 42%]
+........................................................................ [ 43%]
+......F.....F.....................F........F....F...........F.........F. [ 45%]
+..........F.F......FF..FF..............FF............................... [ 46%]
+...................F.................................................... [ 48%]
+.......................F................................................ [ 49%]
+............................F........................................... [ 51%]
+.......FFF.............................................................. [ 52%]
+............................................................F.F......... [ 54%]
+........................................................................ [ 55%]
+...............................F........................................ [ 57%]
+........................................................................ [ 58%]
+...............................................F.........F.............F [ 60%]
+...F..............FF.....F.............................................. [ 61%]
+........................................................................ [ 62%]
+..............................F..............F........................F. [ 64%]
+.......F...................F...........F................................ [ 65%]
+........................................................................ [ 67%]
+..................................................................F..... [ 68%]
+..................F..................................................... [ 70%]
+...........................F.......................F.F.................. [ 71%]
+........................................................................ [ 73%]
+...........................F.F.F........F...F........................FFF [ 74%]
+......................................................................F. [ 76%]
+.......F....F........................................F.................. [ 77%]
+................F.F..................................................... [ 79%]
+.........................F....................F......................... [ 80%]
+........................................................................ [ 81%]
+.........F.F...........F................................................ [ 83%]
+.....F..........................FFFFF........F...........F.............. [ 84%]
+........FF.......................................F...................... [ 86%]
+.........................................................F.............. [ 87%]
+............F......F.................................................... [ 89%]
+.....F.........F........F...........................FF.................. [ 90%]
+........................................................................ [ 92%]
+.................................................................F..F... [ 93%]
+.FF....F.F.........FF................................................... [ 95%]
+........................................................................ [ 96%]
+........................................F............................F.. [ 98%]
+........................................................................ [ 99%]
+........F..........FFF                                                   [100%]
+=================================== FAILURES ===================================
+_____________ test_every_card_has_direct_unit_case[BLADE_SYMPHONY] _____________
+tests/test_all_cards_unit_coverage.py:284: in test_every_card_has_direct_unit_case
+    played = combat.play_card(0, target_index)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sts2_env/core/combat.py:1334: in play_card
+    return self.play_card_from_creature(self.primary_player, hand_index, target_index)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sts2_env/core/combat.py:1367: in play_card_from_creature
+    self._execute_card_play(card, target, spend_energy=True)
+sts2_env/core/combat.py:1443: in _execute_card_play
+    self._resume_pending_play()
+sts2_env/core/combat.py:1504: in _resume_pending_play
+    play_card_effect(card, self, target)
+sts2_env/cards/registry.py:377: in play_card_effect
+    raise KeyError(f"No effect registered for {card.card_id}")
+E   KeyError: 'No effect registered for CardId.BLADE_SYMPHONY'
+_________________ test_every_card_has_direct_unit_case[BLAZE] __________________
+tests/test_all_cards_unit_coverage.py:284: in test_every_card_has_direct_unit_case
+    played = combat.play_card(0, target_index)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sts2_env/core/combat.py:1334: in play_card
+    return self.play_card_from_creature(self.primary_player, hand_index, target_index)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sts2_env/core/combat.py:1367: in play_card_from_creature
+    self._execute_card_play(card, target, spend_energy=True)
+sts2_env/core/combat.py:1443: in _execute_card_play
+    self._resume_pending_play()
+sts2_env/core/combat.py:1504: in _resume_pending_play
+    play_card_effect(card, self, target)
+sts2_env/cards/registry.py:377: in play_card_effect
+    raise KeyError(f"No effect registered for {card.card_id}")
+E   KeyError: 'No effect registered for CardId.BLAZE'
+_______________ test_every_card_has_direct_unit_case[CACOPHONY] ________________
+tests/test_all_cards_unit_coverage.py:284: in test_every_card_has_direct_unit_case
+    played = combat.play_card(0, target_index)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sts2_env/core/combat.py:1334: in play_card
+    return self.play_card_from_creature(self.primary_player, hand_index, target_index)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sts2_env/core/combat.py:1367: in play_card_from_creature
+    self._execute_card_play(card, target, spend_energy=True)
+sts2_env/core/combat.py:1443: in _execute_card_play
+    self._resume_pending_play()
+sts2_env/core/combat.py:1504: in _resume_pending_play
+    play_card_effect(card, self, target)
+sts2_env/cards/registry.py:377: in play_card_effect
+    raise KeyError(f"No effect registered for {card.card_id}")
+E   KeyError: 'No effect registered for CardId.CACOPHONY'
+________________ test_every_card_has_direct_unit_case[CONCOCT] _________________
+tests/test_all_cards_unit_coverage.py:284: in test_every_card_has_direct_unit_case
+    played = combat.play_card(0, target_index)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sts2_env/core/combat.py:1334: in play_card
+    return self.play_card_from_creature(self.primary_player, hand_index, target_index)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sts2_env/core/combat.py:1367: in play_card_from_creature
+    self._execute_card_play(card, target, spend_energy=True)
+sts2_env/core/combat.py:1443: in _execute_card_play
+    self._resume_pending_play()
+sts2_env/core/combat.py:1504: in _resume_pending_play
+    play_card_effect(card, self, target)
+sts2_env/cards/registry.py:377: in play_card_effect
+    raise KeyError(f"No effect registered for {card.card_id}")
+E   KeyError: 'No effect registered for CardId.CONCOCT'
+_____________ test_every_card_has_direct_unit_case[CONSTELLATION] ______________
+tests/test_all_cards_unit_coverage.py:284: in test_every_card_has_direct_unit_case
+    played = combat.play_card(0, target_index)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sts2_env/core/combat.py:1334: in play_card
+    return self.play_card_from_creature(self.primary_player, hand_index, target_index)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sts2_env/core/combat.py:1367: in play_card_from_creature
+    self._execute_card_play(card, target, spend_energy=True)
+sts2_env/core/combat.py:1443: in _execute_card_play
+    self._resume_pending_play()
+sts2_env/core/combat.py:1504: in _resume_pending_play
+    play_card_effect(card, self, target)
+sts2_env/cards/registry.py:377: in play_card_effect
+    raise KeyError(f"No effect registered for {card.card_id}")
+E   KeyError: 'No effect registered for CardId.CONSTELLATION'
+__________________ test_every_card_has_direct_unit_case[FADE] __________________
+tests/test_all_cards_unit_coverage.py:284: in test_every_card_has_direct_unit_case
+    played = combat.play_card(0, target_index)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sts2_env/core/combat.py:1334: in play_card
+    return self.play_card_from_creature(self.primary_player, hand_index, target_index)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sts2_env/core/combat.py:1367: in play_card_from_creature
+    self._execute_card_play(card, target, spend_energy=True)
+sts2_env/core/combat.py:1443: in _execute_card_play
+    self._resume_pending_play()
+sts2_env/core/combat.py:1504: in _resume_pending_play
+    play_card_effect(card, self, target)
+sts2_env/cards/registry.py:377: in play_card_effect
+    raise KeyError(f"No effect registered for {card.card_id}")
+E   KeyError: 'No effect registered for CardId.FADE'
+_______________ test_every_card_has_direct_unit_case[HIBERNATE] ________________
+tests/test_all_cards_unit_coverage.py:284: in test_every_card_has_direct_unit_case
+    played = combat.play_card(0, target_index)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sts2_env/core/combat.py:1334: in play_card
+    return self.play_card_from_creature(self.primary_player, hand_index, target_index)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sts2_env/core/combat.py:1367: in play_card_from_creature
+    self._execute_card_play(card, target, spend_energy=True)
+sts2_env/core/combat.py:1443: in _execute_card_play
+    self._resume_pending_play()
+sts2_env/core/combat.py:1504: in _resume_pending_play
+    play_card_effect(card, self, target)
+sts2_env/cards/registry.py:377: in play_card_effect
+    raise KeyError(f"No effect registered for {card.card_id}")
+E   KeyError: 'No effect registered for CardId.HIBERNATE'
+___________ test_every_card_has_direct_unit_case[IMITATION_LEARNING] ___________
+tests/test_all_cards_unit_coverage.py:284: in test_every_card_has_direct_unit_case
+    played = combat.play_card(0, target_index)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sts2_env/core/combat.py:1334: in play_card
+    return self.play_card_from_creature(self.primary_player, hand_index, target_index)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sts2_env/core/combat.py:1367: in play_card_from_creature
+    self._execute_card_play(card, target, spend_energy=True)
+sts2_env/core/combat.py:1443: in _execute_card_play
+    self._resume_pending_play()
+sts2_env/core/combat.py:1504: in _resume_pending_play
+    play_card_effect(card, self, target)
+sts2_env/cards/registry.py:377: in play_card_effect
+    raise KeyError(f"No effect registered for {card.card_id}")
+E   KeyError: 'No effect registered for CardId.IMITATION_LEARNING'
+________________ test_every_card_has_direct_unit_case[MIDNIGHT] ________________
+tests/test_all_cards_unit_coverage.py:285: in test_every_card_has_direct_unit_case
+    assert played, f"{card_id.name} should play successfully in the direct per-card case"
+E   AssertionError: MIDNIGHT should play successfully in the direct per-card case
+E   assert False
+______________ test_every_card_has_direct_unit_case[ONE_FOR_ALL] _______________
+tests/test_all_cards_unit_coverage.py:284: in test_every_card_has_direct_unit_case
+    played = combat.play_card(0, target_index)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sts2_env/core/combat.py:1334: in play_card
+    return self.play_card_from_creature(self.primary_player, hand_index, target_index)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sts2_env/core/combat.py:1367: in play_card_from_creature
+    self._execute_card_play(card, target, spend_energy=True)
+sts2_env/core/combat.py:1443: in _execute_card_play
+    self._resume_pending_play()
+sts2_env/core/combat.py:1504: in _resume_pending_play
+    play_card_effect(card, self, target)
+sts2_env/cards/registry.py:377: in play_card_effect
+    raise KeyError(f"No effect registered for {card.card_id}")
+E   KeyError: 'No effect registered for CardId.ONE_FOR_ALL'
+________________ test_every_card_has_direct_unit_case[OUTRAGE] _________________
+tests/test_all_cards_unit_coverage.py:284: in test_every_card_has_direct_unit_case
+    played = combat.play_card(0, target_index)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sts2_env/core/combat.py:1334: in play_card
+    return self.play_card_from_creature(self.primary_player, hand_index, target_index)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sts2_env/core/combat.py:1367: in play_card_from_creature
+    self._execute_card_play(card, target, spend_energy=True)
+sts2_env/core/combat.py:1443: in _execute_card_play
+    self._resume_pending_play()
+sts2_env/core/combat.py:1504: in _resume_pending_play
+    play_card_effect(card, self, target)
+sts2_env/cards/registry.py:377: in play_card_effect
+    raise KeyError(f"No effect registered for {card.card_id}")
+E   KeyError: 'No effect registered for CardId.OUTRAGE'
+__________________ test_every_card_has_direct_unit_case[PLOT] __________________
+tests/test_all_cards_unit_coverage.py:284: in test_every_card_has_direct_unit_case
+    played = combat.play_card(0, target_index)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sts2_env/core/combat.py:1334: in play_card
+    return self.play_card_from_creature(self.primary_player, hand_index, target_index)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sts2_env/core/combat.py:1367: in play_card_from_creature
+    self._execute_card_play(card, target, spend_energy=True)
+sts2_env/core/combat.py:1443: in _execute_card_play
+    self._resume_pending_play()
+sts2_env/core/combat.py:1504: in _resume_pending_play
+    play_card_effect(card, self, target)
+sts2_env/cards/registry.py:377: in play_card_effect
+    raise KeyError(f"No effect registered for {card.card_id}")
+E   KeyError: 'No effect registered for CardId.PLOT'
+_______________ test_every_card_has_direct_unit_case[SOULBOUND] ________________
+tests/test_all_cards_unit_coverage.py:284: in test_every_card_has_direct_unit_case
+    played = combat.play_card(0, target_index)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sts2_env/core/combat.py:1334: in play_card
+    return self.play_card_from_creature(self.primary_player, hand_index, target_index)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sts2_env/core/combat.py:1367: in play_card_from_creature
+    self._execute_card_play(card, target, spend_energy=True)
+sts2_env/core/combat.py:1443: in _execute_card_play
+    self._resume_pending_play()
+sts2_env/core/combat.py:1504: in _resume_pending_play
+    play_card_effect(card, self, target)
+sts2_env/cards/registry.py:377: in play_card_effect
+    raise KeyError(f"No effect registered for {card.card_id}")
+E   KeyError: 'No effect registered for CardId.SOULBOUND'
+________________ test_every_card_has_direct_unit_case[THE_BALL] ________________
+tests/test_all_cards_unit_coverage.py:284: in test_every_card_has_direct_unit_case
+    played = combat.play_card(0, target_index)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sts2_env/core/combat.py:1334: in play_card
+    return self.play_card_from_creature(self.primary_player, hand_index, target_index)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sts2_env/core/combat.py:1367: in play_card_from_creature
+    self._execute_card_play(card, target, spend_energy=True)
+sts2_env/core/combat.py:1443: in _execute_card_play
+    self._resume_pending_play()
+sts2_env/core/combat.py:1504: in _resume_pending_play
+    play_card_effect(card, self, target)
+sts2_env/cards/registry.py:377: in play_card_effect
+    raise KeyError(f"No effect registered for {card.card_id}")
+E   KeyError: 'No effect registered for CardId.THE_BALL'
+_________________ test_every_card_has_direct_unit_case[TUTOR] __________________
+tests/test_all_cards_unit_coverage.py:284: in test_every_card_has_direct_unit_case
+    played = combat.play_card(0, target_index)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sts2_env/core/combat.py:1334: in play_card
+    return self.play_card_from_creature(self.primary_player, hand_index, target_index)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sts2_env/core/combat.py:1367: in play_card_from_creature
+    self._execute_card_play(card, target, spend_energy=True)
+sts2_env/core/combat.py:1443: in _execute_card_play
+    self._resume_pending_play()
+sts2_env/core/combat.py:1504: in _resume_pending_play
+    play_card_effect(card, self, target)
+sts2_env/cards/registry.py:377: in play_card_effect
+    raise KeyError(f"No effect registered for {card.card_id}")
+E   KeyError: 'No effect registered for CardId.TUTOR'
+_______________ test_every_card_has_direct_unit_case[UNDERWORLD] _______________
+tests/test_all_cards_unit_coverage.py:284: in test_every_card_has_direct_unit_case
+    played = combat.play_card(0, target_index)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sts2_env/core/combat.py:1334: in play_card
+    return self.play_card_from_creature(self.primary_player, hand_index, target_index)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sts2_env/core/combat.py:1367: in play_card_from_creature
+    self._execute_card_play(card, target, spend_energy=True)
+sts2_env/core/combat.py:1443: in _execute_card_play
+    self._resume_pending_play()
+sts2_env/core/combat.py:1504: in _resume_pending_play
+    play_card_effect(card, self, target)
+sts2_env/cards/registry.py:377: in play_card_effect
+    raise KeyError(f"No effect registered for {card.card_id}")
+E   KeyError: 'No effect registered for CardId.UNDERWORLD'
+_______ test_static_metadata_parser_golden[CardId.SCARE-False-expected4] _______
+tests/test_audit_parser_golden_samples.py:122: in test_static_metadata_parser_golden
+    meta = source[card_id]
+           ^^^^^^^^^^^^^^^
+E   KeyError: <CardId.SCARE: 141>
+_____ test_static_metadata_parser_golden[CardId.ALIGNMENT-False-expected8] _____
+tests/test_audit_parser_golden_samples.py:124: in test_static_metadata_parser_golden
+    assert actual == expected, f"parser output for {card_id.name} drifted from C#: {actual}"
+E   AssertionError: parser output for ALIGNMENT drifted from C#: {'cost': 0, 'card_type': <CardType.SKILL: 2>, 'rarity': <CardRarity.UNCOMMON: 3>, 'target_type': <TargetType.SELF: 2>, 'star_cost': 2}
+E   assert {'cost': 0, '...SELF: 2>, ...} == {'cost': 0, '...SELF: 2>, ...}
+E     
+E     Omitting 4 identical items, use -vv to show
+E     Differing items:
+E     {'star_cost': 2} != {'star_cost': 3}
+E     Use -v to get more diff
+_______________________ test_monster_stats_parser_golden _______________________
+tests/test_audit_parser_golden_samples.py:196: in test_monster_stats_parser_golden
+    assert actual == const_value, (
+E   AssertionError: Aeonglass.EbbDamage: parser sees (22, 26), C# says (26, 32)
+E   assert (22, 26) == (26, 32)
+E     
+E     At index 0 diff: 22 != 26
+E     Use -v to get more diff
+_____________ test_shop_enchant_relics_apply_expected_enchantments _____________
+tests/test_card_enchantment_runtime_parity.py:102: in test_shop_enchant_relics_apply_expected_enchantments
+    assert sum(1 for card in player.deck if card.has_enchantment("Swift")) == 3
+E   assert 4 == 3
+E    +  where 4 = sum(<generator object test_shop_enchant_relics_apply_expected_enchantments.<locals>.<genexpr> at 0x1076a4740>)
+_____ test_card_generation_filters_multiplayer_constraints_like_reference ______
+tests/test_card_generation_filters.py:83: in test_card_generation_filters_multiplayer_constraints_like_reference
+    assert CardId.WELL_LAID_PLANS not in multiplayer_silent
+E   assert <CardId.WELL_LAID_PLANS: 181> not in {<CardId.ACROBATICS: 125>, <CardId.HIDDEN_DAGGERS: 163>, <CardId.FLICK_FLACK: 135>, <CardId.UP_MY_SLEEVE: 180>, <CardId.DODGE_AND_ROLL: 134>, <CardId.DEADLY_POISON: 132>, ...}
+E    +  where <CardId.WELL_LAID_PLANS: 181> = CardId.WELL_LAID_PLANS
+_____________ test_card_static_metadata_matches_decompiled_models ______________
+tests/test_card_static_metadata_audit.py:13: in test_card_static_metadata_matches_decompiled_models
+    assert collect_static_metadata_mismatches() == []
+E   AssertionError: assert ['BLADE_SYMPH...!= True', ...] == []
+E     
+E     Left contains 64 more items, first extra item: 'BLADE_SYMPHONY.upgraded=False.can_be_generated_in_combat: False != True'
+E     Use -v to get more diff
+_ TestColorlessCardEffectsReferenceParity.test_rend_scales_damage_with_non_duration_debuff_count _
+tests/test_colorless_card_effects_reference_parity.py:481: in test_rend_scales_damage_with_non_duration_debuff_count
+    assert enemy.current_hp == 175
+E   assert 180 == 175
+E    +  where 180 = SHRINKER_BEETLE(HP=180/200 Block=0 WEAK(1), FRAIL(1)).current_hp
+_ TestColorlessCardEffectsReferenceParity.test_rend_counts_negative_strength_but_ignores_temporary_debuffs _
+tests/test_colorless_card_effects_reference_parity.py:494: in test_rend_counts_negative_strength_but_ignores_temporary_debuffs
+    assert enemy.current_hp == 180
+E   assert 185 == 180
+E    +  where 185 = SHRINKER_BEETLE(HP=185/200 Block=0 STRENGTH(-11), DARK_SHACKLES(9)).current_hp
+_ TestColorlessCardEffectsReferenceParity.test_rend_uses_normal_attack_damage_modifiers _
+tests/test_colorless_card_effects_reference_parity.py:506: in test_rend_uses_normal_attack_damage_modifiers
+    assert enemy.current_hp == 182
+E   assert 187 == 182
+E    +  where 187 = SHRINKER_BEETLE(HP=187/200 Block=0).current_hp
+_ TestColorlessCardEffectsReferenceParity.test_beacon_of_hope_triggers_from_colorless_block_cards _
+tests/test_colorless_card_effects_reference_parity.py:579: in test_beacon_of_hope_triggers_from_colorless_block_cards
+    assert combat.play_card(0)
+E   assert False
+E    +  where False = play_card(0)
+E    +    where play_card = CombatState(round=1, energy=1, hand=2, draw=0, discard=0, player=Player(HP=80/80 Block=0), allies=[Player(HP=60/60 Block=0)], enemies=[SHRINKER_BEETLE(HP=40/40 Block=0)]).play_card
+_ TestColorlessCardEffectsReferenceParity.test_beacon_of_hope_triggers_from_fisticuffs_block _
+tests/test_colorless_card_effects_reference_parity.py:596: in test_beacon_of_hope_triggers_from_fisticuffs_block
+    assert combat.play_card(0, 0)
+E   assert False
+E    +  where False = play_card(0, 0)
+E    +    where play_card = CombatState(round=1, energy=0, hand=1, draw=5, discard=0, player=Player(HP=80/80 Block=0 BEACON_OF_HOPE(1)), allies=[Player(HP=60/60 Block=0)], enemies=[SHRINKER_BEETLE(HP=100/100 Block=0)]).play_card
+_ TestColorlessFactoryUpgradeParity.test_rend_factory_upgrade_uses_eighteen_plus_eight_per_debuff _
+tests/test_colorless_factory_upgrade_parity.py:384: in test_rend_factory_upgrade_uses_eighteen_plus_eight_per_debuff
+    assert enemy.current_hp == 74
+E   assert 80 == 74
+E    +  where 80 = SHRINKER_BEETLE(HP=80/100 Block=0 WEAK(1)).current_hp
+___ TestPowerTurnHooks.test_generated_status_dispatches_power_and_card_hooks ___
+tests/test_combat_parity.py:320: in test_generated_status_dispatches_power_and_card_hooks
+    assert rocket_punch.cost == 0
+E   assert 1 == 0
+E    +  where 1 = ROCKET_PUNCH(1E 13dmg).cost
+_ TestPowerTurnHooks.test_monster_generated_status_skips_player_generated_hooks_but_not_rocket_punch _
+tests/test_combat_parity.py:518: in test_monster_generated_status_skips_player_generated_hooks_but_not_rocket_punch
+    assert rocket_punch.cost == 0
+E   assert 1 == 0
+E    +  where 1 = ROCKET_PUNCH(1E 13dmg).cost
+__________ TestCardCleanup.test_well_laid_plans_applies_correct_power __________
+tests/test_combat_parity.py:673: in test_well_laid_plans_applies_correct_power
+    assert combat.player.has_power(PowerId.WELL_LAID_PLANS)
+E   assert False
+E    +  where False = has_power(<PowerId.WELL_LAID_PLANS: 78>)
+E    +    where has_power = Player(HP=80/80 Block=0).has_power
+E    +      where Player(HP=80/80 Block=0) = CombatState(round=1, energy=1, hand=1, draw=5, discard=0, player=Player(HP=80/80 Block=0), allies=[], enemies=[SHRINKER_BEETLE(HP=38/38 Block=0)]).player
+E    +    and   <PowerId.WELL_LAID_PLANS: 78> = PowerId.WELL_LAID_PLANS
+_ TestDefectCardEffectsReferenceParity.test_null_deals_damage_applies_weak_and_channels_dark _
+tests/test_defect_card_effects_reference_parity.py:251: in test_null_deals_damage_applies_weak_and_channels_dark
+    assert enemy.get_power_amount(PowerId.WEAK) == NULL_WEAK
+E   assert 1 == 2
+E    +  where 1 = get_power_amount(<PowerId.WEAK: 27>)
+E    +    where get_power_amount = SHRINKER_BEETLE(HP=90/100 Block=0 WEAK(1)).get_power_amount
+E    +    and   <PowerId.WEAK: 27> = PowerId.WEAK
+_ TestDefectCardEffectsReferenceParity.test_hyperbeam_hits_only_hittable_enemies_and_loses_focus _
+tests/test_defect_card_effects_reference_parity.py:418: in test_hyperbeam_hits_only_hittable_enemies_and_loses_focus
+    assert hittable.current_hp == 72
+E   assert 76 == 72
+E    +  where 76 = SHRINKER_BEETLE(HP=76/100 Block=0).current_hp
+_ TestDefectCardEffectsReferenceParity.test_refract_hits_twice_and_channels_two_glass_orbs _
+tests/test_defect_card_effects_reference_parity.py:638: in test_refract_hits_twice_and_channels_two_glass_orbs
+    assert enemy.current_hp == starting_hp - REFRACT_DAMAGE * REFRACT_HITS
+E   assert 18 == (38 - (9 * 2))
+E    +  where 18 = SHRINKER_BEETLE(HP=18/38 Block=0).current_hp
+_ TestDefectCardEffectsReferenceParity.test_upgraded_refract_hits_twice_with_twelve_damage _
+tests/test_defect_card_effects_reference_parity.py:651: in test_upgraded_refract_hits_twice_with_twelve_damage
+    assert enemy.current_hp == starting_hp - REFRACT_UPGRADED_DAMAGE * REFRACT_HITS
+E   assert 12 == (38 - (12 * 2))
+E    +  where 12 = SHRINKER_BEETLE(HP=12/38 Block=0).current_hp
+_ TestDefectCardEffectsReferenceParity.test_momentum_strike_sets_its_own_cost_to_zero_this_combat _
+tests/test_defect_card_effects_reference_parity.py:809: in test_momentum_strike_sets_its_own_cost_to_zero_this_combat
+    assert enemy.current_hp == starting_hp - 10
+E   assert 27 == (38 - 10)
+E    +  where 27 = SHRINKER_BEETLE(HP=27/38 Block=0).current_hp
+___ TestDefectCardEffectsReferenceParity.test_thunder_applies_thunder_power ____
+tests/test_defect_card_effects_reference_parity.py:972: in test_thunder_applies_thunder_power
+    assert combat.player.get_power_amount(PowerId.THUNDER) == 6
+E   assert 8 == 6
+E    +  where 8 = get_power_amount(<PowerId.THUNDER: 263>)
+E    +    where get_power_amount = Player(HP=75/75 Block=0 THUNDER(8)).get_power_amount
+E    +      where Player(HP=75/75 Block=0 THUNDER(8)) = CombatState(round=1, energy=0, hand=0, draw=5, discard=0, player=Player(HP=75/75 Block=0 THUNDER(8)), allies=[], enemies=[SHRINKER_BEETLE(HP=38/38 Block=0)]).player
+E    +    and   <PowerId.THUNDER: 263> = PowerId.THUNDER
+_ TestDefectCardEffectsReferenceParity.test_rocket_punch_costs_zero_until_played_after_status_generation _
+tests/test_defect_card_effects_reference_parity.py:1129: in test_rocket_punch_costs_zero_until_played_after_status_generation
+    assert card.cost == 0
+E   assert 1 == 0
+E    +  where 1 = ROCKET_PUNCH(1E 13dmg).cost
+_ TestDefectCardEffectsReferenceParity.test_rocket_punch_zero_cost_survives_end_of_turn_cleanup _
+tests/test_defect_card_effects_reference_parity.py:1146: in test_rocket_punch_zero_cost_survives_end_of_turn_cleanup
+    assert card.cost == 0
+E   assert 1 == 0
+E    +  where 1 = ROCKET_PUNCH(1E 13dmg).cost
+_ TestDefectCardEffectsReferenceParity.test_biased_cognition_applies_focus_then_delayed_focus_loss _
+tests/test_defect_card_effects_reference_parity.py:1186: in test_biased_cognition_applies_focus_then_delayed_focus_loss
+    assert combat.player.get_power_amount(PowerId.FOCUS) == 4
+E   assert 5 == 4
+E    +  where 5 = get_power_amount(<PowerId.FOCUS: 214>)
+E    +    where get_power_amount = Player(HP=75/75 Block=0 FOCUS(5), BIASED_COGNITION(1)).get_power_amount
+E    +      where Player(HP=75/75 Block=0 FOCUS(5), BIASED_COGNITION(1)) = CombatState(round=1, energy=0, hand=0, draw=5, discard=0, player=Player(HP=75/75 Block=0 FOCUS(5), BIASED_COGNITION(1)), allies=[], enemies=[SHRINKER_BEETLE(HP=38/38 Block=0)]).player
+E    +    and   <PowerId.FOCUS: 214> = PowerId.FOCUS
+_ TestDefectCardEffectsReferenceParity.test_defect_power_card_upgrades_match_original _
+tests/test_defect_card_effects_reference_parity.py:1253: in test_defect_power_card_upgrades_match_original
+    assert biased.effect_vars["focus_power"] == 5
+E   assert 6 == 5
+__________ test_biased_cognition_factory_upgrade_increases_focus_only __________
+tests/test_defect_factory_upgrade_parity.py:303: in test_biased_cognition_factory_upgrade_increases_focus_only
+    assert combat.player.get_power_amount(PowerId.FOCUS) == BIASED_COGNITION_UPGRADED_FOCUS
+E   assert 6 == 5
+E    +  where 6 = get_power_amount(<PowerId.FOCUS: 214>)
+E    +    where get_power_amount = Player(HP=75/75 Block=0 FOCUS(6), BIASED_COGNITION(1)).get_power_amount
+E    +      where Player(HP=75/75 Block=0 FOCUS(6), BIASED_COGNITION(1)) = CombatState(round=1, energy=0, hand=0, draw=5, discard=0, player=Player(HP=75/75 Block=0 FOCUS(6), BIASED_COGNITION(1)), allies=[], enemies=[SHRINKER_BEETLE(HP=38/38 Block=0)]).player
+E    +    and   <PowerId.FOCUS: 214> = PowerId.FOCUS
+_____________ test_hyperbeam_factory_upgrade_increases_damage_only _____________
+tests/test_defect_factory_upgrade_parity.py:511: in test_hyperbeam_factory_upgrade_increases_damage_only
+    assert [enemy.current_hp for enemy in enemies] == [
+E   assert [45, 45] == [39, 39]
+E     
+E     At index 0 diff: 45 != 39
+E     Use -v to get more diff
+___ test_momentum_strike_factory_upgrade_increases_damage_and_sets_cost_zero ___
+tests/test_defect_factory_upgrade_parity.py:673: in test_momentum_strike_factory_upgrade_increases_damage_and_sets_cost_zero
+    assert enemy.current_hp == starting_hp - MOMENTUM_STRIKE_UPGRADED_DAMAGE
+E   assert 23 == (38 - 13)
+E    +  where 23 = SHRINKER_BEETLE(HP=23/38 Block=0).current_hp
+__ test_trash_to_treasure_factory_upgrade_adds_innate_and_keeps_power_amount ___
+tests/test_defect_factory_upgrade_parity.py:908: in test_trash_to_treasure_factory_upgrade_adds_innate_and_keeps_power_amount
+    assert card.is_innate is True
+E   assert False is True
+E    +  where False = TRASH_TO_TREASURE(0E+).is_innate
+____ test_thunder_factory_upgrade_increases_power_amount_without_channeling ____
+tests/test_defect_factory_upgrade_parity.py:940: in test_thunder_factory_upgrade_increases_power_amount_without_channeling
+    assert combat.player.get_power_amount(PowerId.THUNDER) == THUNDER_UPGRADED_POWER
+E   assert 11 == 8
+E    +  where 11 = get_power_amount(<PowerId.THUNDER: 263>)
+E    +    where get_power_amount = Player(HP=75/75 Block=0 THUNDER(11)).get_power_amount
+E    +      where Player(HP=75/75 Block=0 THUNDER(11)) = CombatState(round=1, energy=0, hand=0, draw=5, discard=0, player=Player(HP=75/75 Block=0 THUNDER(11)), allies=[], enemies=[SHRINKER_BEETLE(HP=38/38 Block=0)]).player
+E    +    and   <PowerId.THUNDER: 263> = PowerId.THUNDER
+__ test_uproar_factory_upgrade_increases_each_hit_damage_and_autoplays_attack __
+tests/test_defect_factory_upgrade_parity.py:1006: in test_uproar_factory_upgrade_increases_each_hit_damage_and_autoplays_attack
+    assert enemy.current_hp == (
+E   assert 11 == ((38 - (8 * 2)) - 10)
+E    +  where 11 = SHRINKER_BEETLE(HP=11/38 Block=0).current_hp
+_ TestDefectOrbEnergyFocusParity.test_synchronize_grants_temporary_focus_from_distinct_orb_types _
+tests/test_defect_orb_energy_focus_parity.py:240: in test_synchronize_grants_temporary_focus_from_distinct_orb_types
+    assert combat.player.get_power_amount(PowerId.SYNCHRONIZE) == 4
+E   assert 2 == 4
+E    +  where 2 = get_power_amount(<PowerId.SYNCHRONIZE: 259>)
+E    +    where get_power_amount = Player(HP=75/75 Block=0 SYNCHRONIZE(2), FOCUS(2)).get_power_amount
+E    +      where Player(HP=75/75 Block=0 SYNCHRONIZE(2), FOCUS(2)) = CombatState(round=1, energy=1, hand=1, draw=5, discard=1, player=Player(HP=75/75 Block=0 SYNCHRONIZE(2), FOCUS(2)), allies=[], enemies=[SHRINKER_BEETLE(HP=38/38 Block=0)]).player
+E    +    and   <PowerId.SYNCHRONIZE: 259> = PowerId.SYNCHRONIZE
+_ TestAct1NormalEncounters.test_ruby_raiders_normal_samples_three_unique_raiders_in_original_pool_order _
+tests/test_encounter_setup_and_pools_parity.py:456: in test_ruby_raiders_normal_samples_three_unique_raiders_in_original_pool_order
+    assert [enemy.monster_id for enemy in combat.enemies] == expected_raiders_for_seed
+E   AssertionError: assert ['AXE_RUBY_RA..._RUBY_RAIDER'] == ['CROSSBOW_RU..._RUBY_RAIDER']
+E     
+E     At index 0 diff: 'AXE_RUBY_RAIDER' != 'CROSSBOW_RUBY_RAIDER'
+E     Use -v to get more diff
+_ TestAct2Pools.test_decimillipede_elite_offsets_segment_openers_from_original_random_starter _
+tests/test_encounter_setup_and_pools_parity.py:737: in test_decimillipede_elite_offsets_segment_openers_from_original_random_starter
+    assert [combat.enemy_ais[enemy.combat_id].current_move.state_id for enemy in combat.enemies] == expected_openers
+E   AssertionError: assert ['BULK_MOVE',...'WRITHE_MOVE'] == ['CONSTRICT_M..., 'BULK_MOVE']
+E     
+E     At index 0 diff: 'BULK_MOVE' != 'CONSTRICT_MOVE'
+E     Use -v to get more diff
+______ TestAct2Pools.test_exoskeletons_tough_ascension_hp_matches_csharp _______
+tests/test_encounter_setup_and_pools_parity.py:770: in test_exoskeletons_tough_ascension_hp_matches_csharp
+    assert all(EXOSKELETON_TOUGH_MIN_HP <= enemy.max_hp <= EXOSKELETON_TOUGH_MAX_HP for enemy in combat.enemies)
+E   assert False
+E    +  where False = all(<generator object TestAct2Pools.test_exoskeletons_tough_ascension_hp_matches_csharp.<locals>.<genexpr> at 0x10780de00>)
+___________ test_run_manager_can_start_at_neow_and_force_relic_pick ____________
+tests/test_interactive_run_cli.py:51: in test_run_manager_can_start_at_neow_and_force_relic_pick
+    assert result["phase"] == RunManager.PHASE_MAP_CHOICE
+E   AssertionError: assert 'CARD_REWARD' == 'MAP_CHOICE'
+E     
+E     - MAP_CHOICE
+E     + CARD_REWARD
+________________ test_interactive_cli_displays_reward_contents _________________
+tests/test_interactive_run_cli.py:135: in test_interactive_cli_displays_reward_contents
+    assert "Fishing Rod" in output
+E   AssertionError: assert 'Fishing Rod' in '\n  REWARD:\n    Relic: Pomander\n'
+_ TestIroncladCombatEdgeCardModelParity.test_colossus_gains_block_and_applies_reference_power _
+tests/test_ironclad_combat_edge_card_model_parity.py:130: in test_colossus_gains_block_and_applies_reference_power
+    assert combat.player.block == COLOSSUS_BLOCK
+E   assert 4 == 5
+E    +  where 4 = Player(HP=80/80 Block=4 COLOSSUS(1)).block
+E    +    where Player(HP=80/80 Block=4 COLOSSUS(1)) = CombatState(round=1, energy=0, hand=0, draw=5, discard=1, player=Player(HP=80/80 Block=4 COLOSSUS(1)), allies=[], enemies=[SHRINKER_BEETLE(HP=38/38 Block=0)]).player
+_ TestIroncladCombatEdgeCardModelParity.test_setup_strike_grants_temporary_strength_until_turn_end _
+tests/test_ironclad_combat_edge_card_model_parity.py:270: in test_setup_strike_grants_temporary_strength_until_turn_end
+    assert combat.player.get_power_amount(PowerId.SETUP_STRIKE) == 3
+E   assert 4 == 3
+E    +  where 4 = get_power_amount(<PowerId.SETUP_STRIKE: 248>)
+E    +    where get_power_amount = Player(HP=80/80 Block=0 SETUP_STRIKE(4), STRENGTH(4)).get_power_amount
+E    +      where Player(HP=80/80 Block=0 SETUP_STRIKE(4), STRENGTH(4)) = CombatState(round=1, energy=0, hand=0, draw=5, discard=1, player=Player(HP=80/80 Block=0 SETUP_STRIKE(4), STRENGTH(4)), allies=[], enemies=[SHRINKER_BEETLE(HP=91/100 Block=0)]).player
+E    +    and   <PowerId.SETUP_STRIKE: 248> = PowerId.SETUP_STRIKE
+_ TestIroncladCombatEdgeCardModelParity.test_tremble_and_taunt_apply_reference_vulnerable_and_block _
+tests/test_ironclad_combat_edge_card_model_parity.py:344: in test_tremble_and_taunt_apply_reference_vulnerable_and_block
+    assert taunt_combat.player.block == 8
+E   assert 7 == 8
+E    +  where 7 = Player(HP=80/80 Block=7).block
+E    +    where Player(HP=80/80 Block=7) = CombatState(round=1, energy=0, hand=0, draw=5, discard=1, player=Player(HP=80/80 Block=7), allies=[], enemies=[SHRINKER_BEETLE(HP=38/38 Block=0 VULNERABLE(2))]).player
+_ TestIroncladCombatEdgeCardModelParity.test_crimson_mantle_increments_self_damage_when_played _
+tests/test_ironclad_combat_edge_card_model_parity.py:552: in test_crimson_mantle_increments_self_damage_when_played
+    assert combat.player.block == 8
+E   assert 7 == 8
+E    +  where 7 = Player(HP=79/80 Block=7 CRIMSON_MANTLE(7)).block
+E    +    where Player(HP=79/80 Block=7 CRIMSON_MANTLE(7)) = CombatState(round=1, energy=3, hand=5, draw=0, discard=0, player=Player(HP=79/80 Block=7 CRIMSON_MANTLE(7)), allies=[], enemies=[SHRINKER_BEETLE(HP=38/38 Block=0)]).player
+_ TestIroncladCombatEdgeCardModelParity.test_demon_form_applies_original_strength_gain_power _
+tests/test_ironclad_combat_edge_card_model_parity.py:683: in test_demon_form_applies_original_strength_gain_power
+    assert combat.player.get_power_amount(PowerId.DEMON_FORM) == 3
+E   assert 4 == 3
+E    +  where 4 = get_power_amount(<PowerId.DEMON_FORM: 40>)
+E    +    where get_power_amount = Player(HP=80/80 Block=0 DEMON_FORM(4)).get_power_amount
+E    +      where Player(HP=80/80 Block=0 DEMON_FORM(4)) = CombatState(round=1, energy=0, hand=0, draw=5, discard=0, player=Player(HP=80/80 Block=0 DEMON_FORM(4)), allies=[], enemies=[SHRINKER_BEETLE(HP=38/38 Block=0)]).player
+E    +    and   <PowerId.DEMON_FORM: 40> = PowerId.DEMON_FORM
+_ TestIroncladCombatEdgeCardModelParity.test_mangle_applies_temporary_strength_loss_then_restores _
+tests/test_ironclad_combat_edge_card_model_parity.py:864: in test_mangle_applies_temporary_strength_loss_then_restores
+    assert enemy.current_hp == 80
+E   assert 74 == 80
+E    +  where 74 = SHRINKER_BEETLE(HP=74/100 Block=0 STRENGTH(-11), MANGLE(15)).current_hp
+_ TestIroncladCombatEdgeCardModelParity.test_howl_from_beyond_replays_from_exhaust_at_end_of_turn _
+tests/test_ironclad_combat_edge_card_model_parity.py:902: in test_howl_from_beyond_replays_from_exhaust_at_end_of_turn
+    assert [enemy.current_hp for enemy in combat.enemies] == [84, 84]
+E   assert [82, 82] == [84, 84]
+E     
+E     At index 0 diff: 82 != 84
+E     Use -v to get more diff
+_ TestIroncladCombatEdgeCardModelParity.test_expect_a_fight_gains_energy_for_attacks_in_hand_not_skills _
+tests/test_ironclad_combat_edge_card_model_parity.py:1041: in test_expect_a_fight_gains_energy_for_attacks_in_hand_not_skills
+    assert combat.play_card(0)
+E   assert False
+E    +  where False = play_card(0)
+E    +    where play_card = CombatState(round=1, energy=2, hand=4, draw=5, discard=0, player=Player(HP=80/80 Block=0), allies=[], enemies=[SHRINKER_BEETLE(HP=38/38 Block=0)]).play_card
+_ TestIroncladCombatEdgeCardModelParity.test_expect_a_fight_blocks_further_energy_gain_until_side_turn_end _
+tests/test_ironclad_combat_edge_card_model_parity.py:1058: in test_expect_a_fight_blocks_further_energy_gain_until_side_turn_end
+    assert combat.play_card(0)
+E   assert False
+E    +  where False = play_card(0)
+E    +    where play_card = CombatState(round=1, energy=2, hand=3, draw=5, discard=0, player=Player(HP=80/80 Block=0), allies=[], enemies=[SHRINKER_BEETLE(HP=38/38 Block=0)]).play_card
+_ TestIroncladCombatEdgeCardModelParity.test_pacts_end_always_playable_but_needs_three_exhausted_for_damage _
+tests/test_ironclad_combat_edge_card_model_parity.py:1132: in test_pacts_end_always_playable_but_needs_three_exhausted_for_damage
+    assert [enemy.current_hp for enemy in combat.enemies] == [83, 83]
+E   assert [82, 82] == [83, 83]
+E     
+E     At index 0 diff: 82 != 83
+E     Use -v to get more diff
+_ TestIroncladCombatEdgeCardModelParity.test_forgotten_ritual_only_gains_energy_after_owner_exhausted_card_this_turn _
+tests/test_ironclad_combat_edge_card_model_parity.py:1140: in test_forgotten_ritual_only_gains_energy_after_owner_exhausted_card_this_turn
+    assert combat.energy == 0
+E   assert 3 == 0
+E    +  where 3 = CombatState(round=1, energy=3, hand=0, draw=5, discard=0, player=Player(HP=80/80 Block=0), allies=[], enemies=[SHRINKER_BEETLE(HP=38/38 Block=0)]).energy
+_ TestIroncladCoreCardModelParity.test_rampage_increases_its_own_base_damage_each_play _
+tests/test_ironclad_core_card_model_parity.py:379: in test_rampage_increases_its_own_base_damage_each_play
+    assert enemy.current_hp == start_hp - RAMPAGE_DAMAGE
+E   assert 29 == (39 - 9)
+E    +  where 29 = SHRINKER_BEETLE(HP=29/39 Block=0).current_hp
+_ TestIroncladCoreCardModelParity.test_rampage_upgrade_preserves_grown_damage __
+tests/test_ironclad_core_card_model_parity.py:394: in test_rampage_upgrade_preserves_grown_damage
+    assert rampage.base_damage == RAMPAGE_DAMAGE_AFTER_ONE_PLAY
+E   assert 15 == 14
+E    +  where 15 = RAMPAGE(1E 15dmg).base_damage
+____ test_ironclad_factory_upgrade_core_metadata_matches_reference[GRAPPLE] ____
+tests/test_ironclad_factory_upgrade_parity.py:98: in test_ironclad_factory_upgrade_core_metadata_matches_reference
+    expected = create_reference_card(card_id, upgraded=True, allow_generation=True)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sts2_env/cards/factory.py:404: in create_reference_card
+    return _build_reference_card(card_id, upgraded=upgraded, allow_generation=allow_generation)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sts2_env/cards/factory.py:341: in _build_reference_card
+    raise KeyError(f"No reference card definition for {card_id!r}")
+E   KeyError: 'No reference card definition for <CardId.GRAPPLE: 39>'
+____ test_ironclad_factory_upgrade_dynamic_values_match_reference[GRAPPLE] _____
+tests/test_ironclad_factory_upgrade_parity.py:114: in test_ironclad_factory_upgrade_dynamic_values_match_reference
+    expected = create_reference_card(card_id, upgraded=True, allow_generation=True)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sts2_env/cards/factory.py:404: in create_reference_card
+    return _build_reference_card(card_id, upgraded=upgraded, allow_generation=allow_generation)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sts2_env/cards/factory.py:341: in _build_reference_card
+    raise KeyError(f"No reference card definition for {card_id!r}")
+E   KeyError: 'No reference card definition for <CardId.GRAPPLE: 39>'
+_____ TestRoomTypeCounts.test_act3_counts_glory_rests_first_then_unknowns ______
+tests/test_map_generation_layout_parity.py:263: in test_act3_counts_glory_rests_first_then_unknowns
+    assert rng.counter == 1
+E   assert 3 == 1
+E    +  where 3 = <sts2_env.core.rng.Rng object at 0x106083a10>.counter
+_ test_cs_named_monster_factory_maps_to_expected_model[DecimillipedeSegmentBack] _
+tests/test_monster_ai_state_machine_parity.py:1167: in test_cs_named_monster_factory_maps_to_expected_model
+    assert min_hp <= creature.max_hp <= max_hp
+E   assert 42 <= 40
+E    +  where 40 = DECIMILLIPEDE_SEGMENT_BACK(HP=40/40 Block=0).max_hp
+_ test_cs_named_monster_factory_maps_to_expected_model[DecimillipedeSegmentFront] _
+tests/test_monster_ai_state_machine_parity.py:1167: in test_cs_named_monster_factory_maps_to_expected_model
+    assert min_hp <= creature.max_hp <= max_hp
+E   assert 42 <= 40
+E    +  where 40 = DECIMILLIPEDE_SEGMENT_FRONT(HP=40/40 Block=0).max_hp
+_ test_cs_named_monster_factory_maps_to_expected_model[DecimillipedeSegmentMiddle] _
+tests/test_monster_ai_state_machine_parity.py:1167: in test_cs_named_monster_factory_maps_to_expected_model
+    assert min_hp <= creature.max_hp <= max_hp
+E   assert 42 <= 40
+E    +  where 40 = DECIMILLIPEDE_SEGMENT_MIDDLE(HP=40/40 Block=0).max_hp
+_ TestFixedRotation.test_axebot_moves_use_original_player_targets_with_osty_redirect _
+tests/test_monster_ai_state_machine_parity.py:5413: in test_axebot_moves_use_original_player_targets_with_osty_redirect
+    assert ally.current_hp == ally_hp_before_one_two - one_two_damage * one_two_hits
+E   assert 50 == (70 - (9 * 2))
+E    +  where 50 = Player(HP=50/70 Block=0).current_hp
+__ TestFixedRotation.test_fabricator_spawn_history_is_shared_across_bot_pools __
+tests/test_monster_ai_state_machine_parity.py:5496: in test_fabricator_spawn_history_is_shared_across_bot_pools
+    assert [enemy.monster_id for enemy in combat.enemies[1:3]] == expected_first_fabricate
+E   AssertionError: assert ['NOISEBOT', 'ZAPBOT'] == ['NOISEBOT', 'STABBOT']
+E     
+E     At index 1 diff: 'ZAPBOT' != 'STABBOT'
+E     Use -v to get more diff
+_ TestNecrobinderCardEffectsReferenceParity.test_upgraded_times_up_adds_retain_only _
+tests/test_necrobinder_card_effects_reference_parity.py:391: in test_upgraded_times_up_adds_retain_only
+    assert card.exhausts
+E   assert False
+E    +  where False = TIMES_UP(2E 0dmg+).exhausts
+_ test_necrobinder_factory_upgrade_dynamic_values_match_reference[THE_SCYTHE] __
+tests/test_necrobinder_factory_upgrade_parity.py:101: in test_necrobinder_factory_upgrade_dynamic_values_match_reference
+    assert actual.effect_vars.get("increase") == 5
+E   AssertionError: assert 7 == 5
+E    +  where 7 = <built-in method get of dict object at 0x107a12140>('increase')
+E    +    where <built-in method get of dict object at 0x107a12140> = {'increase': 7}.get
+E    +      where {'increase': 7} = THE_SCYTHE(2E 13dmg+).effect_vars
+_ TestNecrobinderParity.test_sacrifice_kills_osty_and_gains_double_osty_hp_as_block _
+tests/test_necrobinder_parity.py:134: in test_sacrifice_kills_osty_and_gains_double_osty_hp_as_block
+    assert combat.player.block == 10
+E   assert 15 == 10
+E    +  where 15 = Player(HP=70/70 Block=15).block
+E    +    where Player(HP=70/70 Block=15) = CombatState(round=1, energy=0, hand=0, draw=5, discard=1, player=Player(HP=70/70 Block=15), allies=[], enemies=[SHRINKER_BEETLE(HP=38/38 Block=0)]).player
+_ TestNecrobinderParity.test_ally_sacrifice_kills_only_ally_osty_and_grants_ally_block _
+tests/test_necrobinder_parity.py:328: in test_ally_sacrifice_kills_only_ally_osty_and_grants_ally_block
+    assert ally.block == 8
+E   assert 12 == 8
+E    +  where 12 = Player(HP=45/45 Block=12).block
+_ TestNecrobinderParity.test_eidolon_exhausts_hand_and_grants_intangible_at_threshold _
+tests/test_necrobinder_parity.py:397: in test_eidolon_exhausts_hand_and_grants_intangible_at_threshold
+    assert len(combat.hand) == 0
+E   assert 9 == 0
+E    +  where 9 = len([STRIKE_IRONCLAD(1E 6dmg), STRIKE_IRONCLAD(1E 6dmg), STRIKE_IRONCLAD(1E 6dmg), STRIKE_IRONCLAD(1E 6dmg), STRIKE_IRONCLAD(1E 6dmg), STRIKE_IRONCLAD(1E 6dmg), ...])
+E    +    where [STRIKE_IRONCLAD(1E 6dmg), STRIKE_IRONCLAD(1E 6dmg), STRIKE_IRONCLAD(1E 6dmg), STRIKE_IRONCLAD(1E 6dmg), STRIKE_IRONCLAD(1E 6dmg), STRIKE_IRONCLAD(1E 6dmg), ...] = CombatState(round=1, energy=0, hand=9, draw=5, discard=0, player=Player(HP=70/70 Block=0), allies=[], enemies=[SHRINKER_BEETLE(HP=38/38 Block=0)]).hand
+_ TestNecrobinderScytheXCostAndDebuffParity.test_the_scythe_damage_increases_after_each_play _
+tests/test_necrobinder_scythe_x_cost_and_debuff_parity.py:136: in test_the_scythe_damage_increases_after_each_play
+    assert card.base_damage == 17
+E   assert 18 == 17
+E    +  where 18 = THE_SCYTHE(2E 18dmg).base_damage
+_ TestNecrobinderScytheXCostAndDebuffParity.test_the_scythe_upgrade_preserves_grown_damage _
+tests/test_necrobinder_scythe_x_cost_and_debuff_parity.py:155: in test_the_scythe_upgrade_preserves_grown_damage
+    assert card.base_damage == 17
+E   assert 18 == 17
+E    +  where 18 = THE_SCYTHE(2E 18dmg).base_damage
+_ TestNecrobinderSoulAndDoomParity.test_soul_storm_scales_damage_with_exhausted_soul_count _
+tests/test_necrobinder_soul_and_doom_parity.py:182: in test_soul_storm_scales_damage_with_exhausted_soul_count
+    assert enemy.current_hp == starting_hp - 15
+E   assert 17 == (38 - 15)
+E    +  where 17 = SHRINKER_BEETLE(HP=17/38 Block=0).current_hp
+__ TestStatusParity.test_brightest_flame_draws_gains_energy_and_loses_max_hp ___
+tests/test_parity_helpers.py:2711: in test_brightest_flame_draws_gains_energy_and_loses_max_hp
+    assert combat.player.max_hp == starting_max_hp - 1
+E   assert 78 == (80 - 1)
+E    +  where 78 = Player(HP=78/78 Block=0).max_hp
+E    +    where Player(HP=78/78 Block=0) = CombatState(round=1, energy=2, hand=2, draw=1, discard=1, player=Player(HP=78/78 Block=0), allies=[], enemies=[SHRINKER_BEETLE(HP=38/38 Block=0)]).player
+_ TestStatusParity.test_non_ironclad_block_cards_fire_after_block_gained_hooks _
+tests/test_parity_helpers.py:2938: in test_non_ironclad_block_cards_fire_after_block_gained_hooks
+    assert combat.player.block == expected_block
+E   assert 15 == 10
+E    +  where 15 = Player(HP=80/80 Block=15 BEACON_OF_HOPE(1)).block
+E    +    where Player(HP=80/80 Block=15 BEACON_OF_HOPE(1)) = CombatState(round=1, energy=1, hand=0, draw=0, discard=4, player=Player(HP=80/80 Block=15 BEACON_OF_HOPE(1)), allies=[Player(HP=50/50 Block=7)], enemies=[SHRINKER_BEETLE(HP=38/38 Block=0)]).player
+___ TestStatusParity.test_sacrifice_kills_osty_and_gains_double_max_hp_block ___
+tests/test_parity_helpers.py:3285: in test_sacrifice_kills_osty_and_gains_double_max_hp_block
+    assert combat.player.block == 10
+E   assert 15 == 10
+E    +  where 15 = Player(HP=80/80 Block=15).block
+E    +    where Player(HP=80/80 Block=15) = CombatState(round=1, energy=0, hand=0, draw=0, discard=1, player=Player(HP=80/80 Block=15), allies=[], enemies=[SHRINKER_BEETLE(HP=38/38 Block=0)]).player
+_ TestStatusParity.test_eidolon_exhausts_hand_and_grants_intangible_when_threshold_met _
+tests/test_parity_helpers.py:3389: in test_eidolon_exhausts_hand_and_grants_intangible_when_threshold_met
+    assert len(combat.hand) == 0
+E   assert 9 == 0
+E    +  where 9 = len([STRIKE_IRONCLAD(1E 6dmg), STRIKE_IRONCLAD(1E 6dmg), STRIKE_IRONCLAD(1E 6dmg), STRIKE_IRONCLAD(1E 6dmg), STRIKE_IRONCLAD(1E 6dmg), STRIKE_IRONCLAD(1E 6dmg), ...])
+E    +    where [STRIKE_IRONCLAD(1E 6dmg), STRIKE_IRONCLAD(1E 6dmg), STRIKE_IRONCLAD(1E 6dmg), STRIKE_IRONCLAD(1E 6dmg), STRIKE_IRONCLAD(1E 6dmg), STRIKE_IRONCLAD(1E 6dmg), ...] = CombatState(round=1, energy=0, hand=9, draw=0, discard=1, player=Player(HP=80/80 Block=0), allies=[], enemies=[SHRINKER_BEETLE(HP=38/38 Block=0)]).hand
+_____________________ TestPotionRegistry.test_total_count ______________________
+tests/test_potion_registry_usage_and_generation.py:119: in test_total_count
+    assert len(all_potion_models()) == 64
+E   AssertionError: assert 65 == 64
+E    +  where 65 = len([PotionModel(potion_id='AttackPotion', rarity=<PotionRarity.COMMON: 1>, usage_type=<PotionUsageType.COMBAT_ONLY: 1>, t...tionTargetType.ANY_PLAYER: 4>, is_character_specific=False, character_pool=None, can_be_generated_in_combat=True), ...])
+E    +    where [PotionModel(potion_id='AttackPotion', rarity=<PotionRarity.COMMON: 1>, usage_type=<PotionUsageType.COMBAT_ONLY: 1>, t...tionTargetType.ANY_PLAYER: 4>, is_character_specific=False, character_pool=None, can_be_generated_in_combat=True), ...] = all_potion_models()
+______________________ TestRarityCounts.test_event_count _______________________
+tests/test_potion_registry_usage_and_generation.py:183: in test_event_count
+    assert len(event) == 2
+E   AssertionError: assert 3 == 2
+E    +  where 3 = len([PotionModel(potion_id='FoulPotion', rarity=<PotionRarity.EVENT: 4>, usage_type=<PotionUsageType.ANY_TIME: 2>, target_...e=<PotionTargetType.ANY_PLAYER: 4>, is_character_specific=False, character_pool=None, can_be_generated_in_combat=True)])
+_ TestPowerAmountChangedHooks.test_rolling_boulder_keeps_separate_instances_like_reference _
+tests/test_power_lifecycle_and_modifier_hooks.py:1347: in test_rolling_boulder_keeps_separate_instances_like_reference
+    assert enemy.current_hp == starting_hp - 40
+E   assert 0 == (38 - 40)
+E    +  where 0 = SHRINKER_BEETLE(HP=0/38 Block=0).current_hp
+_ TestPowerAmountChangedHooks.test_regen_power_heals_on_owner_side_turn_end_and_decrements _
+tests/test_power_lifecycle_and_modifier_hooks.py:1668: in test_regen_power_heals_on_owner_side_turn_end_and_decrements
+    assert player.current_hp == damaged_hp + regen_amount
+E   assert 70 == (70 + 4)
+E    +  where 70 = Player(HP=70/80 Block=0 REGEN(4)).current_hp
+_ TestRegentCardEffectsReferenceParity.test_devastate_spends_stars_and_deals_large_damage _
+tests/test_regent_card_effects_reference_parity.py:148: in test_devastate_spends_stars_and_deals_large_damage
+    assert enemy.current_hp == 70
+E   assert 65 == 70
+E    +  where 65 = SHRINKER_BEETLE(HP=65/100 Block=0).current_hp
+_ TestRegentCardEffectsReferenceParity.test_crush_under_applies_temporary_strength_loss_to_hittable_enemies _
+tests/test_regent_card_effects_reference_parity.py:513: in test_crush_under_applies_temporary_strength_loss_to_hittable_enemies
+    assert hittable.current_hp == 92
+E   assert 91 == 92
+E    +  where 91 = SHRINKER_BEETLE(HP=91/100 Block=0 CRUSH_UNDER(2), STRENGTH(-2)).current_hp
+_ TestRegentCardEffectsReferenceParity.test_hammer_time_repeats_forge_for_other_living_players _
+tests/test_regent_card_effects_reference_parity.py:556: in test_hammer_time_repeats_forge_for_other_living_players
+    assert owner_blade.base_damage == 15
+E   assert 16 == 15
+E    +  where 16 = SOVEREIGN_BLADE(2E 16dmg).base_damage
+_ TestRegentGeneratedCardsAndXCostParity.test_collision_course_generates_debris_and_counts_as_generated_card _
+tests/test_regent_generated_cards_and_x_cost_parity.py:51: in test_collision_course_generates_debris_and_counts_as_generated_card
+    assert enemy.current_hp == start_hp - 11
+E   assert 28 == (38 - 11)
+E    +  where 28 = SHRINKER_BEETLE(HP=28/38 Block=0).current_hp
+_ TestRegentGeneratedCardsAndXCostParity.test_supermassive_scales_with_generated_cards_this_combat _
+tests/test_regent_generated_cards_and_x_cost_parity.py:91: in test_supermassive_scales_with_generated_cards_this_combat
+    assert enemy.current_hp == 100 - 11 - 8
+E   assert 82 == ((100 - 11) - 8)
+E    +  where 82 = SHRINKER_BEETLE(HP=82/100 Block=0).current_hp
+_ TestRegentGeneratedCardsAndXCostParity.test_terraforming_applies_vigor_that_is_consumed_by_next_powered_attack _
+tests/test_regent_generated_cards_and_x_cost_parity.py:124: in test_terraforming_applies_vigor_that_is_consumed_by_next_powered_attack
+    assert combat.player.get_power_amount(PowerId.VIGOR) == 6
+E   assert 7 == 6
+E    +  where 7 = get_power_amount(<PowerId.VIGOR: 25>)
+E    +    where get_power_amount = Player(HP=60/60 Block=0 VIGOR(7)).get_power_amount
+E    +      where Player(HP=60/60 Block=0 VIGOR(7)) = CombatState(round=1, energy=1, hand=1, draw=5, discard=1, player=Player(HP=60/60 Block=0 VIGOR(7)), allies=[], enemies=[SHRINKER_BEETLE(HP=38/38 Block=0)]).player
+E    +    and   <PowerId.VIGOR: 25> = PowerId.VIGOR
+____ TestRegentParity.test_refine_blade_forges_and_applies_energy_next_turn ____
+tests/test_regent_parity.py:160: in test_refine_blade_forges_and_applies_energy_next_turn
+    assert blade.base_damage == 19
+E   assert 18 == 19
+E    +  where 18 = SOVEREIGN_BLADE(2E 18dmg).base_damage
+________ TestRegentParity.test_spoils_of_battle_forges_then_draws_cards ________
+tests/test_regent_parity.py:210: in test_spoils_of_battle_forges_then_draws_cards
+    assert blade.base_damage == 15
+E   assert 16 == 15
+E    +  where 16 = SOVEREIGN_BLADE(2E 16dmg).base_damage
+_ TestRegentStarCostVoidFormForgeParity.test_guiding_star_spends_star_cost_and_draws_immediately _
+tests/test_regent_star_cost_void_form_forge_parity.py:61: in test_guiding_star_spends_star_cost_and_draws_immediately
+    assert card.star_cost == 2
+E   assert 1 == 2
+E    +  where 1 = GUIDING_STAR(1E 13dmg+).star_cost
+_ TestRegentStarCostVoidFormForgeParity.test_alignment_spends_stars_and_grants_energy _
+tests/test_regent_star_cost_void_form_forge_parity.py:79: in test_alignment_spends_stars_and_grants_energy
+    assert card.star_cost == 3
+E   assert 2 == 3
+E    +  where 2 = ALIGNMENT(0E+).star_cost
+_ TestRegentStarCostVoidFormForgeParity.test_void_form_waives_star_cost_for_covered_card_play _
+tests/test_regent_star_cost_void_form_forge_parity.py:96: in test_void_form_waives_star_cost_for_covered_card_play
+    assert card.star_cost == 2
+E   assert 1 == 2
+E    +  where 1 = GUIDING_STAR(1E 12dmg).star_cost
+_ TestRelicEventObtainOpeningRestHooksParity.test_toasty_mittens_round_one_exhausts_non_innate_card _
+tests/test_relic_event_obtain_opening_rest_hooks_parity.py:277: in test_toasty_mittens_round_one_exhausts_non_innate_card
+    assert non_innate in combat.exhaust_pile
+E   assert STRIKE_IRONCLAD(1E 6dmg) in []
+E    +  where [] = CombatState(round=1, energy=3, hand=2, draw=0, discard=0, player=Player(HP=80/80 Block=0), allies=[], enemies=[]).exhaust_pile
+_ TestRelicEventObtainOpeningRestHooksParity.test_signet_ring_grants_nine_hundred_ninety_nine_gold_on_obtain _
+tests/test_relic_event_obtain_opening_rest_hooks_parity.py:402: in test_signet_ring_grants_nine_hundred_ninety_nine_gold_on_obtain
+    assert run_state.player.gold == starting_gold + 999
+E   AssertionError: assert 987 == (99 + 999)
+E    +  where 987 = PlayerState(player_id=1, character_id='Ironclad', max_hp=80, current_hp=80, gold=987, deck=[], relics=['SIGNET_RING'],...pochs=[], card_shop_removals_used=0, wongo_points=0, run_state=<sts2_env.run.run_state.RunState object at 0x1074601a0>).gold
+E    +    where PlayerState(player_id=1, character_id='Ironclad', max_hp=80, current_hp=80, gold=987, deck=[], relics=['SIGNET_RING'],...pochs=[], card_shop_removals_used=0, wongo_points=0, run_state=<sts2_env.run.run_state.RunState object at 0x1074601a0>) = <sts2_env.run.run_state.RunState object at 0x1074601a0>.player
+_ TestRelicEventRewardsCursesGoldHooksParity.test_seal_of_gold_spends_five_gold_for_one_energy_each_player_turn _
+tests/test_relic_event_rewards_curses_gold_hooks_parity.py:90: in test_seal_of_gold_spends_five_gold_for_one_energy_each_player_turn
+    assert combat.gold == 15
+E   assert 17 == 15
+E    +  where 17 = CombatState(round=1, energy=4, hand=5, draw=5, discard=0, player=Player(HP=80/80 Block=0), allies=[], enemies=[SHRINKER_BEETLE(HP=40/40 Block=0)]).gold
+______ test_fur_coat_marks_combat_rooms_and_sets_marked_enemies_to_one_hp ______
+tests/test_relic_rare_shop_combat_start_map_and_autoplay_parity.py:331: in test_fur_coat_marks_combat_rooms_and_sets_marked_enemies_to_one_hp
+    assert len(marked) == 7
+E   assert 8 == 7
+E    +  where 8 = len([(6,4), (3,2), (0,14), (0,3), (0,12), (1,4), ...])
+_ TestRelicRareShopOwnerScopeCostAndGenerationParity.test_shop_event_card_play_relics_ignore_other_players_cards _
+tests/test_relic_rare_shop_owner_scope_cost_and_generation_parity.py:447: in test_shop_event_card_play_relics_ignore_other_players_cards
+    assert combat.player.get_power_amount(PowerId.DIAMOND_DIADEM) == 1
+E   assert 0 == 1
+E    +  where 0 = get_power_amount(<PowerId.DIAMOND_DIADEM: 6>)
+E    +    where get_power_amount = Player(HP=80/80 Block=0 BLUR(1)).get_power_amount
+E    +      where Player(HP=80/80 Block=0 BLUR(1)) = CombatState(round=1, energy=4, hand=0, draw=1, discard=0, player=Player(HP=80/80 Block=0 BLUR(1)), allies=[Player(HP=60/60 Block=0)], enemies=[SHRINKER_BEETLE(HP=300/300 Block=0)]).player
+E    +    and   <PowerId.DIAMOND_DIADEM: 6> = PowerId.DIAMOND_DIADEM
+_ TestRelicRareShopOwnerScopeCostAndGenerationParity.test_diamond_diadem_resets_after_side_turn_start _
+tests/test_relic_rare_shop_owner_scope_cost_and_generation_parity.py:478: in test_diamond_diadem_resets_after_side_turn_start
+    assert relic._cards_this_turn == 3
+           ^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'DiamondDiadem' object has no attribute '_cards_this_turn'
+______________ test_toy_box_wax_rewards_melt_after_three_combats _______________
+tests/test_relic_reward_and_card_reward_hooks_parity.py:185: in test_toy_box_wax_rewards_melt_after_three_combats
+    assert len(wax_rewards) == 4
+E   AssertionError: assert 5 == 4
+E    +  where 5 = len([RelicReward(player_id=1, reward_type=<RewardType.RELIC: 4>, rewards_set_index=3, is_populated=False, skippable=True, ...=3, is_populated=False, skippable=True, relic_id=None, rarity=None, is_wax=True, rng_stream='rewards', setup_attrs={})])
+_____________ test_massive_scroll_enqueues_multiplayer_reward_pool _____________
+tests/test_relic_reward_and_card_reward_hooks_parity.py:618: in test_massive_scroll_enqueues_multiplayer_reward_pool
+    assert set(reward.custom_card_ids) == expected_ids
+E   assert {<CardId.COOR...RD: 477>, ...} == {<CardId.COOR...ARD: 83>, ...}
+E     
+E     Extra items in the left set:
+E     <CardId.BLAZE: 586>
+E     <CardId.MIDNIGHT: 594>
+E     <CardId.THE_BALL: 600>
+E     <CardId.OUTRAGE: 596>
+E     Use -v to get more diff
+_ TestRelicUncommonOwnerScopeAndRoomHooksParity.test_regalite_gains_block_for_owner_generated_combat_cards _
+tests/test_relic_uncommon_owner_scope_and_room_hooks_parity.py:124: in test_regalite_gains_block_for_owner_generated_combat_cards
+    assert player.block == 2
+E   assert 4 == 2
+E    +  where 4 = Player(HP=80/80 Block=4).block
+_ TestRelicUncommonOwnerScopeAndRoomHooksParity.test_regalite_block_triggers_after_block_gained_hooks _
+tests/test_relic_uncommon_owner_scope_and_room_hooks_parity.py:156: in test_regalite_block_triggers_after_block_gained_hooks
+    assert player.block == 2
+E   assert 4 == 2
+E    +  where 4 = Player(HP=80/80 Block=4 JUGGERNAUT(5)).block
+_ TestRelicUncommonRoomPotionOrbHooksParity.test_delicate_frond_uses_out_of_combat_potion_pool _
+tests/test_relic_uncommon_room_potion_orb_hooks_parity.py:172: in test_delicate_frond_uses_out_of_combat_potion_pool
+    assert [p.potion_id for p in combat.held_potions(combat.player)] == ["RegenPotion"]
+E   AssertionError: assert ['SwiftPotion'] == ['RegenPotion']
+E     
+E     At index 0 diff: 'SwiftPotion' != 'RegenPotion'
+E     Use -v to get more diff
+______ TestCardRarityOdds.test_uniform_base_odds_without_pity_change_api _______
+tests/test_rewards.py:97: in test_uniform_base_odds_without_pity_change_api
+    assert odds.roll_with_base_odds(rng, context="uniform") == CardRarity.COMMON
+E   AssertionError: assert <CardRarity.RARE: 4> == <CardRarity.COMMON: 2>
+E    +  where <CardRarity.RARE: 4> = roll_with_base_odds(<sts2_env.core.rng.Rng object at 0x106fa9cc0>, context='uniform')
+E    +    where roll_with_base_odds = <sts2_env.run.odds.CardRarityOdds object at 0x112eee600>.roll_with_base_odds
+E    +  and   <CardRarity.COMMON: 2> = CardRarity.COMMON
+_____________ test_rng_seeded_next_matches_csharp_random_sequence ______________
+tests/test_rng_parity.py:14: in test_rng_seeded_next_matches_csharp_random_sequence
+    assert values == [
+E   assert [1291202458, ...2, 1574098596] == [1559595546, ...31, 442452829]
+E     
+E     At index 0 diff: 1291202458 != 1559595546
+E     Use -v to get more diff
+______________ test_named_rng_streams_match_game_seed_derivation _______________
+tests/test_rng_parity.py:28: in test_named_rng_streams_match_game_seed_derivation
+    assert Rng(seed, "up_front").seed == 1_840_945_279
+E   AssertionError: assert 9831763918152499513 == 1840945279
+E    +  where 9831763918152499513 = <sts2_env.core.rng.Rng object at 0x115459240>.seed
+E    +    where <sts2_env.core.rng.Rng object at 0x115459240> = Rng(7919287270473417401, 'up_front')
+_________________ test_run_rng_set_exposes_game_named_streams __________________
+tests/test_rng_parity.py:48: in test_run_rng_set_exposes_game_named_streams
+    assert streams.up_front.seed == 1_840_945_279
+E   assert 9831763918152499513 == 1840945279
+E    +  where 9831763918152499513 = <sts2_env.core.rng.Rng object at 0x115459550>.seed
+E    +    where <sts2_env.core.rng.Rng object at 0x115459550> = <sts2_env.run.run_state.RunRngSet object at 0x1076b7c50>.up_front
+______________ test_event_rng_seed_matches_game_event_derivation _______________
+tests/test_rng_parity.py:70: in test_event_rng_seed_matches_game_event_derivation
+    assert aroma.create_event_rng(run_state).seed == 3_201_353_244
+E   assert 1039496005280511596 == 3201353244
+E    +  where 1039496005280511596 = <sts2_env.core.rng.Rng object at 0x1154583d0>.seed
+E    +    where <sts2_env.core.rng.Rng object at 0x1154583d0> = create_event_rng(<sts2_env.run.run_state.RunState object at 0x107463620>)
+E    +      where create_event_rng = <sts2_env.events.shared.AromaOfChaos object at 0x1077b5810>.create_event_rng
+________________ test_shuffle_uses_csharp_fisher_yates_sequence ________________
+tests/test_rng_parity.py:81: in test_shuffle_uses_csharp_fisher_yates_sequence
+    assert values == [3, 2, 5, 1, 4]
+E   assert [5, 4, 3, 2, 1] == [3, 2, 5, 1, 4]
+E     
+E     At index 0 diff: 5 != 3
+E     Use -v to get more diff
+_______ test_manager_context_requires_full_enchant_choice_before_confirm _______
+tests/test_run_deck_choice_flow.py:136: in test_manager_context_requires_full_enchant_choice_before_confirm
+    assert mgr.run_state.pending_choice is not None
+E   assert None is not None
+E    +  where None = <sts2_env.run.run_state.RunState object at 0x107460440>.pending_choice
+E    +    where <sts2_env.run.run_state.RunState object at 0x107460440> = <sts2_env.run.run_manager.RunManager object at 0x1074601a0>.run_state
+______ test_treasure_relic_with_enchant_reward_pauses_then_returns_to_map ______
+tests/test_run_deck_choice_flow.py:328: in test_treasure_relic_with_enchant_reward_pauses_then_returns_to_map
+    assert result["phase"] == RunManager.PHASE_CARD_REWARD
+E   AssertionError: assert 'MAP_CHOICE' == 'CARD_REWARD'
+E     
+E     - CARD_REWARD
+E     + MAP_CHOICE
+_______ test_shop_buy_relic_with_multi_choice_resumes_shop_after_confirm _______
+tests/test_run_deck_choice_flow.py:743: in test_shop_buy_relic_with_multi_choice_resumes_shop_after_confirm
+    assert result["phase"] == RunManager.PHASE_CARD_REWARD
+E   AssertionError: assert 'SHOP' == 'CARD_REWARD'
+E     
+E     - CARD_REWARD
+E     + SHOP
+___ test_boss_relic_pick_with_deck_choice_resumes_to_next_act_after_confirm ____
+tests/test_run_deck_choice_flow.py:765: in test_boss_relic_pick_with_deck_choice_resumes_to_next_act_after_confirm
+    assert result["phase"] == RunManager.PHASE_CARD_REWARD
+E   AssertionError: assert 'MAP_CHOICE' == 'CARD_REWARD'
+E     
+E     - CARD_REWARD
+E     + MAP_CHOICE
+_ TestActionMasksPerPhase.test_run_level_multi_choice_in_map_phase_uses_choose_then_confirm _
+tests/test_run_env.py:352: in test_run_level_multi_choice_in_map_phase_uses_choose_then_confirm
+    assert mask[_COMBAT_START + 1] == 1
+E   assert np.int8(0) == 1
+_____ TestConcreteRunObjects.test_shop_purchase_adds_real_card_and_potion ______
+tests/test_run_flow.py:460: in test_shop_purchase_adds_real_card_and_potion
+    potion_entry = next(entry for entry in inv.potions if entry.potion_id and mgr.run_state.player.gold >= entry.price)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   StopIteration
+____________________ TestPotionRewardOdds.test_elite_bonus _____________________
+tests/test_run_flow.py:731: in test_elite_bonus
+    assert elite_drops > reg_drops
+E   assert 2501 > 2501
+________________ test_elite_victory_offers_relic_reward_object _________________
+tests/test_run_manager_rewards.py:75: in test_elite_victory_offers_relic_reward_object
+    assert mgr._offered_relic is not None
+E   assert None is not None
+E    +  where None = <sts2_env.run.run_manager.RunManager object at 0x107462660>._offered_relic
+_ TestSilentCardEffectsReferenceParity.test_tracking_adds_two_first_then_one_when_already_active _
+tests/test_silent_card_effects_reference_parity.py:452: in test_tracking_adds_two_first_then_one_when_already_active
+    assert combat.player.get_power_amount(PowerId.TRACKING) == 2
+E   assert 50 == 2
+E    +  where 50 = get_power_amount(<PowerId.TRACKING: 24>)
+E    +    where get_power_amount = Player(HP=70/70 Block=0 TRACKING(50)).get_power_amount
+E    +      where Player(HP=70/70 Block=0 TRACKING(50)) = CombatState(round=1, energy=2, hand=1, draw=5, discard=0, player=Player(HP=70/70 Block=0 TRACKING(50)), allies=[], enemies=[SHRINKER_BEETLE(HP=38/38 Block=0)]).player
+E    +    and   <PowerId.TRACKING: 24> = PowerId.TRACKING
+_ TestSilentCardEffectsReferenceParity.test_outbreak_card_applies_reference_power_amounts _
+tests/test_silent_card_effects_reference_parity.py:577: in test_outbreak_card_applies_reference_power_amounts
+    assert combat.play_card(0)
+E   assert False
+E    +  where False = play_card(0)
+E    +    where play_card = CombatState(round=1, energy=1, hand=1, draw=5, discard=0, player=Player(HP=70/70 Block=0), allies=[], enemies=[SHRINKER_BEETLE(HP=38/38 Block=0)]).play_card
+_ TestSilentCardEffectsReferenceParity.test_silent_direct_damage_and_block_cards_match_reference _
+tests/test_silent_card_effects_reference_parity.py:743: in test_silent_direct_damage_and_block_cards_match_reference
+    assert [enemy.current_hp for enemy in flick_combat.enemies] == [92, 92]
+E   assert [91, 91] == [92, 92]
+E     
+E     At index 0 diff: 91 != 92
+E     Use -v to get more diff
+_ TestSilentDrawRetainDiscardParity.test_well_laid_plans_retains_one_card_during_end_of_turn_flush _
+tests/test_silent_draw_retain_discard_parity.py:128: in test_well_laid_plans_retains_one_card_during_end_of_turn_flush
+    assert combat.play_card(0)
+E   assert False
+E    +  where False = play_card(0)
+E    +    where play_card = CombatState(round=1, energy=1, hand=3, draw=0, discard=0, player=Player(HP=70/70 Block=0), allies=[], enemies=[SHRINKER_BEETLE(HP=38/38 Block=0)]).play_card
+_ TestSilentDrawRetainDiscardParity.test_well_laid_plans_retains_extra_cards_beyond_existing_single_turn_retain _
+tests/test_silent_draw_retain_discard_parity.py:154: in test_well_laid_plans_retains_extra_cards_beyond_existing_single_turn_retain
+    assert combat.hand == [already_retained, keep_a, keep_b]
+E   assert [DEFEND_SILEN...LENT(1E 6dmg)] == [DEFEND_SILEN...LENT(1E 5blk)]
+E     
+E     Left contains one more item: STRIKE_SILENT(1E 6dmg)
+E     Use -v to get more diff
+_ TestSilentPoisonTrackingXCostParity.test_anticipate_grants_temporary_dexterity_until_turn_end _
+tests/test_silent_poison_tracking_x_cost_parity.py:51: in test_anticipate_grants_temporary_dexterity_until_turn_end
+    assert combat.player.get_power_amount(PowerId.ANTICIPATE) == 3
+E   assert 4 == 3
+E    +  where 4 = get_power_amount(<PowerId.ANTICIPATE: 188>)
+E    +    where get_power_amount = Player(HP=70/70 Block=0 ANTICIPATE(4), DEXTERITY(4)).get_power_amount
+E    +      where Player(HP=70/70 Block=0 ANTICIPATE(4), DEXTERITY(4)) = CombatState(round=1, energy=0, hand=0, draw=7, discard=1, player=Player(HP=70/70 Block=0 ANTICIPATE(4), DEXTERITY(4)), allies=[], enemies=[SHRINKER_BEETLE(HP=38/38 Block=0)]).player
+E    +    and   <PowerId.ANTICIPATE: 188> = PowerId.ANTICIPATE
+_ TestSilentPoisonTrackingXCostParity.test_expertise_draws_up_to_six_and_does_not_overdraw_when_hand_is_full_enough _
+tests/test_silent_poison_tracking_x_cost_parity.py:103: in test_expertise_draws_up_to_six_and_does_not_overdraw_when_hand_is_full_enough
+    assert combat.hand == [kept_attack, kept_skill, draw_1, draw_2, draw_3, draw_4]
+E   assert [STRIKE_SILEN...LENT(1E 5blk)] == [STRIKE_SILEN...LENT(1E 5blk)]
+E     
+E     Right contains 2 more items, first extra item: STRIKE_SILENT(1E 6dmg)
+E     Use -v to get more diff
+_ TestSilentPoisonTrackingXCostParity.test_tracking_applies_two_stacks_and_doubles_damage_against_weak_targets _
+tests/test_silent_poison_tracking_x_cost_parity.py:180: in test_tracking_applies_two_stacks_and_doubles_damage_against_weak_targets
+    assert tracked_combat.player.get_power_amount(PowerId.TRACKING) == 2
+E   assert 50 == 2
+E    +  where 50 = get_power_amount(<PowerId.TRACKING: 24>)
+E    +    where get_power_amount = Player(HP=70/70 Block=0 TRACKING(50)).get_power_amount
+E    +      where Player(HP=70/70 Block=0 TRACKING(50)) = CombatState(round=1, energy=1, hand=1, draw=7, discard=0, player=Player(HP=70/70 Block=0 TRACKING(50)), allies=[], enemies=[SHRINKER_BEETLE(HP=38/38 Block=0 WEAK(1))]).player
+E    +    and   <PowerId.TRACKING: 24> = PowerId.TRACKING
+_ TestSilentPoisonTrackingXCostParity.test_tracking_applies_to_owner_pet_attacks _
+tests/test_silent_poison_tracking_x_cost_parity.py:207: in test_tracking_applies_to_owner_pet_attacks
+    assert enemy.current_hp == enemy.max_hp - 10
+E   assert 33 == (38 - 10)
+E    +  where 33 = SHRINKER_BEETLE(HP=33/38 Block=0 WEAK(1)).current_hp
+E    +  and   38 = SHRINKER_BEETLE(HP=33/38 Block=0 WEAK(1)).max_hp
+_ TestStatusCurseCardEffectsParity.test_relax_gains_block_and_next_turn_draw_and_energy _
+tests/test_status_curse_card_effects_parity.py:126: in test_relax_gains_block_and_next_turn_draw_and_energy
+    assert combat.player.block == 17
+E   assert 18 == 17
+E    +  where 18 = Player(HP=80/80 Block=18 DRAW_CARDS_NEXT_TURN(3), ENERGY_NEXT_TURN(3)).block
+E    +    where Player(HP=80/80 Block=18 DRAW_CARDS_NEXT_TURN(3), ENERGY_NEXT_TURN(3)) = CombatState(round=1, energy=0, hand=0, draw=5, discard=0, player=Player(HP=80/80 Block=18 DRAW_CARDS_NEXT_TURN(3), ENERGY_NEXT_TURN(3)), allies=[], enemies=[SHRINKER_BEETLE(HP=38/38 Block=0)]).player
+_ TestStatusCurseCardEffectsParity.test_maul_play_grows_all_owner_maul_copies_and_upgrade_preserves_growth _
+tests/test_status_curse_card_effects_parity.py:155: in test_maul_play_grows_all_owner_maul_copies_and_upgrade_preserves_growth
+    assert played.base_damage == 6
+E   assert 7 == 6
+E    +  where 7 = MAUL(1E 7dmg).base_damage
+_ TestStatusCurseCardEffectsParity.test_fuel_gains_energy_before_drawing_void __
+tests/test_status_curse_card_effects_parity.py:332: in test_fuel_gains_energy_before_drawing_void
+    assert combat.energy == 0
+E   assert 1 == 0
+E    +  where 1 = CombatState(round=1, energy=1, hand=0, draw=1, discard=0, player=Player(HP=80/80 Block=0), allies=[], enemies=[SHRINKER_BEETLE(HP=38/38 Block=0)]).energy
+_ TestStatusCurseCardEffectsParity.test_brightest_flame_gains_energy_before_drawing_void _
+tests/test_status_curse_card_effects_parity.py:345: in test_brightest_flame_gains_energy_before_drawing_void
+    assert combat.player.max_hp == max_hp_before - 1
+E   assert 78 == (80 - 1)
+E    +  where 78 = Player(HP=78/78 Block=0).max_hp
+E    +    where Player(HP=78/78 Block=0) = CombatState(round=1, energy=1, hand=1, draw=0, discard=1, player=Player(HP=78/78 Block=0), allies=[], enemies=[SHRINKER_BEETLE(HP=38/38 Block=0)]).player
+_____________ TestNewCardPoolMembership.test_scare_in_silent_pool ______________
+tests/test_v0_107_1_new_content_parity.py:159: in test_scare_in_silent_pool
+    assert CardId.SCARE in SILENT_CARD_POOL
+E   assert <CardId.SCARE: 141> in (<CardId.ABRASIVE: 182>, <CardId.ACCELERANT: 183>, <CardId.ACCURACY_CARD: 146>, <CardId.ACROBATICS: 125>, <CardId.ADRENALINE: 184>, <CardId.AFTERIMAGE_CARD: 185>, ...)
+E    +  where <CardId.SCARE: 141> = CardId.SCARE
+__________ TestNoEnergyGainPowerParity.test_applied_by_expect_a_fight __________
+tests/test_v0_107_1_new_powers_parity.py:250: in test_applied_by_expect_a_fight
+    assert combat.play_card(0)
+E   assert False
+E    +  where False = play_card(0)
+E    +    where play_card = CombatState(round=1, energy=2, hand=3, draw=5, discard=0, player=Player(HP=80/80 Block=0), allies=[], enemies=[SHRINKER_BEETLE(HP=38/38 Block=0)]).play_card
+_____________ test_web_session_starts_at_neow_and_advances_to_map ______________
+tests/test_web_play_run.py:128: in test_web_session_starts_at_neow_and_advances_to_map
+    assert state["actions"][0]["label"] == "Fishing Rod - Gain a positive relic"
+E   AssertionError: assert 'Pomander - G...ositive relic' == 'Fishing Rod ...ositive relic'
+E     
+E     - Fishing Rod - Gain a positive relic
+E     ? ^^^^^ ----
+E     + Pomander - Gain a positive relic
+E     ? ^^^^  ++
+________________ test_web_session_can_reach_first_combat_reward ________________
+tests/test_web_play_run.py:339: in test_web_session_can_reach_first_combat_reward
+    state = _reach_first_combat_reward(session)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_web_play_run.py:95: in _reach_first_combat_reward
+    assert state["screen"]["title"] == "Map"
+E   AssertionError: assert 'Choose' == 'Map'
+E     
+E     - Map
+E     + Choose
+___________ test_web_session_can_take_card_reward_and_return_to_map ____________
+tests/test_web_play_run.py:349: in test_web_session_can_take_card_reward_and_return_to_map
+    state = _reach_first_combat_reward(session)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_web_play_run.py:95: in _reach_first_combat_reward
+    assert state["screen"]["title"] == "Map"
+E   AssertionError: assert 'Choose' == 'Map'
+E     
+E     - Map
+E     + Choose
+________ test_web_session_can_continue_to_second_map_node_after_rewards ________
+tests/test_web_play_run.py:369: in test_web_session_can_continue_to_second_map_node_after_rewards
+    state = _reach_first_combat_reward(session)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_web_play_run.py:95: in _reach_first_combat_reward
+    assert state["screen"]["title"] == "Map"
+E   AssertionError: assert 'Choose' == 'Map'
+E     
+E     - Map
+E     + Choose
+=========================== short test summary info ============================
+FAILED tests/test_all_cards_unit_coverage.py::test_every_card_has_direct_unit_case[BLADE_SYMPHONY]
+FAILED tests/test_all_cards_unit_coverage.py::test_every_card_has_direct_unit_case[BLAZE]
+FAILED tests/test_all_cards_unit_coverage.py::test_every_card_has_direct_unit_case[CACOPHONY]
+FAILED tests/test_all_cards_unit_coverage.py::test_every_card_has_direct_unit_case[CONCOCT]
+FAILED tests/test_all_cards_unit_coverage.py::test_every_card_has_direct_unit_case[CONSTELLATION]
+FAILED tests/test_all_cards_unit_coverage.py::test_every_card_has_direct_unit_case[FADE]
+FAILED tests/test_all_cards_unit_coverage.py::test_every_card_has_direct_unit_case[HIBERNATE]
+FAILED tests/test_all_cards_unit_coverage.py::test_every_card_has_direct_unit_case[IMITATION_LEARNING]
+FAILED tests/test_all_cards_unit_coverage.py::test_every_card_has_direct_unit_case[MIDNIGHT]
+FAILED tests/test_all_cards_unit_coverage.py::test_every_card_has_direct_unit_case[ONE_FOR_ALL]
+FAILED tests/test_all_cards_unit_coverage.py::test_every_card_has_direct_unit_case[OUTRAGE]
+FAILED tests/test_all_cards_unit_coverage.py::test_every_card_has_direct_unit_case[PLOT]
+FAILED tests/test_all_cards_unit_coverage.py::test_every_card_has_direct_unit_case[SOULBOUND]
+FAILED tests/test_all_cards_unit_coverage.py::test_every_card_has_direct_unit_case[THE_BALL]
+FAILED tests/test_all_cards_unit_coverage.py::test_every_card_has_direct_unit_case[TUTOR]
+FAILED tests/test_all_cards_unit_coverage.py::test_every_card_has_direct_unit_case[UNDERWORLD]
+FAILED tests/test_audit_parser_golden_samples.py::test_static_metadata_parser_golden[CardId.SCARE-False-expected4]
+FAILED tests/test_audit_parser_golden_samples.py::test_static_metadata_parser_golden[CardId.ALIGNMENT-False-expected8]
+FAILED tests/test_audit_parser_golden_samples.py::test_monster_stats_parser_golden
+FAILED tests/test_card_enchantment_runtime_parity.py::test_shop_enchant_relics_apply_expected_enchantments
+FAILED tests/test_card_generation_filters.py::test_card_generation_filters_multiplayer_constraints_like_reference
+FAILED tests/test_card_static_metadata_audit.py::test_card_static_metadata_matches_decompiled_models
+FAILED tests/test_colorless_card_effects_reference_parity.py::TestColorlessCardEffectsReferenceParity::test_rend_scales_damage_with_non_duration_debuff_count
+FAILED tests/test_colorless_card_effects_reference_parity.py::TestColorlessCardEffectsReferenceParity::test_rend_counts_negative_strength_but_ignores_temporary_debuffs
+FAILED tests/test_colorless_card_effects_reference_parity.py::TestColorlessCardEffectsReferenceParity::test_rend_uses_normal_attack_damage_modifiers
+FAILED tests/test_colorless_card_effects_reference_parity.py::TestColorlessCardEffectsReferenceParity::test_beacon_of_hope_triggers_from_colorless_block_cards
+FAILED tests/test_colorless_card_effects_reference_parity.py::TestColorlessCardEffectsReferenceParity::test_beacon_of_hope_triggers_from_fisticuffs_block
+FAILED tests/test_colorless_factory_upgrade_parity.py::TestColorlessFactoryUpgradeParity::test_rend_factory_upgrade_uses_eighteen_plus_eight_per_debuff
+FAILED tests/test_combat_parity.py::TestPowerTurnHooks::test_generated_status_dispatches_power_and_card_hooks
+FAILED tests/test_combat_parity.py::TestPowerTurnHooks::test_monster_generated_status_skips_player_generated_hooks_but_not_rocket_punch
+FAILED tests/test_combat_parity.py::TestCardCleanup::test_well_laid_plans_applies_correct_power
+FAILED tests/test_defect_card_effects_reference_parity.py::TestDefectCardEffectsReferenceParity::test_null_deals_damage_applies_weak_and_channels_dark
+FAILED tests/test_defect_card_effects_reference_parity.py::TestDefectCardEffectsReferenceParity::test_hyperbeam_hits_only_hittable_enemies_and_loses_focus
+FAILED tests/test_defect_card_effects_reference_parity.py::TestDefectCardEffectsReferenceParity::test_refract_hits_twice_and_channels_two_glass_orbs
+FAILED tests/test_defect_card_effects_reference_parity.py::TestDefectCardEffectsReferenceParity::test_upgraded_refract_hits_twice_with_twelve_damage
+FAILED tests/test_defect_card_effects_reference_parity.py::TestDefectCardEffectsReferenceParity::test_momentum_strike_sets_its_own_cost_to_zero_this_combat
+FAILED tests/test_defect_card_effects_reference_parity.py::TestDefectCardEffectsReferenceParity::test_thunder_applies_thunder_power
+FAILED tests/test_defect_card_effects_reference_parity.py::TestDefectCardEffectsReferenceParity::test_rocket_punch_costs_zero_until_played_after_status_generation
+FAILED tests/test_defect_card_effects_reference_parity.py::TestDefectCardEffectsReferenceParity::test_rocket_punch_zero_cost_survives_end_of_turn_cleanup
+FAILED tests/test_defect_card_effects_reference_parity.py::TestDefectCardEffectsReferenceParity::test_biased_cognition_applies_focus_then_delayed_focus_loss
+FAILED tests/test_defect_card_effects_reference_parity.py::TestDefectCardEffectsReferenceParity::test_defect_power_card_upgrades_match_original
+FAILED tests/test_defect_factory_upgrade_parity.py::test_biased_cognition_factory_upgrade_increases_focus_only
+FAILED tests/test_defect_factory_upgrade_parity.py::test_hyperbeam_factory_upgrade_increases_damage_only
+FAILED tests/test_defect_factory_upgrade_parity.py::test_momentum_strike_factory_upgrade_increases_damage_and_sets_cost_zero
+FAILED tests/test_defect_factory_upgrade_parity.py::test_trash_to_treasure_factory_upgrade_adds_innate_and_keeps_power_amount
+FAILED tests/test_defect_factory_upgrade_parity.py::test_thunder_factory_upgrade_increases_power_amount_without_channeling
+FAILED tests/test_defect_factory_upgrade_parity.py::test_uproar_factory_upgrade_increases_each_hit_damage_and_autoplays_attack
+FAILED tests/test_defect_orb_energy_focus_parity.py::TestDefectOrbEnergyFocusParity::test_synchronize_grants_temporary_focus_from_distinct_orb_types
+FAILED tests/test_encounter_setup_and_pools_parity.py::TestAct1NormalEncounters::test_ruby_raiders_normal_samples_three_unique_raiders_in_original_pool_order
+FAILED tests/test_encounter_setup_and_pools_parity.py::TestAct2Pools::test_decimillipede_elite_offsets_segment_openers_from_original_random_starter
+FAILED tests/test_encounter_setup_and_pools_parity.py::TestAct2Pools::test_exoskeletons_tough_ascension_hp_matches_csharp
+FAILED tests/test_interactive_run_cli.py::test_run_manager_can_start_at_neow_and_force_relic_pick
+FAILED tests/test_interactive_run_cli.py::test_interactive_cli_displays_reward_contents
+FAILED tests/test_ironclad_combat_edge_card_model_parity.py::TestIroncladCombatEdgeCardModelParity::test_colossus_gains_block_and_applies_reference_power
+FAILED tests/test_ironclad_combat_edge_card_model_parity.py::TestIroncladCombatEdgeCardModelParity::test_setup_strike_grants_temporary_strength_until_turn_end
+FAILED tests/test_ironclad_combat_edge_card_model_parity.py::TestIroncladCombatEdgeCardModelParity::test_tremble_and_taunt_apply_reference_vulnerable_and_block
+FAILED tests/test_ironclad_combat_edge_card_model_parity.py::TestIroncladCombatEdgeCardModelParity::test_crimson_mantle_increments_self_damage_when_played
+FAILED tests/test_ironclad_combat_edge_card_model_parity.py::TestIroncladCombatEdgeCardModelParity::test_demon_form_applies_original_strength_gain_power
+FAILED tests/test_ironclad_combat_edge_card_model_parity.py::TestIroncladCombatEdgeCardModelParity::test_mangle_applies_temporary_strength_loss_then_restores
+FAILED tests/test_ironclad_combat_edge_card_model_parity.py::TestIroncladCombatEdgeCardModelParity::test_howl_from_beyond_replays_from_exhaust_at_end_of_turn
+FAILED tests/test_ironclad_combat_edge_card_model_parity.py::TestIroncladCombatEdgeCardModelParity::test_expect_a_fight_gains_energy_for_attacks_in_hand_not_skills
+FAILED tests/test_ironclad_combat_edge_card_model_parity.py::TestIroncladCombatEdgeCardModelParity::test_expect_a_fight_blocks_further_energy_gain_until_side_turn_end
+FAILED tests/test_ironclad_combat_edge_card_model_parity.py::TestIroncladCombatEdgeCardModelParity::test_pacts_end_always_playable_but_needs_three_exhausted_for_damage
+FAILED tests/test_ironclad_combat_edge_card_model_parity.py::TestIroncladCombatEdgeCardModelParity::test_forgotten_ritual_only_gains_energy_after_owner_exhausted_card_this_turn
+FAILED tests/test_ironclad_core_card_model_parity.py::TestIroncladCoreCardModelParity::test_rampage_increases_its_own_base_damage_each_play
+FAILED tests/test_ironclad_core_card_model_parity.py::TestIroncladCoreCardModelParity::test_rampage_upgrade_preserves_grown_damage
+FAILED tests/test_ironclad_factory_upgrade_parity.py::test_ironclad_factory_upgrade_core_metadata_matches_reference[GRAPPLE]
+FAILED tests/test_ironclad_factory_upgrade_parity.py::test_ironclad_factory_upgrade_dynamic_values_match_reference[GRAPPLE]
+FAILED tests/test_map_generation_layout_parity.py::TestRoomTypeCounts::test_act3_counts_glory_rests_first_then_unknowns
+FAILED tests/test_monster_ai_state_machine_parity.py::test_cs_named_monster_factory_maps_to_expected_model[DecimillipedeSegmentBack]
+FAILED tests/test_monster_ai_state_machine_parity.py::test_cs_named_monster_factory_maps_to_expected_model[DecimillipedeSegmentFront]
+FAILED tests/test_monster_ai_state_machine_parity.py::test_cs_named_monster_factory_maps_to_expected_model[DecimillipedeSegmentMiddle]
+FAILED tests/test_monster_ai_state_machine_parity.py::TestFixedRotation::test_axebot_moves_use_original_player_targets_with_osty_redirect
+FAILED tests/test_monster_ai_state_machine_parity.py::TestFixedRotation::test_fabricator_spawn_history_is_shared_across_bot_pools
+FAILED tests/test_necrobinder_card_effects_reference_parity.py::TestNecrobinderCardEffectsReferenceParity::test_upgraded_times_up_adds_retain_only
+FAILED tests/test_necrobinder_factory_upgrade_parity.py::test_necrobinder_factory_upgrade_dynamic_values_match_reference[THE_SCYTHE]
+FAILED tests/test_necrobinder_parity.py::TestNecrobinderParity::test_sacrifice_kills_osty_and_gains_double_osty_hp_as_block
+FAILED tests/test_necrobinder_parity.py::TestNecrobinderParity::test_ally_sacrifice_kills_only_ally_osty_and_grants_ally_block
+FAILED tests/test_necrobinder_parity.py::TestNecrobinderParity::test_eidolon_exhausts_hand_and_grants_intangible_at_threshold
+FAILED tests/test_necrobinder_scythe_x_cost_and_debuff_parity.py::TestNecrobinderScytheXCostAndDebuffParity::test_the_scythe_damage_increases_after_each_play
+FAILED tests/test_necrobinder_scythe_x_cost_and_debuff_parity.py::TestNecrobinderScytheXCostAndDebuffParity::test_the_scythe_upgrade_preserves_grown_damage
+FAILED tests/test_necrobinder_soul_and_doom_parity.py::TestNecrobinderSoulAndDoomParity::test_soul_storm_scales_damage_with_exhausted_soul_count
+FAILED tests/test_parity_helpers.py::TestStatusParity::test_brightest_flame_draws_gains_energy_and_loses_max_hp
+FAILED tests/test_parity_helpers.py::TestStatusParity::test_non_ironclad_block_cards_fire_after_block_gained_hooks
+FAILED tests/test_parity_helpers.py::TestStatusParity::test_sacrifice_kills_osty_and_gains_double_max_hp_block
+FAILED tests/test_parity_helpers.py::TestStatusParity::test_eidolon_exhausts_hand_and_grants_intangible_when_threshold_met
+FAILED tests/test_potion_registry_usage_and_generation.py::TestPotionRegistry::test_total_count
+FAILED tests/test_potion_registry_usage_and_generation.py::TestRarityCounts::test_event_count
+FAILED tests/test_power_lifecycle_and_modifier_hooks.py::TestPowerAmountChangedHooks::test_rolling_boulder_keeps_separate_instances_like_reference
+FAILED tests/test_power_lifecycle_and_modifier_hooks.py::TestPowerAmountChangedHooks::test_regen_power_heals_on_owner_side_turn_end_and_decrements
+FAILED tests/test_regent_card_effects_reference_parity.py::TestRegentCardEffectsReferenceParity::test_devastate_spends_stars_and_deals_large_damage
+FAILED tests/test_regent_card_effects_reference_parity.py::TestRegentCardEffectsReferenceParity::test_crush_under_applies_temporary_strength_loss_to_hittable_enemies
+FAILED tests/test_regent_card_effects_reference_parity.py::TestRegentCardEffectsReferenceParity::test_hammer_time_repeats_forge_for_other_living_players
+FAILED tests/test_regent_generated_cards_and_x_cost_parity.py::TestRegentGeneratedCardsAndXCostParity::test_collision_course_generates_debris_and_counts_as_generated_card
+FAILED tests/test_regent_generated_cards_and_x_cost_parity.py::TestRegentGeneratedCardsAndXCostParity::test_supermassive_scales_with_generated_cards_this_combat
+FAILED tests/test_regent_generated_cards_and_x_cost_parity.py::TestRegentGeneratedCardsAndXCostParity::test_terraforming_applies_vigor_that_is_consumed_by_next_powered_attack
+FAILED tests/test_regent_parity.py::TestRegentParity::test_refine_blade_forges_and_applies_energy_next_turn
+FAILED tests/test_regent_parity.py::TestRegentParity::test_spoils_of_battle_forges_then_draws_cards
+FAILED tests/test_regent_star_cost_void_form_forge_parity.py::TestRegentStarCostVoidFormForgeParity::test_guiding_star_spends_star_cost_and_draws_immediately
+FAILED tests/test_regent_star_cost_void_form_forge_parity.py::TestRegentStarCostVoidFormForgeParity::test_alignment_spends_stars_and_grants_energy
+FAILED tests/test_regent_star_cost_void_form_forge_parity.py::TestRegentStarCostVoidFormForgeParity::test_void_form_waives_star_cost_for_covered_card_play
+FAILED tests/test_relic_event_obtain_opening_rest_hooks_parity.py::TestRelicEventObtainOpeningRestHooksParity::test_toasty_mittens_round_one_exhausts_non_innate_card
+FAILED tests/test_relic_event_obtain_opening_rest_hooks_parity.py::TestRelicEventObtainOpeningRestHooksParity::test_signet_ring_grants_nine_hundred_ninety_nine_gold_on_obtain
+FAILED tests/test_relic_event_rewards_curses_gold_hooks_parity.py::TestRelicEventRewardsCursesGoldHooksParity::test_seal_of_gold_spends_five_gold_for_one_energy_each_player_turn
+FAILED tests/test_relic_rare_shop_combat_start_map_and_autoplay_parity.py::test_fur_coat_marks_combat_rooms_and_sets_marked_enemies_to_one_hp
+FAILED tests/test_relic_rare_shop_owner_scope_cost_and_generation_parity.py::TestRelicRareShopOwnerScopeCostAndGenerationParity::test_shop_event_card_play_relics_ignore_other_players_cards
+FAILED tests/test_relic_rare_shop_owner_scope_cost_and_generation_parity.py::TestRelicRareShopOwnerScopeCostAndGenerationParity::test_diamond_diadem_resets_after_side_turn_start
+FAILED tests/test_relic_reward_and_card_reward_hooks_parity.py::test_toy_box_wax_rewards_melt_after_three_combats
+FAILED tests/test_relic_reward_and_card_reward_hooks_parity.py::test_massive_scroll_enqueues_multiplayer_reward_pool
+FAILED tests/test_relic_uncommon_owner_scope_and_room_hooks_parity.py::TestRelicUncommonOwnerScopeAndRoomHooksParity::test_regalite_gains_block_for_owner_generated_combat_cards
+FAILED tests/test_relic_uncommon_owner_scope_and_room_hooks_parity.py::TestRelicUncommonOwnerScopeAndRoomHooksParity::test_regalite_block_triggers_after_block_gained_hooks
+FAILED tests/test_relic_uncommon_room_potion_orb_hooks_parity.py::TestRelicUncommonRoomPotionOrbHooksParity::test_delicate_frond_uses_out_of_combat_potion_pool
+FAILED tests/test_rewards.py::TestCardRarityOdds::test_uniform_base_odds_without_pity_change_api
+FAILED tests/test_rng_parity.py::test_rng_seeded_next_matches_csharp_random_sequence
+FAILED tests/test_rng_parity.py::test_named_rng_streams_match_game_seed_derivation
+FAILED tests/test_rng_parity.py::test_run_rng_set_exposes_game_named_streams
+FAILED tests/test_rng_parity.py::test_event_rng_seed_matches_game_event_derivation
+FAILED tests/test_rng_parity.py::test_shuffle_uses_csharp_fisher_yates_sequence
+FAILED tests/test_run_deck_choice_flow.py::test_manager_context_requires_full_enchant_choice_before_confirm
+FAILED tests/test_run_deck_choice_flow.py::test_treasure_relic_with_enchant_reward_pauses_then_returns_to_map
+FAILED tests/test_run_deck_choice_flow.py::test_shop_buy_relic_with_multi_choice_resumes_shop_after_confirm
+FAILED tests/test_run_deck_choice_flow.py::test_boss_relic_pick_with_deck_choice_resumes_to_next_act_after_confirm
+FAILED tests/test_run_env.py::TestActionMasksPerPhase::test_run_level_multi_choice_in_map_phase_uses_choose_then_confirm
+FAILED tests/test_run_flow.py::TestConcreteRunObjects::test_shop_purchase_adds_real_card_and_potion
+FAILED tests/test_run_flow.py::TestPotionRewardOdds::test_elite_bonus - asser...
+FAILED tests/test_run_manager_rewards.py::test_elite_victory_offers_relic_reward_object
+FAILED tests/test_silent_card_effects_reference_parity.py::TestSilentCardEffectsReferenceParity::test_tracking_adds_two_first_then_one_when_already_active
+FAILED tests/test_silent_card_effects_reference_parity.py::TestSilentCardEffectsReferenceParity::test_outbreak_card_applies_reference_power_amounts
+FAILED tests/test_silent_card_effects_reference_parity.py::TestSilentCardEffectsReferenceParity::test_silent_direct_damage_and_block_cards_match_reference
+FAILED tests/test_silent_draw_retain_discard_parity.py::TestSilentDrawRetainDiscardParity::test_well_laid_plans_retains_one_card_during_end_of_turn_flush
+FAILED tests/test_silent_draw_retain_discard_parity.py::TestSilentDrawRetainDiscardParity::test_well_laid_plans_retains_extra_cards_beyond_existing_single_turn_retain
+FAILED tests/test_silent_poison_tracking_x_cost_parity.py::TestSilentPoisonTrackingXCostParity::test_anticipate_grants_temporary_dexterity_until_turn_end
+FAILED tests/test_silent_poison_tracking_x_cost_parity.py::TestSilentPoisonTrackingXCostParity::test_expertise_draws_up_to_six_and_does_not_overdraw_when_hand_is_full_enough
+FAILED tests/test_silent_poison_tracking_x_cost_parity.py::TestSilentPoisonTrackingXCostParity::test_tracking_applies_two_stacks_and_doubles_damage_against_weak_targets
+FAILED tests/test_silent_poison_tracking_x_cost_parity.py::TestSilentPoisonTrackingXCostParity::test_tracking_applies_to_owner_pet_attacks
+FAILED tests/test_status_curse_card_effects_parity.py::TestStatusCurseCardEffectsParity::test_relax_gains_block_and_next_turn_draw_and_energy
+FAILED tests/test_status_curse_card_effects_parity.py::TestStatusCurseCardEffectsParity::test_maul_play_grows_all_owner_maul_copies_and_upgrade_preserves_growth
+FAILED tests/test_status_curse_card_effects_parity.py::TestStatusCurseCardEffectsParity::test_fuel_gains_energy_before_drawing_void
+FAILED tests/test_status_curse_card_effects_parity.py::TestStatusCurseCardEffectsParity::test_brightest_flame_gains_energy_before_drawing_void
+FAILED tests/test_v0_107_1_new_content_parity.py::TestNewCardPoolMembership::test_scare_in_silent_pool
+FAILED tests/test_v0_107_1_new_powers_parity.py::TestNoEnergyGainPowerParity::test_applied_by_expect_a_fight
+FAILED tests/test_web_play_run.py::test_web_session_starts_at_neow_and_advances_to_map
+FAILED tests/test_web_play_run.py::test_web_session_can_reach_first_combat_reward
+FAILED tests/test_web_play_run.py::test_web_session_can_take_card_reward_and_return_to_map
+FAILED tests/test_web_play_run.py::test_web_session_can_continue_to_second_map_node_after_rewards
+145 failed, 4773 passed in 281.97s (0:04:41)
