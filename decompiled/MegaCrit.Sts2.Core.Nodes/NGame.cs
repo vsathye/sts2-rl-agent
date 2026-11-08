@@ -78,6 +78,11 @@ public class NGame : Control
 		public new static readonly StringName _EnterTree = "_EnterTree";
 
 		/// <summary>
+		/// Cached name for the 'OnFilesDropped' method.
+		/// </summary>
+		public static readonly StringName OnFilesDropped = "OnFilesDropped";
+
+		/// <summary>
 		/// Cached name for the '_Ready' method.
 		/// </summary>
 		public new static readonly StringName _Ready = "_Ready";
@@ -228,6 +233,11 @@ public class NGame : Control
 		public static readonly StringName CheckShowLocalizationOverrideErrors = "CheckShowLocalizationOverrideErrors";
 
 		/// <summary>
+		/// Cached name for the 'CheckShowModdedSaveFilePopup' method.
+		/// </summary>
+		public static readonly StringName CheckShowModdedSaveFilePopup = "CheckShowModdedSaveFilePopup";
+
+		/// <summary>
 		/// Cached name for the 'OnSteamNoLongerRunning' method.
 		/// </summary>
 		public static readonly StringName OnSteamNoLongerRunning = "OnSteamNoLongerRunning";
@@ -251,6 +261,11 @@ public class NGame : Control
 		/// Cached name for the 'GetOrCreateFeedbackScreen' method.
 		/// </summary>
 		public static readonly StringName GetOrCreateFeedbackScreen = "GetOrCreateFeedbackScreen";
+
+		/// <summary>
+		/// Cached name for the 'GetGameVersion' method.
+		/// </summary>
+		public static readonly StringName GetGameVersion = "GetGameVersion";
 	}
 
 	/// <summary>
@@ -402,6 +417,8 @@ public class NGame : Control
 
 	public static readonly Vector2 devResolution = new Vector2(1920f, 1080f);
 
+	private readonly TaskCompletionSource _gameStartupComplete = new TaskCompletionSource();
+
 	private Control _inspectionContainer;
 
 	private NScreenShake _screenShake;
@@ -455,6 +472,13 @@ public class NGame : Control
 	public string? DebugSeedOverride { get; set; }
 
 	public bool StartOnMainMenu { get; set; } = true;
+
+	/// <summary>
+	/// Completes when <see cref="M:MegaCrit.Sts2.Core.Nodes.NGame.GameStartup" /> has finished (including <see cref="T:MegaCrit.Sts2.Core.Models.ModelDb" /> initialization), whether
+	/// it succeeded or threw. Used by <see cref="T:MegaCrit.Sts2.Core.Nodes.Debug.NSceneBootstrapper" /> to wait for initialization before starting a
+	/// debug run, since it can create its own NGame and would otherwise race the async startup.
+	/// </summary>
+	public Task GameStartupComplete => _gameStartupComplete.Task;
 
 	public static bool IsTrailerMode { get; private set; }
 
@@ -511,7 +535,6 @@ public class NGame : Control
 			return;
 		}
 		Instance = this;
-		SentryService.Initialize();
 		RootSceneContainer = GetNode<NSceneContainer>("%RootSceneContainer");
 		HoverTipsContainer = GetNode<Node>("%HoverTipsContainer");
 		DebugAudio = GetNode<NDebugAudioManager>("%DebugAudioManager");
@@ -529,8 +552,13 @@ public class NGame : Control
 		HitStop = GetNode<NHitStop>("HitStop");
 		Transition = GetNode<NTransition>("%GameTransitionRect");
 		_mainThreadId = System.Environment.CurrentManagedThreadId;
-		GetWindow().Connect(Window.SignalName.FilesDropped, Callable.From<string[]>(FileDropHandler.OnFilesDropped));
+		GetWindow().Connect(Window.SignalName.FilesDropped, Callable.From<string[]>(OnFilesDropped));
 		TaskHelper.RunSafely(GameStartupWrapper());
+	}
+
+	private void OnFilesDropped(string[] files)
+	{
+		FileDropHandler.OnFilesDropped(files);
 	}
 
 	public override void _Ready()
@@ -547,6 +575,7 @@ public class NGame : Control
 	{
 		if (!(await InitializePlatform()))
 		{
+			_gameStartupComplete.TrySetResult();
 			return;
 		}
 		TaskHelper.RunSafely(OsDebugInfo.LogSystemInfo());
@@ -554,9 +583,11 @@ public class NGame : Control
 		try
 		{
 			await GameStartup();
+			_gameStartupComplete.TrySetResult();
 		}
 		catch
 		{
+			_gameStartupComplete.TrySetResult();
 			TaskHelper.RunSafely(GameStartupError());
 			throw;
 		}
@@ -654,7 +685,7 @@ public class NGame : Control
 		SaveManager.Instance.InitProfileId();
 		ReadSaveResult<SerializableProgress> progressReadResult = SaveManager.Instance.InitProgressData();
 		ReadSaveResult<PrefsSave> prefsReadResult = SaveManager.Instance.InitPrefsData();
-		SentryService.AfterGameInit(PlatformUtil.GetPlatformBranch().ToName(), SaveManager.Instance.Progress.UniqueId, GetTree().Root);
+		SentryService.AfterGameInit(PlatformUtil.GetPlatformBranch().ToName(), SaveManager.Instance.Progress.UniqueId);
 		_screenShake.SetMultiplier(NScreenshakePaginator.GetShakeMultiplier(SaveManager.Instance.PrefsSave.ScreenShakeOptionIndex));
 		if (!OS.HasFeature("editor") && SaveManager.Instance.PrefsSave.FastMode == FastModeType.Instant)
 		{
@@ -679,6 +710,7 @@ public class NGame : Control
 			await LaunchMainMenu(skipLogo);
 			CheckShowSaveFileError(progressReadResult, prefsReadResult, OneTimeInitialization.SettingsReadResult);
 			CheckShowLocalizationOverrideErrors();
+			CheckShowModdedSaveFilePopup();
 		}
 		ModManager.OnModDetected += OnNewModDetected;
 	}
@@ -757,14 +789,14 @@ public class NGame : Control
 			Log.Info("First time setup for display settings...");
 			settingsSave.TargetDisplay = DisplayServer.GetPrimaryScreen();
 		}
-		bool flag2 = settingsSave.Fullscreen;
-		if (PlatformUtil.GetSupportedWindowMode().ShouldForceFullscreen())
+		bool flag2 = PlatformUtil.GetSupportedWindowMode().ResolveFullscreen(settingsSave.Fullscreen, DebugSettings.DevWindowed);
+		if (flag2 && !settingsSave.Fullscreen)
 		{
-			if (!flag2)
-			{
-				Log.Warn($"Settings has fullscreen set to false, but we're forcing fullscreen because the platform reports our supported window mode as {PlatformUtil.GetSupportedWindowMode()}");
-			}
-			flag2 = true;
+			Log.Warn($"Settings has fullscreen set to false, but we're forcing fullscreen because the platform reports our supported window mode as {PlatformUtil.GetSupportedWindowMode()}");
+		}
+		else if (!flag2 && settingsSave.Fullscreen)
+		{
+			Log.Info("[Display] STS2_DEV_WINDOWED is set. Forcing windowed mode for this launch.");
 		}
 		Log.Info($"Applying display settings...\n  FULLSCREEN: {flag2}\n  ASPECT_RATIO: ({settingsSave.AspectRatioSetting})\n  TARGET_DISPLAY: ({settingsSave.TargetDisplay})\n  WINDOW_SIZE: {settingsSave.WindowSize}\n  POSITION: {settingsSave.WindowPosition}");
 		Log.Info($"[Display] Min size: {DisplayServer.WindowGetMinSize()} Max size: {DisplayServer.WindowGetMaxSize()}");
@@ -1087,6 +1119,7 @@ public class NGame : Control
 			}
 		}
 		NMainMenu currentScene = NMainMenu.Create(openTimeline);
+		NHotkeyManager.Instance?.ClearHotkeys();
 		RootSceneContainer.SetCurrentScene(currentScene);
 	}
 
@@ -1122,7 +1155,7 @@ public class NGame : Control
 	/// <param name="dailyTime">Time used to determine the daily run info. Null if not a daily run.</param>
 	public async Task<RunState> StartNewMultiplayerRun(StartRunLobby lobby, bool shouldSave, IReadOnlyList<ActModel> acts, IReadOnlyList<ModifierModel> modifiers, string seed, int ascensionLevel, DateTimeOffset? dailyTime = null)
 	{
-		RunState runState = RunState.CreateForNewRun(lobby.Players.Select((LobbyPlayer p) => Player.CreateForNewRun(p.character, UnlockState.FromSerializable(p.unlockState), p.id)).ToList(), acts.Select((ActModel a) => a.ToMutable()).ToList(), modifiers, lobby.GameMode, ascensionLevel, seed);
+		RunState runState = RunState.CreateForNewRun(lobby.Players.Select((StartRunLobbyPlayer p) => Player.CreateForNewRun(p.character, UnlockState.FromSerializable(p.unlockState), p.id)).ToList(), acts.Select((ActModel a) => a.ToMutable()).ToList(), modifiers, lobby.GameMode, ascensionLevel, seed);
 		RunManager.Instance.SetUpNewMultiplayer(runState, lobby, shouldSave, dailyTime);
 		await StartRun(runState);
 		return runState;
@@ -1335,6 +1368,18 @@ public class NGame : Control
 	}
 
 	/// <summary>
+	/// If the player launched with mods for the first time, then display a dialog saying their saves were copied.
+	/// </summary>
+	private void CheckShowModdedSaveFilePopup()
+	{
+		if (ModManager.UnmoddedSavesWereCopied)
+		{
+			NErrorPopup modalToCreate = NErrorPopup.Create(new LocString("main_menu_ui", "MODDED_SAVE_COPY_POPUP.title"), new LocString("main_menu_ui", "MODDED_SAVE_COPY_POPUP.body"), null, showReportBugButton: false);
+			NModalContainer.Instance.Add(modalToCreate);
+		}
+	}
+
+	/// <summary>
 	/// Contains platform-specific initialization. This must complete before the game can be allowed to proceed.
 	/// </summary>
 	private async Task<bool> InitializePlatform()
@@ -1359,7 +1404,9 @@ public class NGame : Control
 				return false;
 			}
 			NModalContainer.Instance.Add(nGenericPopup);
-			await nGenericPopup.WaitForConfirmation(new LocString("main_menu_ui", "STEAM_INIT_ERROR.description"), new LocString("main_menu_ui", "STEAM_INIT_ERROR.title"), null, new LocString("main_menu_ui", "QUIT"));
+			LocString locString = new LocString("main_menu_ui", "STEAM_INIT_ERROR.description");
+			locString.Add("details", SteamInitializer.InitErrorMessage ?? "<null>");
+			await nGenericPopup.WaitForConfirmation(locString, new LocString("main_menu_ui", "STEAM_INIT_ERROR.title"), null, new LocString("main_menu_ui", "QUIT"));
 			GetTree().Quit();
 		}
 		else
@@ -1424,6 +1471,11 @@ public class NGame : Control
 		return FeedbackScreen;
 	}
 
+	public static string GetGameVersion()
+	{
+		return ReleaseInfoManager.Instance.ReleaseInfo?.Version ?? GitHelper.ShortCommitId ?? "UNKNOWN";
+	}
+
 	/// <summary>
 	/// Get the method information for all the methods declared in this class.
 	/// This method is used by Godot to register the available methods in the editor.
@@ -1432,8 +1484,12 @@ public class NGame : Control
 	[EditorBrowsable(EditorBrowsableState.Never)]
 	internal static List<MethodInfo> GetGodotMethodList()
 	{
-		List<MethodInfo> list = new List<MethodInfo>(36);
+		List<MethodInfo> list = new List<MethodInfo>(39);
 		list.Add(new MethodInfo(MethodName._EnterTree, new PropertyInfo(Variant.Type.Nil, "", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false), MethodFlags.Normal, null, null));
+		list.Add(new MethodInfo(MethodName.OnFilesDropped, new PropertyInfo(Variant.Type.Nil, "", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false), MethodFlags.Normal, new List<PropertyInfo>
+		{
+			new PropertyInfo(Variant.Type.PackedStringArray, "files", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false)
+		}, null));
 		list.Add(new MethodInfo(MethodName._Ready, new PropertyInfo(Variant.Type.Nil, "", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false), MethodFlags.Normal, null, null));
 		list.Add(new MethodInfo(MethodName.OnWindowChange, new PropertyInfo(Variant.Type.Nil, "", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false), MethodFlags.Normal, null, null));
 		list.Add(new MethodInfo(MethodName.IsMainThread, new PropertyInfo(Variant.Type.Bool, "", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false), MethodFlags.Normal | MethodFlags.Static, null, null));
@@ -1496,6 +1552,7 @@ public class NGame : Control
 		}, null));
 		list.Add(new MethodInfo(MethodName.InitPools, new PropertyInfo(Variant.Type.Nil, "", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false), MethodFlags.Normal, null, null));
 		list.Add(new MethodInfo(MethodName.CheckShowLocalizationOverrideErrors, new PropertyInfo(Variant.Type.Nil, "", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false), MethodFlags.Normal, null, null));
+		list.Add(new MethodInfo(MethodName.CheckShowModdedSaveFilePopup, new PropertyInfo(Variant.Type.Nil, "", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false), MethodFlags.Normal, null, null));
 		list.Add(new MethodInfo(MethodName.OnSteamNoLongerRunning, new PropertyInfo(Variant.Type.Nil, "", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false), MethodFlags.Normal, null, null));
 		list.Add(new MethodInfo(MethodName.LogResourceStats, new PropertyInfo(Variant.Type.Nil, "", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false), MethodFlags.Normal | MethodFlags.Static, new List<PropertyInfo>
 		{
@@ -1507,6 +1564,7 @@ public class NGame : Control
 		}, null));
 		list.Add(new MethodInfo(MethodName.IsGameFocusedWindow, new PropertyInfo(Variant.Type.Bool, "", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false), MethodFlags.Normal | MethodFlags.Static, null, null));
 		list.Add(new MethodInfo(MethodName.GetOrCreateFeedbackScreen, new PropertyInfo(Variant.Type.Object, "", PropertyHint.None, "", PropertyUsageFlags.Default, new StringName("Control"), exported: false), MethodFlags.Normal, null, null));
+		list.Add(new MethodInfo(MethodName.GetGameVersion, new PropertyInfo(Variant.Type.String, "", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false), MethodFlags.Normal | MethodFlags.Static, null, null));
 		return list;
 	}
 
@@ -1517,6 +1575,12 @@ public class NGame : Control
 		if (method == MethodName._EnterTree && args.Count == 0)
 		{
 			_EnterTree();
+			ret = default(godot_variant);
+			return true;
+		}
+		if (method == MethodName.OnFilesDropped && args.Count == 1)
+		{
+			OnFilesDropped(VariantUtils.ConvertTo<string[]>(in args[0]));
 			ret = default(godot_variant);
 			return true;
 		}
@@ -1695,6 +1759,12 @@ public class NGame : Control
 			ret = default(godot_variant);
 			return true;
 		}
+		if (method == MethodName.CheckShowModdedSaveFilePopup && args.Count == 0)
+		{
+			CheckShowModdedSaveFilePopup();
+			ret = default(godot_variant);
+			return true;
+		}
 		if (method == MethodName.OnSteamNoLongerRunning && args.Count == 0)
 		{
 			OnSteamNoLongerRunning();
@@ -1720,6 +1790,11 @@ public class NGame : Control
 		if (method == MethodName.GetOrCreateFeedbackScreen && args.Count == 0)
 		{
 			ret = VariantUtils.CreateFrom<NSendFeedbackScreen>(GetOrCreateFeedbackScreen());
+			return true;
+		}
+		if (method == MethodName.GetGameVersion && args.Count == 0)
+		{
+			ret = VariantUtils.CreateFrom<string>(GetGameVersion());
 			return true;
 		}
 		return base.InvokeGodotClassMethod(in method, args, out ret);
@@ -1772,6 +1847,11 @@ public class NGame : Control
 			ret = VariantUtils.CreateFrom<bool>(IsGameFocusedWindow());
 			return true;
 		}
+		if (method == MethodName.GetGameVersion && args.Count == 0)
+		{
+			ret = VariantUtils.CreateFrom<string>(GetGameVersion());
+			return true;
+		}
 		ret = default(godot_variant);
 		return false;
 	}
@@ -1781,6 +1861,10 @@ public class NGame : Control
 	protected override bool HasGodotClassMethod(in godot_string_name method)
 	{
 		if (method == MethodName._EnterTree)
+		{
+			return true;
+		}
+		if (method == MethodName.OnFilesDropped)
 		{
 			return true;
 		}
@@ -1904,6 +1988,10 @@ public class NGame : Control
 		{
 			return true;
 		}
+		if (method == MethodName.CheckShowModdedSaveFilePopup)
+		{
+			return true;
+		}
 		if (method == MethodName.OnSteamNoLongerRunning)
 		{
 			return true;
@@ -1921,6 +2009,10 @@ public class NGame : Control
 			return true;
 		}
 		if (method == MethodName.GetOrCreateFeedbackScreen)
+		{
+			return true;
+		}
+		if (method == MethodName.GetGameVersion)
 		{
 			return true;
 		}

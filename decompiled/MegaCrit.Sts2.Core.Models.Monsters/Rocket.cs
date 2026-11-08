@@ -1,7 +1,5 @@
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Godot;
 using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Ascension;
@@ -40,15 +38,14 @@ public sealed class Rocket : MonsterModel
 
 	public override float DeathAnimLengthOverride => 2.5f;
 
-	private NKaiserCrabBossBackground Background
+	private NKaiserCrabBossBackground? Background
 	{
 		get
 		{
 			AssertMutable();
 			if (_background == null)
 			{
-				Control control = NCombatRoom.Instance?.Background ?? NBestiary.Instance?.Layout ?? throw new InvalidOperationException();
-				_background = control.GetNode<NKaiserCrabBossBackground>("%KaiserCrab");
+				_background = (NCombatRoom.Instance?.Background ?? NBestiary.Instance?.Layout)?.GetNode<NKaiserCrabBossBackground>("%KaiserCrab");
 			}
 			return _background;
 		}
@@ -93,7 +90,7 @@ public sealed class Rocket : MonsterModel
 		await PowerCmd.Apply<SurroundedPower>(new ThrowingPlayerChoiceContext(), base.CombatState.GetOpponentsOf(base.Creature), 1m, base.Creature, null);
 		await PowerCmd.Apply<BackAttackRightPower>(new ThrowingPlayerChoiceContext(), base.Creature, 1m, base.Creature, null);
 		await PowerCmd.Apply<CrabRagePower>(new ThrowingPlayerChoiceContext(), base.Creature, 1m, base.Creature, null);
-		Background.SetVisible(visible: true);
+		Background?.SetVisible(visible: true);
 	}
 
 	public override Task AfterCurrentHpChanged(Creature creature, decimal delta)
@@ -102,7 +99,7 @@ public sealed class Rocket : MonsterModel
 		{
 			return Task.CompletedTask;
 		}
-		Background.PlayHurtAnim(NKaiserCrabBossBackground.ArmSide.Right);
+		Background?.PlayHurtAnim(NKaiserCrabBossBackground.ArmSide.Right);
 		return Task.CompletedTask;
 	}
 
@@ -113,10 +110,10 @@ public sealed class Rocket : MonsterModel
 			return Task.CompletedTask;
 		}
 		NAudioManager.Instance.PlayOneShot(DeathSfx);
-		Background.PlayArmDeathAnim(NKaiserCrabBossBackground.ArmSide.Right);
+		Background?.PlayArmDeathAnim(NKaiserCrabBossBackground.ArmSide.Right);
 		if (CombatManager.Instance.IsOverOrEnding)
 		{
-			Background.PlayBodyDeathAnim();
+			Background?.PlayBodyDeathAnim();
 			NRunMusicController.Instance?.UpdateMusicParameter("kaiser_crab_progress", 5f);
 		}
 		else
@@ -134,7 +131,7 @@ public sealed class Rocket : MonsterModel
 	private async Task TargetingReticleMove(IReadOnlyList<Creature> targets)
 	{
 		SfxCmd.Play("event:/sfx/enemy/enemy_attacks/kaiser_crab/kaiser_crab_right_attack_snap");
-		await Background.PlayAttackAnim(NKaiserCrabBossBackground.ArmSide.Right, "attack", 0.35f);
+		await (Background?.PlayAttackAnim(NKaiserCrabBossBackground.ArmSide.Right, "attack", 0.35f) ?? Task.CompletedTask);
 		await DamageCmd.Attack(TargetingReticleDamage).FromMonster(this).WithAttackerFx(null, AttackSfx)
 			.WithHitFx("vfx/vfx_attack_slash")
 			.Execute(null);
@@ -143,7 +140,7 @@ public sealed class Rocket : MonsterModel
 	private async Task PrecisionBeamMove(IReadOnlyList<Creature> targets)
 	{
 		SfxCmd.Play("event:/sfx/enemy/enemy_attacks/kaiser_crab/kaiser_crab_right_attack_slam");
-		await Background.PlayAttackAnim(NKaiserCrabBossBackground.ArmSide.Right, "attack_med", 0.5f);
+		await (Background?.PlayAttackAnim(NKaiserCrabBossBackground.ArmSide.Right, "attack_med", 0.5f) ?? Task.CompletedTask);
 		await DamageCmd.Attack(PrecisionBeamDamage).FromMonster(this).WithAttackerFx(null, AttackSfx)
 			.WithHitFx("vfx/vfx_heavy_blunt", null, "heavy_attack.mp3")
 			.WithHitVfxSpawnedAtBase()
@@ -153,7 +150,7 @@ public sealed class Rocket : MonsterModel
 	private async Task ChargeUpMove(IReadOnlyList<Creature> targets)
 	{
 		SfxCmd.PlayLoop(base.Creature, "event:/sfx/enemy/enemy_attacks/kaiser_crab/kaiser_crab_right_buff");
-		await Background.PlayRightSideChargeUpAnim(0.7f);
+		await (Background?.PlayRightSideChargeUpAnim(0.7f) ?? Task.CompletedTask);
 		await PowerCmd.Apply<StrengthPower>(new ThrowingPlayerChoiceContext(), base.Creature, ChargeUpStrengthGain, base.Creature, null);
 	}
 
@@ -161,7 +158,7 @@ public sealed class Rocket : MonsterModel
 	{
 		SfxCmd.StopLoop(base.Creature, "event:/sfx/enemy/enemy_attacks/kaiser_crab/kaiser_crab_right_buff");
 		SfxCmd.Play("event:/sfx/enemy/enemy_attacks/kaiser_crab/kaiser_crab_rocket");
-		await Background.PlayRightSideHeavy(0.5f);
+		await (Background?.PlayRightSideHeavy(0.5f) ?? Task.CompletedTask);
 		await DamageCmd.Attack(LaserDamage).FromMonster(this).WithAttackerFx(null, AttackSfx)
 			.WithHitFx("vfx/vfx_attack_blunt")
 			.Execute(null);
@@ -170,6 +167,6 @@ public sealed class Rocket : MonsterModel
 	private async Task RechargeMove(IReadOnlyList<Creature> targets)
 	{
 		SfxCmd.Play("event:/sfx/enemy/enemy_attacks/kaiser_crab/kaiser_crab_right_regrow");
-		await Background.PlayRightRecharge(0.5f);
+		await (Background?.PlayRightRecharge(0.5f) ?? Task.CompletedTask);
 	}
 }

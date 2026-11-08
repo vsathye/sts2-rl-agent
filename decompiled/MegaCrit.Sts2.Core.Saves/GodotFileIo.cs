@@ -75,7 +75,7 @@ public class GodotFileIo : ISaveStore
 	public DateTimeOffset GetLastModifiedTime(string path)
 	{
 		path = GetFullPath(path);
-		return DateTimeOffset.FromUnixTimeSeconds((long)Godot.FileAccess.GetModifiedTime(path));
+		return SaveTimestamps.FromUnixTimeSecondsOrEpoch((long)Godot.FileAccess.GetModifiedTime(path), path);
 	}
 
 	public int GetFileSize(string path)
@@ -107,21 +107,27 @@ public class GodotFileIo : ISaveStore
 		path = GetFullPath(path);
 		ValidateGodotFilePath(path);
 		CopyBackup(path);
-		string text = path + ".tmp";
-		using Godot.FileAccess fileAccess = Godot.FileAccess.Open(text, Godot.FileAccess.ModeFlags.Write);
+		string tempPath = path + ".tmp";
+		FileWriteRetry.Run(tempPath, delegate
+		{
+			StoreBufferToFile(tempPath, bytes, path);
+		});
+		FsyncFile(tempPath);
+		RenameFile(tempPath, path);
+		Log.Info($"Wrote {bytes.Length} bytes to path={path} save_dir={SaveDir}");
+	}
+
+	private void StoreBufferToFile(string tempPath, byte[] bytes, string path)
+	{
+		using Godot.FileAccess fileAccess = Godot.FileAccess.Open(tempPath, Godot.FileAccess.ModeFlags.Write);
 		if (fileAccess == null)
 		{
-			throw new SaveException($"Failed to open file for writing. path='{text}' error={Godot.FileAccess.GetOpenError()}");
+			throw new SaveException($"Failed to open file for writing. path='{tempPath}' error={Godot.FileAccess.GetOpenError()}");
 		}
-		if (fileAccess.StoreBuffer(bytes))
+		if (!fileAccess.StoreBuffer(bytes))
 		{
-			fileAccess.Close();
-			FsyncFile(text);
-			RenameFile(text, path);
-			Log.Info($"Wrote {bytes.Length} bytes to path={path} save_dir={SaveDir}");
-			return;
+			throw new SaveException($"Failed to write {bytes.Length} bytes to path={path} save_dir={SaveDir}. Error: {fileAccess.GetError()}");
 		}
-		throw new SaveException($"Failed to write {bytes.Length} bytes to path={path} save_dir={SaveDir}. Error: {fileAccess.GetError()}");
 	}
 
 	public Task WriteFileAsync(string path, string content)
@@ -135,13 +141,17 @@ public class GodotFileIo : ISaveStore
 		ValidateGodotFilePath(path);
 		CopyBackup(path);
 		string tempPath = path + ".tmp";
-		await using FileAccessStream stream = new FileAccessStream(tempPath, Godot.FileAccess.ModeFlags.Write);
-		await stream.WriteAsync(bytes);
-		long position = stream.Position;
-		stream.Close();
+		long bytesWritten = 0L;
+		await FileWriteRetry.RunAsync(tempPath, async delegate
+		{
+			await using FileAccessStream stream = new FileAccessStream(tempPath, Godot.FileAccess.ModeFlags.Write);
+			await stream.WriteAsync(bytes);
+			bytesWritten = stream.Position;
+			stream.Close();
+		});
 		FsyncFile(tempPath);
 		RenameFile(tempPath, path);
-		Log.Info($"Wrote {position} bytes to path={path} save_dir={SaveDir}");
+		Log.Info($"Wrote {bytesWritten} bytes to path={path} save_dir={SaveDir}");
 	}
 
 	public bool FileExists(string path)

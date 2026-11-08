@@ -1207,6 +1207,9 @@ class RunManager:
                 "description": f"Coordinate ({col},{row}) was already visited.",
             }
 
+        if point is not None and point.point_type == MapPointType.UNKNOWN:
+            from sts2_env.cards.v111 import advance_dowsing
+            advance_dowsing(self._run_state.player)
         self._enter_room(room_type)
 
         return {
@@ -1765,7 +1768,7 @@ class RunManager:
             filled = player.fill_empty_potion_slots()
             return {"phase": self.phase, "description": f"Filled {filled} potion slot(s)."}
 
-        if potion.potion_id in {BLOOD_POTION_ID, FRUIT_JUICE_ID}:
+        if potion.potion_id in {BLOOD_POTION_ID, FRUIT_JUICE_ID, "Ambergris"}:
             target_player_id = action.get("target_player_id")
             if target_player_id is None:
                 return {"phase": self.phase, "description": "Cannot use potion."}
@@ -1774,8 +1777,9 @@ class RunManager:
             except (KeyError, TypeError, ValueError):
                 return {"phase": self.phase, "description": "Cannot use potion."}
             player.remove_potion(slot)
-            if potion.potion_id == BLOOD_POTION_ID:
-                healed = target.heal(target.max_hp * BLOOD_POTION_HEAL_PERCENT // PERCENT_DENOMINATOR)
+            if potion.potion_id in {BLOOD_POTION_ID, "Ambergris"}:
+                percent = 50 if potion.potion_id == "Ambergris" else BLOOD_POTION_HEAL_PERCENT
+                healed = target.heal(target.max_hp * percent // PERCENT_DENOMINATOR)
                 return {"phase": self.phase, "description": f"Healed {healed} HP."}
             target.gain_max_hp(FRUIT_JUICE_MAX_HP)
             return {"phase": self.phase, "description": f"Gained {FRUIT_JUICE_MAX_HP} Max HP."}

@@ -121,7 +121,7 @@ class TestNecrobinderParity:
         souls = [card for card in combat.draw_pile if card.card_id == CardId.SOUL]
         assert len(souls) == 3
 
-    def test_sacrifice_kills_osty_and_gains_double_osty_hp_as_block(self):
+    def test_sacrifice_kills_osty_and_gains_triple_osty_hp_as_block(self):
         """Matches Sacrifice.cs: kill Osty, then gain block equal to twice its max HP."""
         combat = _make_combat()
         combat.summon_osty(combat.player, 5)
@@ -131,7 +131,7 @@ class TestNecrobinderParity:
         assert combat.play_card(0)
         assert combat.osty is not None
         assert not combat.osty.is_alive
-        assert combat.player.block == 10
+        assert combat.player.block == 15
 
     def test_transfigure_requests_choice_then_grants_replay_and_cost(self):
         """Matches Transfigure.cs: a single hand card is auto-selected."""
@@ -325,7 +325,7 @@ class TestNecrobinderParity:
         assert combat.play_card_from_creature(ally, 0)
         assert primary_osty.is_alive
         assert not ally_osty.is_alive
-        assert ally.block == 8
+        assert ally.block == 12
         assert combat.player.block == 0
 
     def test_ally_spur_heals_and_grows_only_ally_osty(self):
@@ -387,16 +387,16 @@ class TestNecrobinderParity:
         souls = [card for card in combat.draw_pile if card.card_id == CardId.SOUL]
         assert len(souls) == 2
 
-    def test_eidolon_exhausts_hand_and_grants_intangible_at_threshold(self):
-        """Matches Eidolon.cs: exhaust the hand, then grant Intangible if 9+ cards were exhausted."""
+    def test_eidolon_preserves_non_ethereal_hand_without_granting_intangible(self):
+        """Matches Eidolon.cs: replay Ethereal cards from exhaust, leaving ordinary hand cards intact."""
         combat = _make_combat()
         combat.hand = [make_eidolon()] + [make_strike_ironclad() for _ in range(9)]
         combat.energy = 2
 
         assert combat.play_card(0)
-        assert len(combat.hand) == 0
-        assert len(combat.exhaust_pile) >= 9
-        assert combat.player.get_power_amount(PowerId.INTANGIBLE) == 1
+        assert len(combat.hand) == 9
+        assert all(c.card_id == CardId.EIDOLON for c in combat.exhaust_pile)
+        assert not combat.player.has_power(PowerId.INTANGIBLE)
 
     def test_protector_scales_damage_with_owner_osty_max_hp(self):
         """Matches Protector.cs: damage is based on the owner's live Osty max HP."""

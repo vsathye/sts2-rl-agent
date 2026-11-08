@@ -167,6 +167,12 @@ class TestRelicUncommonRoomPotionOrbHooksParity:
         creature, ai = create_shrinker_beetle(Rng(24))
         combat.add_enemy(creature, ai)
 
+        class HealingRng(Rng):
+            def next_float(self):
+                return 0.2
+            def choice(self, models):
+                return next(m for m in models if m.potion_id == "RegenPotion")
+        combat.rng = HealingRng(24)
         combat.start_combat()
 
         assert [p.potion_id for p in combat.held_potions(combat.player)] == ["RegenPotion"]

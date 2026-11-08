@@ -12,3 +12,5 @@ import sts2_env.cards.necrobinder  # noqa: F401
 import sts2_env.cards.regent  # noqa: F401
 import sts2_env.cards.colorless  # noqa: F401
 import sts2_env.cards.status  # noqa: F401
+
+import sts2_env.cards.v111

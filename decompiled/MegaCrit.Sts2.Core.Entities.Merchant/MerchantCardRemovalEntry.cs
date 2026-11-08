@@ -34,6 +34,10 @@ public sealed class MerchantCardRemovalEntry : MerchantEntry
 
 	public async Task<bool> OnTryPurchaseWrapper(MerchantInventory? inventory, bool ignoreCost = false, bool cancelable = true)
 	{
+		if (!RunManager.Instance.IsInProgress)
+		{
+			return false;
+		}
 		if (!base.EnoughGold && !ignoreCost)
 		{
 			InvokePurchaseFailed(PurchaseStatus.FailureGold);

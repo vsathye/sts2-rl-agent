@@ -971,8 +971,9 @@ public class NPlayerHand : Control
 		}
 		CurrentMode = mode;
 		_currentSelectionFilter = filter;
-		NCombatRoom.Instance.RestrictControllerNavigation(Array.Empty<Control>());
-		NCombatUi ui = NCombatRoom.Instance.Ui;
+		NCombatRoom instance = NCombatRoom.Instance;
+		instance.RestrictControllerNavigation(Array.Empty<Control>());
+		NCombatUi ui = instance.Ui;
 		ui.OnHandSelectModeEntered();
 		EnableControllerNavigation();
 		_prefs = prefs;
@@ -983,6 +984,10 @@ public class NPlayerHand : Control
 		UpdateSelectModeCardVisibility();
 		RefreshSelectModeConfirmButton();
 		IEnumerable<CardModel> result = await _selectionCompletionSource.Task;
+		if (!IsInsideTree())
+		{
+			return result;
+		}
 		tween.Kill();
 		AfterCardsSelected(source);
 		if (wasDisabled)
@@ -1133,7 +1138,7 @@ public class NPlayerHand : Control
 		_holdersAwaitingQueue.Add(holder);
 		holder.Reparent(this);
 		holder.BeginDrag();
-		_currentCardPlay = (NControllerManager.Instance.IsUsingController ? ((NCardPlay)NControllerCardPlay.Create(holder)) : ((NCardPlay)NMouseCardPlay.Create(holder, _selectCardShortcuts[_draggedHolderIndex], startedViaShortcut)));
+		_currentCardPlay = (NControllerManager.Instance.IsUsingDirectionalNavigation ? ((NCardPlay)NControllerCardPlay.Create(holder)) : ((NCardPlay)NMouseCardPlay.Create(holder, _selectCardShortcuts[_draggedHolderIndex], startedViaShortcut)));
 		this.AddChildSafely(_currentCardPlay);
 		_currentCardPlay.Connect(NCardPlay.SignalName.Finished, Callable.From(delegate(bool success)
 		{
@@ -1404,7 +1409,7 @@ public class NPlayerHand : Control
 
 	public override void _UnhandledInput(InputEvent input)
 	{
-		if (NControllerManager.Instance.IsUsingController || !ActiveScreenContext.Instance.IsCurrent(NCombatRoom.Instance) || CombatManager.Instance.IsOverOrEnding)
+		if (NControllerManager.Instance.InputType == InputType.Controller || !ActiveScreenContext.Instance.IsCurrent(NCombatRoom.Instance) || CombatManager.Instance.IsOverOrEnding)
 		{
 			return;
 		}

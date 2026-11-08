@@ -291,7 +291,7 @@ public class NEpochSlot : NButton
 
 	private static readonly Color _highlightSlotColor = StsColors.purple;
 
-	private static readonly Color _defaultSlotOutlineColor = new Color("70a0ff18");
+	private static readonly Color _defaultSlotOutlineColor = new Color("70A0FF18");
 
 	private IHoverTip? _hoverTip;
 
@@ -393,7 +393,7 @@ public class NEpochSlot : NButton
 		_isGlowPulsing = false;
 		_hoverTween?.Kill();
 		_hoverTween = CreateTween().SetParallel();
-		if (NControllerManager.Instance.IsUsingController)
+		if (NControllerManager.Instance.IsUsingDirectionalNavigation)
 		{
 			_selectionReticle.OnSelect();
 		}

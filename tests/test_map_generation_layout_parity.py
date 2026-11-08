@@ -260,7 +260,7 @@ class TestRoomTypeCounts:
         assert _map_point_type_counts(rng, ascension_level=0, act_index=2) == (
             5, 3, expected_unknowns, expected_rests
         )
-        assert rng.counter == 1
+        assert rng.counter == 3
         assert rng.next_int(0, 100) == expected_next
 
     def test_shop_count(self):

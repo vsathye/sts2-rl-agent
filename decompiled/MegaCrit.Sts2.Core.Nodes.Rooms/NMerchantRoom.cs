@@ -161,7 +161,7 @@ public class NMerchantRoom : Control, IScreenContext, IRoomWithProceedButton
 
 	public IReadOnlyList<NMerchantCharacter> PlayerVisuals => _playerVisuals;
 
-	public Control? DefaultFocusedControl => this;
+	public Control DefaultFocusedControl => this;
 
 	public static NMerchantRoom? Create(MerchantRoom room, IReadOnlyList<Player> players)
 	{

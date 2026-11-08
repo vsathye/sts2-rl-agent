@@ -32,17 +32,13 @@ public class MoveToMapCoordAction : GameAction
 		_destination = destination;
 	}
 
-	protected override Task ExecuteAction()
-	{
-		TaskHelper.RunSafely(GoToMapCoord());
-		return Task.CompletedTask;
-	}
-
-	private async Task GoToMapCoord()
+	protected override async Task ExecuteAction()
 	{
 		if (TestMode.IsOn)
 		{
+			await RunManager.Instance.FadeOut();
 			await RunManager.Instance.EnterMapCoord(_destination);
+			TaskHelper.RunSafely(RunManager.Instance.FadeIn());
 		}
 		else
 		{

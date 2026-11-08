@@ -493,6 +493,19 @@ class PowerId(Enum):
     GENERIC = auto()
 
 
+    # v0.111.0 powers
+    AMBERGRIS = auto()
+    CACOPHONY = auto()
+    CONCOCT = auto()
+    FADE = auto()
+    HIBERNATE = auto()
+    HYPERBEAM_FOCUS_DOWN = auto()
+    IMITATION_LEARNING = auto()
+    ONE_FOR_ALL = auto()
+    SOULBOUND = auto()
+    UNDERWORLD = auto()
+
+
 class CardId(Enum):
     # Ironclad basic
     STRIKE_IRONCLAD = auto()
@@ -1124,3 +1137,24 @@ class CardId(Enum):
     DEPRECATED_CARD = auto()
 
     GENERIC = auto()
+
+    # Added in the v0.108-v0.111 beta series; keep older IDs stable.
+    ABUNDANCE = auto()
+    BLADE_SYMPHONY = auto()
+    BLAZE = auto()
+    CACOPHONY = auto()
+    CONCOCT = auto()
+    CONSTELLATION = auto()
+    DOWSING = auto()
+    FADE = auto()
+    HIBERNATE = auto()
+    IMITATION_LEARNING = auto()
+    MIDNIGHT = auto()
+    ONE_FOR_ALL = auto()
+    OUTRAGE = auto()
+    PLOT = auto()
+    SIDESTEP = auto()
+    SOULBOUND = auto()
+    THE_BALL = auto()
+    TUTOR = auto()
+    UNDERWORLD = auto()

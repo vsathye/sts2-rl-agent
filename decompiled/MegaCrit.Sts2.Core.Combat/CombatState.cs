@@ -12,6 +12,7 @@ using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Singleton;
 using MegaCrit.Sts2.Core.Random;
 using MegaCrit.Sts2.Core.Runs;
+using MegaCrit.Sts2.Core.TestSupport;
 
 namespace MegaCrit.Sts2.Core.Combat;
 
@@ -241,7 +242,7 @@ public class CombatState : ICombatState, ICardScope
 			creature.ScaleMonsterHpForMultiplayer(Encounter, Players.Count, RunState.CurrentActIndex);
 		}
 		AttachCreature(creature);
-		monster.Rng = new Rng((uint)((RunState.Rng.Seed + RunState.CurrentMapCoord?.col) ?? ((long?)RunState.CurrentMapCoord?.row) ?? (RunState.CurrentActIndex + creature.CombatId.Value)));
+		monster.Rng = new Rng((ulong)((long)RunState.Rng.Seed + (long)(RunState.CurrentMapCoord?.col ?? 0) + (RunState.CurrentMapCoord?.row ?? 0) + RunState.CurrentActIndex + creature.CombatId.Value));
 		_encounter?.OnCreatureSpawned(creature);
 		return creature;
 	}
@@ -601,6 +602,11 @@ public class CombatState : ICombatState, ICardScope
 
 	private static async Task GodotTimerTask(double timeSec)
 	{
+		if (TestMode.IsOn)
+		{
+			await Task.Delay(TimeSpan.FromSeconds(timeSec));
+			return;
+		}
 		SceneTreeTimer sceneTreeTimer = ((SceneTree)Engine.GetMainLoop()).CreateTimer(timeSec);
 		await sceneTreeTimer.ToSignal(sceneTreeTimer, SceneTreeTimer.SignalName.Timeout);
 	}

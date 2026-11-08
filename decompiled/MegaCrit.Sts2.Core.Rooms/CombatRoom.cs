@@ -202,7 +202,7 @@ public class CombatRoom : AbstractRoom, ICombatRoomVisuals
 		}
 		if (ShouldCreateCombat)
 		{
-			await PreloadManager.LoadRoomCombatAssets(Encounter, runState ?? NullRunState.Instance);
+			await PreloadManager.LoadRoomCombatAssets(Encounter, CombatState.RunState);
 		}
 		foreach (var (monsterModel, slot) in Encounter.MonstersWithSlots)
 		{
@@ -266,9 +266,10 @@ public class CombatRoom : AbstractRoom, ICombatRoomVisuals
 			List<RewardsSet> list = rewards;
 			list.Add(await RewardsCmd.GenerateForRoomEnd(player, this));
 		}
-		foreach (RewardsSet item in rewards)
+		foreach (RewardsSet reward in rewards)
 		{
-			TaskHelper.RunSafely(item.Offer());
+			await Hook.BeforeCombatRewardOffered(reward, CombatState.RunState, this);
+			TaskHelper.RunSafely(reward.Offer());
 		}
 	}
 }

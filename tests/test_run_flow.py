@@ -446,6 +446,7 @@ class TestConcreteRunObjects:
     def test_shop_purchase_adds_real_card_and_potion(self):
         mgr = RunManager(seed=64, character_id="Ironclad")
         mgr._enter_shop()
+        mgr.run_state.player.gold = 1000
         inv = mgr._shop_inventory
         assert inv is not None
 
@@ -718,17 +719,15 @@ class TestPotionRewardOdds:
             assert odds.current_value == pytest.approx(initial + 0.10)
 
     def test_elite_bonus(self):
-        """Elite rolls should have higher drop rate."""
-        rng_reg = Rng(42)
-        rng_elite = Rng(42)
-        n = 5000
-        odds_reg = PotionRewardOdds()
-        odds_elite = PotionRewardOdds()
-
-        reg_drops = sum(1 for _ in range(n) if odds_reg.roll(rng_reg, is_elite=False))
-        elite_drops = sum(1 for _ in range(n) if odds_elite.roll(rng_elite, is_elite=True))
-
-        assert elite_drops > reg_drops
+        from types import SimpleNamespace
+        # Compare the same roll at the same pity state: long-run adaptive pity
+        # converges to 50% for both and cannot test the elite threshold bonus.
+        rng = SimpleNamespace(next_float=lambda: 0.45)
+        regular, elite = PotionRewardOdds(), PotionRewardOdds()
+        assert not regular.roll(rng, is_elite=False)
+        assert elite.roll(rng, is_elite=True)
+        assert regular.current_value == pytest.approx(0.5)
+        assert elite.current_value == pytest.approx(0.3)
 
     def test_forced_drop_reduces_future_odds(self):
         odds = PotionRewardOdds()

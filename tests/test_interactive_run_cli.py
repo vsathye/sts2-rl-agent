@@ -48,6 +48,9 @@ def test_run_manager_can_start_at_neow_and_force_relic_pick() -> None:
     relic = actions[0]["relic_id"]
     result = mgr.take_action(actions[0])
 
+    assert result["phase"] == RunManager.PHASE_CARD_REWARD
+    assert mgr.run_state.pending_choice is not None
+    result = mgr.take_action({"action": "choose", "index": 0})
     assert result["phase"] == RunManager.PHASE_MAP_CHOICE
     assert relic in mgr.run_state.player.relics
 
@@ -132,7 +135,7 @@ def test_interactive_cli_displays_reward_contents(capsys) -> None:
 
     assert "REWARD:" in output
     assert "Relic:" in output
-    assert "Fishing Rod" in output
+    assert "Pomander" in output
 
 
 def test_interactive_cli_displays_shop_inventory(capsys) -> None:

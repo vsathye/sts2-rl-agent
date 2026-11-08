@@ -213,7 +213,7 @@ def _make_smoke_combat(card: CardInstance) -> CombatState:
     combat.draw_pile = [make_bash(), make_strike_ironclad(), make_defend_ironclad()]
     combat.discard_pile = [make_bash(), make_strike_ironclad(), make_defend_ironclad()]
     combat.exhaust_pile = [make_bash()]
-    combat.energy = 10
+    combat.energy = max(10, card.cost)
     combat.stars = 10
     combat.player.stars = 10
     if CardTag.OSTY_ATTACK in getattr(card, "tags", ()) or "osty_attack" in getattr(card, "tags", ()):

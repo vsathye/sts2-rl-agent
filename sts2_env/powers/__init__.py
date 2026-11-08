@@ -10,3 +10,5 @@ from sts2_env.powers import monster as _monster  # noqa: F401
 from sts2_env.powers import remaining_a as _remaining_a  # noqa: F401
 from sts2_env.powers import remaining_b as _remaining_b  # noqa: F401
 from sts2_env.powers import remaining_c as _remaining_c  # noqa: F401
+
+import sts2_env.powers.v111

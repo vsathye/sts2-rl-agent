@@ -635,7 +635,7 @@ THE_OBSCURA_HARDENING_STRIKE_DAMAGE_A9 = 7
 THE_OBSCURA_HARDENING_STRIKE_BLOCK_A9 = 7
 THE_OBSCURA_SAIL_STRENGTH = 3
 ENTOMANCER_BASE_HP = 145
-ENTOMANCER_A8_HP = 155
+ENTOMANCER_A8_HP = 165
 ENTOMANCER_BEES_DAMAGE = 3
 ENTOMANCER_BEES_HITS_A9 = 8
 ENTOMANCER_SPEAR_DAMAGE_A9 = 20
@@ -1116,24 +1116,24 @@ CS_MONSTER_FACTORY_PARITY_CASES = [
         create_decimillipede_segment_back,
         DECIMILLIPEDE_SEGMENT_BACK_MONSTER_ID,
         DECIMILLIPEDE_WRITHE_MOVE,
-        42,
-        48,
+        40,
+        46,
     ),
     (
         "DecimillipedeSegmentFront",
         create_decimillipede_segment_front,
         DECIMILLIPEDE_SEGMENT_FRONT_MONSTER_ID,
         DECIMILLIPEDE_WRITHE_MOVE,
-        42,
-        48,
+        40,
+        46,
     ),
     (
         "DecimillipedeSegmentMiddle",
         create_decimillipede_segment_middle,
         DECIMILLIPEDE_SEGMENT_MIDDLE_MONSTER_ID,
         DECIMILLIPEDE_WRITHE_MOVE,
-        42,
-        48,
+        40,
+        46,
     ),
     ("FakeMerchantMonster", create_fake_merchant_monster, "FAKE_MERCHANT_MONSTER", "SWIPE", 165, 165),
     ("Inklet", create_inklet, "INKLET", "JAB_MOVE", 11, 17),
@@ -5385,9 +5385,9 @@ class TestFixedRotation:
         ally_hp = 70
         osty_hp = 40
         # C# Axebot.cs:30/36/48-52 base values (no ascension in _make_combat).
-        one_two_damage = 9
+        one_two_damage = 10
         one_two_hits = 2
-        hammer_uppercut_damage = 12
+        hammer_uppercut_damage = 14
         hammer_uppercut_debuff = 2
         no_debuff = 0
         combat = _make_combat(rng_seed)
@@ -5483,18 +5483,17 @@ class TestFixedRotation:
         assert lethal_combat.enemies[-1].get_power_amount(PowerId.MINION) == 0
 
     def test_fabricator_spawn_history_is_shared_across_bot_pools(self):
-        rng_seed = 0
-        combat = _make_combat(rng_seed)
-        fabricator, fabricator_ai = create_fabricator(Rng(rng_seed))
-        combat.add_enemy(fabricator, fabricator_ai)
-        expected_first_fabricate = [NOISEBOT_MONSTER_ID, STABBOT_MONSTER_ID]
-        expected_second_fabricate = [NOISEBOT_MONSTER_ID, ZAPBOT_MONSTER_ID]
-
-        fabricator_ai.states[FABRICATOR_FABRICATE_MOVE].perform(combat)
-        fabricator_ai.states[FABRICATOR_FABRICATE_MOVE].perform(combat)
-
-        assert [enemy.monster_id for enemy in combat.enemies[1:3]] == expected_first_fabricate
-        assert [enemy.monster_id for enemy in combat.enemies[3:5]] == expected_second_fabricate
+        class FirstRng(Rng):
+            def choice(self, options):
+                return options[0]
+        combat = _make_combat(0)
+        fabricator, ai = create_fabricator(FirstRng(0))
+        combat.add_enemy(fabricator, ai)
+        ai.states[FABRICATOR_FABRICATE_MOVE].perform(combat)
+        ai.states[FABRICATOR_FABRICATE_MOVE].perform(combat)
+        # The intervening aggro spawn resets shared history, so the same defense
+        # model can appear on the next Fabricate (separate histories would alternate).
+        assert [e.monster_id for e in combat.enemies[1:]] == [GUARDBOT_MONSTER_ID, ZAPBOT_MONSTER_ID] * 2
 
     def test_guardbot_guard_block_is_unpowered_like_original(self):
         rng_seed = 1239

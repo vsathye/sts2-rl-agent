@@ -132,7 +132,7 @@ def test_manager_context_requires_full_enchant_choice_before_confirm():
     mgr = RunManager(seed=803, character_id="Ironclad")
 
     assert mgr.run_state.enable_deck_choice_requests is True
-    assert mgr.run_state.player.obtain_relic("BEAUTIFUL_BRACELET")
+    assert mgr.run_state.player.obtain_relic("TRI_BOOMERANG")
     assert mgr.run_state.pending_choice is not None
     assert any(action["action"] == "choose" for action in mgr.get_available_actions())
 
@@ -145,7 +145,7 @@ def test_manager_context_requires_full_enchant_choice_before_confirm():
 
     assert final["phase"] == RunManager.PHASE_MAP_CHOICE
     assert mgr.run_state.pending_choice is None
-    assert sum(1 for card in mgr.run_state.player.deck if card.has_enchantment("Swift")) == 3
+    assert sum(1 for card in mgr.run_state.player.deck if card.has_enchantment("Instinct")) == 3
 
 
 def test_remove_card_reward_uses_run_level_deck_choice():
@@ -319,7 +319,7 @@ def test_treasure_relic_with_enchant_reward_pauses_then_returns_to_map():
     mgr._phase = RunManager.PHASE_TREASURE
     mgr._current_reward = RelicReward(
         mgr.run_state.player.player_id,
-        relic_id="BEAUTIFUL_BRACELET",
+        relic_id="TRI_BOOMERANG",
         rarity=RelicRarity.ANCIENT,
     )
 
@@ -735,7 +735,7 @@ def test_shop_buy_relic_with_multi_choice_resumes_shop_after_confirm():
     mgr._phase = RunManager.PHASE_SHOP
     mgr.run_state.player.gold = 999
     mgr._shop_inventory = ShopInventory(
-        relics=[ShopRelicEntry(relic_rarity=RelicRarity.ANCIENT, relic_id="BEAUTIFUL_BRACELET", price=99)]
+        relics=[ShopRelicEntry(relic_rarity=RelicRarity.ANCIENT, relic_id="TRI_BOOMERANG", price=99)]
     )
 
     result = mgr._do_shop_action({"action": "buy_relic", "index": 0})
@@ -751,14 +751,14 @@ def test_shop_buy_relic_with_multi_choice_resumes_shop_after_confirm():
 
     assert final["phase"] == RunManager.PHASE_SHOP
     assert mgr.run_state.pending_choice is None
-    assert sum(1 for card in mgr.run_state.player.deck if card.has_enchantment("Swift")) == 3
+    assert sum(1 for card in mgr.run_state.player.deck if card.has_enchantment("Instinct")) == 3
 
 
 def test_boss_relic_pick_with_deck_choice_resumes_to_next_act_after_confirm():
     mgr = RunManager(seed=805, character_id="Ironclad")
     starting_act = mgr.run_state.current_act_index
     mgr._phase = RunManager.PHASE_BOSS_RELIC
-    mgr._boss_relics = ["BEAUTIFUL_BRACELET"]
+    mgr._boss_relics = ["TRI_BOOMERANG"]
 
     result = mgr._do_boss_relic_pick({"index": 0})
 

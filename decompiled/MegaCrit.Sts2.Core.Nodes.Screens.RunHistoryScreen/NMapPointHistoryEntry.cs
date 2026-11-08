@@ -291,7 +291,8 @@ public class NMapPointHistoryEntry : NClickableControl
 	public void SetPlayer(RunHistoryPlayer player)
 	{
 		_player = player;
-		_questIcon.Visible = _entry.GetEntry(_player.Id).CompletedQuests.Count > 0;
+		PlayerMapPointHistoryEntry entry = _entry.GetEntry(_player.Id);
+		_questIcon.Visible = entry.CompletedQuests.Count > 0 || entry.IsAffectedByFurCoat;
 	}
 
 	protected override void OnFocus()

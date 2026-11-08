@@ -39,7 +39,6 @@ IRONCLAD_FACTORY_UPGRADE_CARD_IDS = (
     CardId.FIEND_FIRE,
     CardId.FIGHT_ME,
     CardId.FORGOTTEN_RITUAL,
-    CardId.GRAPPLE,
     CardId.HAVOC,
     CardId.HELLRAISER_CARD,
     CardId.HEMOKINESIS,
@@ -122,3 +121,18 @@ def test_ironclad_factory_upgrade_dynamic_values_match_reference(card_id: CardId
             assert actual.base_block == expected_value
             continue
         assert actual_value == expected_value
+
+
+def test_removed_grapple_retains_legacy_factory_id():
+    """Old serialized IDs remain readable after removal from v0.111.0."""
+    from sts2_env.cards.factory import create_card
+    card = create_card(CardId.GRAPPLE, upgraded=True)
+    assert card.card_id is CardId.GRAPPLE
+    assert card.upgraded
+
+
+def test_removed_grapple_is_absent_from_current_reference_and_generation():
+    from sts2_env.cards.factory import eligible_registered_cards
+    from sts2_env.cards.reference_static_metadata import reference_metadata_by_card_id
+    assert CardId.GRAPPLE not in reference_metadata_by_card_id()
+    assert CardId.GRAPPLE not in eligible_registered_cards(generation_context=None)

@@ -1045,19 +1045,17 @@ class Astrolabe(RelicInstance):
 
 @register_relic
 class BeautifulBracelet(RelicInstance):
-    """Enchant 3 cards with Swift(3)."""
+    """Enchant four random eligible deck cards with Swift(2)."""
     relic_id = RelicId.BEAUTIFUL_BRACELET
     rarity = RelicRarity.ANCIENT
     pool = RelicPool.EVENT
-    CARDS = 3
-    SWIFT = 3
+    CARDS = 4
+    SWIFT = 2
 
-    def after_obtained(self, owner: Creature) -> None:
+    def after_obtained(self, owner):
         candidates = [card for card in owner.deck if can_enchant_card(card, "Swift")]
-        if getattr(owner.run_state, "defer_followup_rewards", False):
-            owner.offer_enchant_cards_reward("Swift", self.SWIFT, self.CARDS, cards=candidates)
-            return
-        owner.enchant_selected_cards("Swift", self.SWIFT, self.CARDS, cards=candidates)
+        for card in owner.run_state.rng.niche.sample(candidates, min(self.CARDS, len(candidates))):
+            card.add_enchantment("Swift", self.SWIFT)
 
 
 @register_relic
@@ -1524,30 +1522,16 @@ class DelicateFrond(RelicInstance):
 
 @register_relic
 class DiamondDiadem(RelicInstance):
-    """If <= 2 cards played this turn, gain stacking buff."""
+    """Start combat with 20 block and retain it through the first turn."""
     relic_id = RelicId.DIAMOND_DIADEM
     rarity = RelicRarity.ANCIENT
     pool = RelicPool.EVENT
-    CARD_THRESHOLD = 2
+    BLOCK = 20
 
-    def __init__(self, relic_id: RelicId):
-        super().__init__(relic_id)
-        self._cards_this_turn: int = 0
-
-    def after_card_played(self, owner: Creature, card: object, combat: CombatState) -> None:
-        if getattr(card, "owner", None) is owner:
-            self._cards_this_turn += 1
-
-    def before_turn_end(self, owner: Creature, side: CombatSide, combat: CombatState) -> None:
-        if side == CombatSide.PLAYER and self._cards_this_turn <= self.CARD_THRESHOLD:
-            owner.apply_power(PowerId.DIAMOND_DIADEM, 1)
-
-    def after_side_turn_start(self, owner: Creature, side: CombatSide, combat: CombatState) -> None:
-        if side == CombatSide.PLAYER:
-            self._cards_this_turn = 0
-
-    def after_combat_end(self, owner: Creature, combat: CombatState) -> None:
-        self._cards_this_turn = 0
+    def after_side_turn_start(self, owner, side, combat):
+        if side == owner.side and combat.round_number == 1:
+            _gain_unpowered_block(owner, self.BLOCK, combat)
+            combat.apply_power_to(owner, PowerId.BLUR, 1)
 
 
 @register_relic
@@ -1990,7 +1974,7 @@ class FurCoat(RelicInstance):
     relic_id = RelicId.FUR_COAT
     rarity = RelicRarity.ANCIENT
     pool = RelicPool.EVENT
-    COMBATS = 7
+    COMBATS = 8
 
     def __init__(self, relic_id: RelicId):
         super().__init__(relic_id)
@@ -3342,7 +3326,7 @@ class SealOfGold(RelicInstance):
     rarity = RelicRarity.ANCIENT
     pool = RelicPool.EVENT
     ENERGY = 1
-    GOLD_COST = 5
+    GOLD_COST = 3
 
     def after_side_turn_start(self, owner: Creature, side: CombatSide, combat: CombatState) -> None:
         if side == CombatSide.PLAYER:
@@ -3390,7 +3374,7 @@ class SignetRing(RelicInstance):
     relic_id = RelicId.SIGNET_RING
     rarity = RelicRarity.ANCIENT
     pool = RelicPool.EVENT
-    GOLD = 999
+    GOLD = 888
 
     def after_obtained(self, owner: Creature) -> None:
         owner.gain_gold(self.GOLD)
@@ -3708,28 +3692,23 @@ class ThrowingAxe(RelicInstance):
 
 @register_relic
 class ToastyMittens(RelicInstance):
-    """Each turn: exhaust top of draw pile, gain 1 Strength."""
+    """After drawing, choose a hand card to exhaust, then gain 1 Strength."""
     relic_id = RelicId.TOASTY_MITTENS
     rarity = RelicRarity.ANCIENT
     pool = RelicPool.EVENT
     STRENGTH = 1
 
-    def before_hand_draw(self, owner: Creature, combat: CombatState) -> None:
-        from sts2_env.core.hooks import fire_after_card_exhausted
-
+    def after_player_turn_start(self, owner, combat):
         state = combat.combat_player_state_for(owner)
-        if state is None:
-            return
-        combat._shuffle_if_needed(owner)  # noqa: SLF001
-        if combat.round_number == 1:
-            card = next((card for card in state.draw if not card.is_innate), None)
+        def resolve(card):
             if card is not None:
-                state.draw.remove(card)
-                state.exhaust.append(card)
-                fire_after_card_exhausted(card, combat)
+                combat.exhaust_card(card)
+            combat.apply_power_to(owner, PowerId.STRENGTH, self.STRENGTH)
+        if state.hand:
+            combat.request_card_choice(prompt="Choose a card to exhaust", cards=list(state.hand),
+                source_pile="hand", resolver=resolve, allow_skip=False)
         else:
-            combat.exhaust_top_of_draw_pile(owner)
-        owner.apply_power(PowerId.STRENGTH, self.STRENGTH)
+            resolve(None)
 
 
 @register_relic
@@ -3775,7 +3754,7 @@ class ToyBox(RelicInstance):
     rarity = RelicRarity.ANCIENT
     pool = RelicPool.EVENT
     has_upon_pickup_effect = True
-    RELICS = 4
+    RELICS = 5
     COMBATS_PER_MELT = 3
 
     def __init__(self, relic_id: RelicId):
@@ -4569,3 +4548,26 @@ class WingedBoots(RelicInstance):
         if current_point in previous_point.children:
             return
         self._times_used += 1
+
+
+@register_relic
+class DowsingRod(RelicInstance):
+    relic_id = RelicId.DOWSING_ROD
+    rarity = RelicRarity.ANCIENT
+    pool = RelicPool.EVENT
+    has_upon_pickup_effect = True
+
+    def after_obtained(self, owner):
+        owner.add_card_to_deck("Dowsing")
+
+
+@register_relic
+class NeowsSacrifice(RelicInstance):
+    relic_id = RelicId.NEOWS_SACRIFICE
+    rarity = RelicRarity.ANCIENT
+    pool = RelicPool.EVENT
+    has_upon_pickup_effect = True
+
+    def after_obtained(self, owner):
+        owner.procure_potion("Ambergris")
+        owner.add_card_to_deck("Guilty")

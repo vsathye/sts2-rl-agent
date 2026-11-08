@@ -34,7 +34,7 @@ public sealed class SelfHelpBook : EventModel
 	{
 		new StringVar("Enchantment1", ModelDb.Enchantment<Sharp>().Title.GetFormattedText()),
 		new StringVar("Enchantment2", ModelDb.Enchantment<Nimble>().Title.GetFormattedText()),
-		new StringVar("Enchantment3", ModelDb.Enchantment<Swift>().Title.GetFormattedText()),
+		new StringVar("Enchantment3", ModelDb.Enchantment<MegaCrit.Sts2.Core.Models.Enchantments.Swift>().Title.GetFormattedText()),
 		new IntVar("Enchantment1Amount", 2m),
 		new IntVar("Enchantment2Amount", 2m),
 		new IntVar("Enchantment3Amount", 2m)
@@ -45,7 +45,7 @@ public sealed class SelfHelpBook : EventModel
 		List<EventOption> list = new List<EventOption>();
 		bool flag = PlayerHasCardsAvailable<Sharp>(base.Owner, CardType.Attack);
 		bool flag2 = PlayerHasCardsAvailable<Nimble>(base.Owner, CardType.Skill);
-		bool flag3 = PlayerHasCardsAvailable<Swift>(base.Owner, CardType.Power);
+		bool flag3 = PlayerHasCardsAvailable<MegaCrit.Sts2.Core.Models.Enchantments.Swift>(base.Owner, CardType.Power);
 		if (flag || flag2 || flag3)
 		{
 			if (flag)
@@ -66,7 +66,7 @@ public sealed class SelfHelpBook : EventModel
 			}
 			if (flag3)
 			{
-				list.Add(new EventOption(this, ReadEntireBook, "SELF_HELP_BOOK.pages.INITIAL.options.READ_ENTIRE_BOOK", HoverTipFactory.FromEnchantment<Swift>(2)));
+				list.Add(new EventOption(this, ReadEntireBook, "SELF_HELP_BOOK.pages.INITIAL.options.READ_ENTIRE_BOOK", HoverTipFactory.FromEnchantment<MegaCrit.Sts2.Core.Models.Enchantments.Swift>(2)));
 			}
 			else
 			{
@@ -92,7 +92,7 @@ public sealed class SelfHelpBook : EventModel
 
 	private async Task ReadEntireBook()
 	{
-		await SelectAndEnchant<Swift>(2, CardType.Power, L10NLookup("SELF_HELP_BOOK.pages.READ_ENTIRE_BOOK.description"));
+		await SelectAndEnchant<MegaCrit.Sts2.Core.Models.Enchantments.Swift>(2, CardType.Power, L10NLookup("SELF_HELP_BOOK.pages.READ_ENTIRE_BOOK.description"));
 	}
 
 	private bool PlayerHasCardsAvailable<T>(Player player, CardType typeRestriction) where T : EnchantmentModel

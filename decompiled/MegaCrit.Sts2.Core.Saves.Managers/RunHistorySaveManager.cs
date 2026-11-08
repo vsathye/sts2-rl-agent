@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using Godot;
 using MegaCrit.Sts2.Core.Logging;
 using MegaCrit.Sts2.Core.Runs;
 using MegaCrit.Sts2.Core.Saves.Migrations;
@@ -44,9 +45,9 @@ public class RunHistorySaveManager
 		_saveStore.CreateDirectory(HistoryPath);
 	}
 
-	public static string GetHistoryPath(int profileId)
+	public static string GetHistoryPath(int profileId, bool? forceModState = null)
 	{
-		return Path.Combine(UserDataPathProvider.GetProfileDir(profileId), UserDataPathProvider.SavesDir, "history");
+		return UserDataPathProvider.GetProfileDir(profileId, forceModState).PathJoin(UserDataPathProvider.SavesDir).PathJoin("history");
 	}
 
 	public void SaveHistory(RunHistory history)

@@ -5,6 +5,7 @@ using Godot;
 using Godot.Bridge;
 using Godot.NativeInterop;
 using MegaCrit.Sts2.Core.ControllerInput;
+using MegaCrit.Sts2.Core.Daily;
 using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.Nodes.Combat;
 using MegaCrit.Sts2.Core.Nodes.CommonUi;
@@ -16,7 +17,6 @@ namespace MegaCrit.Sts2.Core.Nodes.Screens.DailyRun;
 /// This is pretty close to NPaginator, but NPaginator only supports a static list of options whereas this needs to
 /// - Set its text based on a DateTimeOffset that is (effectively) infinite
 /// - Dynamically enable/disable arrows based on whether the query says there is a leaderboard
-/// It uses the same scene as NPaginator but with the script replaced.
 /// </summary>
 [ScriptPath("res://src/Core/Nodes/Screens/DailyRun/NLeaderboardDayPaginator.cs")]
 public class NLeaderboardDayPaginator : Control
@@ -182,14 +182,24 @@ public class NLeaderboardDayPaginator : Control
 
 	private void PageLeft()
 	{
-		_currentDay -= TimeSpan.FromDays(1);
-		DayChangeHelper(pagedLeft: true);
+		DateTimeOffset? dateTimeOffset = DailyRunUtility.AddLeaderboardDays(_currentDay, -1);
+		if (dateTimeOffset.HasValue)
+		{
+			DateTimeOffset valueOrDefault = dateTimeOffset.GetValueOrDefault();
+			_currentDay = valueOrDefault;
+			DayChangeHelper(pagedLeft: true);
+		}
 	}
 
 	private void PageRight()
 	{
-		_currentDay += TimeSpan.FromDays(1);
-		DayChangeHelper(pagedLeft: false);
+		DateTimeOffset? dateTimeOffset = DailyRunUtility.AddLeaderboardDays(_currentDay, 1);
+		if (dateTimeOffset.HasValue)
+		{
+			DateTimeOffset valueOrDefault = dateTimeOffset.GetValueOrDefault();
+			_currentDay = valueOrDefault;
+			DayChangeHelper(pagedLeft: false);
+		}
 	}
 
 	private void DayChangeHelper(bool pagedLeft)
@@ -236,7 +246,7 @@ public class NLeaderboardDayPaginator : Control
 
 	private void OnFocus()
 	{
-		if (NControllerManager.Instance.IsUsingController)
+		if (NControllerManager.Instance.IsUsingDirectionalNavigation)
 		{
 			_selectionReticle.OnSelect();
 		}

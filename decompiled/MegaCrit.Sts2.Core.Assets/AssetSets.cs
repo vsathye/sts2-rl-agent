@@ -40,6 +40,7 @@ using MegaCrit.Sts2.Core.Nodes.Screens.StatsScreen;
 using MegaCrit.Sts2.Core.Nodes.Screens.Timeline;
 using MegaCrit.Sts2.Core.Nodes.Vfx;
 using MegaCrit.Sts2.Core.Nodes.Vfx.Cards;
+using MegaCrit.Sts2.Core.Nodes.Vfx.Ui;
 using MegaCrit.Sts2.Core.Rewards;
 
 namespace MegaCrit.Sts2.Core.Assets;
@@ -85,7 +86,7 @@ public static class AssetSets
 		list2.AddRange(NTransition.AssetPaths);
 		list2.AddRange(NLogoAnimation.AssetPaths);
 		IntroLogoAssets = new HashSet<string>(new _003C_003Ez__ReadOnlyList<string>(list2));
-		CommonAssets = new HashSet<string>(new IEnumerable<string>[100]
+		CommonAssets = new HashSet<string>(new IEnumerable<string>[99]
 		{
 			NActBanner.AssetPaths,
 			NActHistoryEntry.AssetPaths,
@@ -148,7 +149,6 @@ public static class AssetSets
 			NBlockSparkVfx.AssetPaths,
 			NCardBundle.AssetPaths,
 			NHorizontalLinesVfx.AssetPaths,
-			NExhaustVfx.AssetPaths,
 			NCardFlyPowerVfx.AssetPaths,
 			NCardFlyShuffleVfx.AssetPaths,
 			NCardFlyVfx.AssetPaths,
@@ -186,7 +186,7 @@ public static class AssetSets
 			PlayerFullscreenHealVfx.AssetPaths,
 			NFireSmokePuffVfx.AssetPaths,
 			NThinSliceVfx.AssetPaths,
-			new string[1] { "res://materials/vfx/hsv.tres" }
+			new global::_003C_003Ez__ReadOnlySingleElementList<string>("res://materials/vfx/hsv.tres")
 		}.SelectMany((IEnumerable<string> s) => s).Concat(CardMaterialPaths));
 		MainMenuSet = new HashSet<string>(new IEnumerable<string>[23]
 		{

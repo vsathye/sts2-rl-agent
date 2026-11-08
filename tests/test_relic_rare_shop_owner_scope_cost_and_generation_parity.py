@@ -444,7 +444,7 @@ class TestRelicRareShopOwnerScopeCostAndGenerationParity:
         assert _combat_relic(combat, "PAELS_EYE").should_take_extra_turn(combat.player, combat) is True
 
         fire_before_turn_end(CombatSide.PLAYER, combat)
-        assert combat.player.get_power_amount(PowerId.DIAMOND_DIADEM) == 1
+        assert combat.player.get_power_amount(PowerId.DIAMOND_DIADEM) == 0
 
     def test_daughter_of_the_wind_block_triggers_after_block_gained_hooks(self):
         combat = _make_ironclad_combat(["DaughterOfTheWind"], seed=1927)
@@ -462,23 +462,15 @@ class TestRelicRareShopOwnerScopeCostAndGenerationParity:
         assert combat.player.block == 1
         assert enemy.current_hp == start_hp - 11
 
-    def test_diamond_diadem_resets_after_side_turn_start(self):
+    def test_diamond_diadem_grants_opening_block_and_blur_only(self):
         combat = _make_ironclad_combat(["DiamondDiadem"], seed=1912)
-        relic = _combat_relic(combat, "DIAMOND_DIADEM")
-        card = make_strike_ironclad()
-        card.owner = combat.player
-
-        for _ in range(3):
-            fire_after_card_played(card, combat)
-
-        fire_before_turn_end(CombatSide.PLAYER, combat)
-        assert PowerId.DIAMOND_DIADEM not in combat.player.powers
-
+        assert combat.player.block == 20
+        assert combat.player.get_power_amount(PowerId.BLUR) == 1
+        combat.player.block = 0
+        combat.round_number = 2
         fire_before_side_turn_start(CombatSide.PLAYER, combat)
-        assert relic._cards_this_turn == 3
-
         fire_after_side_turn_start(CombatSide.PLAYER, combat)
-        assert relic._cards_this_turn == 0
+        assert combat.player.block == 0
 
     def test_brilliant_scarf_makes_fifth_owner_card_energy_and_star_cost_free(self):
         combat = _make_ironclad_combat(["BrilliantScarf"], seed=1918)

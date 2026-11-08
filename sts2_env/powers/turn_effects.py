@@ -115,7 +115,7 @@ class RegenPower(PowerInstance):
     def __init__(self, amount: int):
         super().__init__(PowerId.REGEN, amount)
 
-    def after_turn_end(self, owner: Creature, side: CombatSide, combat: CombatState) -> None:
+    def before_turn_end_early(self, owner: Creature, side: CombatSide, combat: CombatState) -> None:
         if side == owner.side and owner.is_alive:
             owner.heal(self.amount)
             self.amount -= 1
@@ -837,6 +837,23 @@ class TemporaryFocusPower(PowerInstance):
             self.amount = 0
 
 
+class HyperbeamFocusDownPower(TemporaryFocusPower):
+    """Focus penalty that reverses at the end of the owner's turn."""
+    power_type = PowerType.DEBUFF
+
+    def __init__(self, amount: int):
+        PowerInstance.__init__(self, PowerId.HYPERBEAM_FOCUS_DOWN, amount)
+
+    def after_power_amount_changed(self, owner, target, power_id, amount, applier, source, combat):
+        if owner is target and power_id == self.power_id and amount:
+            owner.apply_power(PowerId.FOCUS, -amount, applier=applier, source=source)
+
+    def after_turn_end(self, owner, side, combat):
+        if side == owner.side:
+            owner.apply_power(PowerId.FOCUS, self.amount, applier=owner)
+            self.amount = 0
+
+
 class BlockNextTurnPower(PowerInstance):
     """Gain Amount block when block is cleared (next turn start), then remove self.
 
@@ -887,26 +904,15 @@ class RetainHandPower(PowerInstance):
 
 
 class WellLaidPlansPower(PowerInstance):
-    """Retain up to Amount card(s) at end of turn.
-
-    C# hook: BeforeFlushLate — lets the player choose cards to retain.
-    In the simulator, this is handled by the combat layer; this power
-    just exposes the retain count.
-    """
-
+    """v0.111.0: keep the owner's entire hand at the flush boundary."""
     power_type = PowerType.BUFF
-    stack_type = PowerStackType.COUNTER
+    stack_type = PowerStackType.SINGLE
 
     def __init__(self, amount: int):
         super().__init__(PowerId.WELL_LAID_PLANS, amount)
 
-    def before_flush_late(self, owner: Creature, flushing_owner: Creature, combat: CombatState) -> None:
-        if flushing_owner is owner and owner.is_player:
-            from sts2_env.core.hooks import should_flush
-
-            if not should_flush(combat, owner):
-                return
-            combat.request_retain(owner, self.amount)
+    def should_flush(self, owner, flushing_owner, combat):
+        return False if flushing_owner is owner else None
 
 
 class WraithFormPower(PowerInstance):
@@ -1004,6 +1010,14 @@ class DoomPower(PowerInstance):
         super().__init__(PowerId.DOOM, amount)
 
     def before_turn_end(self, owner: Creature, side: CombatSide, combat: CombatState) -> None:
+        if side == CombatSide.ENEMY:
+            self._trigger(owner, side, combat)
+
+    def after_turn_end(self, owner: Creature, side: CombatSide, combat: CombatState) -> None:
+        if side == CombatSide.PLAYER:
+            self._trigger(owner, side, combat)
+
+    def _trigger(self, owner: Creature, side: CombatSide, combat: CombatState) -> None:
         if side != owner.side or not owner.is_alive or owner.current_hp > self.amount:
             return
         side_creatures = (
@@ -1027,7 +1041,19 @@ class DoomPower(PowerInstance):
 
 from sts2_env.core.creature import register_power_class
 
+class AmbergrisPower(PowerInstance):
+    def __init__(self, amount):
+        super().__init__(PowerId.AMBERGRIS, amount)
+
+    def should_take_extra_turn(self, owner, combat):
+        return owner.side == CombatSide.PLAYER and self.amount > 0
+
+    def after_taking_extra_turn(self, owner, combat):
+        self.amount = max(0, self.amount - 1)
+
+
 _ALL_POWERS: dict[PowerId, type[PowerInstance]] = {
+    PowerId.AMBERGRIS: AmbergrisPower,
     PowerId.DEMON_FORM: DemonFormPower,
     PowerId.RITUAL: RitualPower,
     PowerId.REGEN: RegenPower,
@@ -1058,6 +1084,7 @@ _ALL_POWERS: dict[PowerId, type[PowerInstance]] = {
     PowerId.TEMPORARY_DEXTERITY: TemporaryDexterityPower,
     PowerId.SPEED_POTION: SpeedPotionPower,
     PowerId.TEMPORARY_FOCUS: TemporaryFocusPower,
+    PowerId.HYPERBEAM_FOCUS_DOWN: HyperbeamFocusDownPower,
     PowerId.BLOCK_NEXT_TURN: BlockNextTurnPower,
     PowerId.RETAIN_HAND: RetainHandPower,
     PowerId.WELL_LAID_PLANS: WellLaidPlansPower,

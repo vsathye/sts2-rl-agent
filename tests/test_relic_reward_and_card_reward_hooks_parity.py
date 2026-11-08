@@ -182,7 +182,7 @@ def test_toy_box_wax_rewards_melt_after_three_combats():
     assert mgr.run_state.player.obtain_relic("TOY_BOX")
 
     wax_rewards = [reward for reward in mgr.run_state.pending_rewards if isinstance(reward, RelicReward)]
-    assert len(wax_rewards) == 4
+    assert len(wax_rewards) == 5
     assert all(reward.is_wax for reward in wax_rewards)
 
     first_reward = wax_rewards[0]
@@ -614,6 +614,7 @@ def test_massive_scroll_enqueues_multiplayer_reward_pool():
         CardId.RALLY,
         CardId.TAG_TEAM,
         CardId.TANK_CARD,
+        CardId.BLAZE, CardId.MIDNIGHT, CardId.OUTRAGE, CardId.THE_BALL,
     }
     assert set(reward.custom_card_ids) == expected_ids
     reward.populate(run_state, None)

@@ -274,7 +274,7 @@ public abstract class NCardPlay : Node
 	{
 	}
 
-	protected virtual void Cleanup(bool isFinished)
+	protected void Cleanup(bool isFinished)
 	{
 		HideTargetingVisuals();
 		HideEvokingOrbs();

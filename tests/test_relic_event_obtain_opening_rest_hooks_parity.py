@@ -273,6 +273,9 @@ class TestRelicEventObtainOpeningRestHooksParity:
 
         combat._start_player_turn()  # noqa: SLF001
 
+        assert combat.pending_choice is not None
+        index = next(i for i, option in enumerate(combat.pending_choice.options) if option.card is non_innate)
+        assert combat.resolve_pending_choice(index)
         assert innate in combat.hand
         assert non_innate in combat.exhaust_pile
         assert combat.player.get_power_amount(PowerId.STRENGTH) == 1
@@ -394,12 +397,12 @@ class TestRelicEventObtainOpeningRestHooksParity:
         assert combat.player.block == 7
         assert enemy.current_hp == start_hp - 5
 
-    def test_signet_ring_grants_nine_hundred_ninety_nine_gold_on_obtain(self):
+    def test_signet_ring_grants_eight_hundred_eighty_eight_gold_on_obtain(self):
         run_state = RunState(seed=888, character_id="Ironclad")
         starting_gold = run_state.player.gold
 
         assert run_state.player.obtain_relic("SIGNET_RING")
-        assert run_state.player.gold == starting_gold + 999
+        assert run_state.player.gold == starting_gold + 888
 
     def test_small_capsule_queues_one_relic_reward(self):
         run_state = RunState(seed=889, character_id="Ironclad")

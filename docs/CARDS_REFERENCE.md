@@ -19,12 +19,25 @@ Game version: see GAME_VERSIONS.md.
 - **Effect:** (see decompiled Abrasive.cs)
 - **Upgrade:** ThornsPower+2
 
+### Abundance
+- **ID:** ABUNDANCE
+- **Color:** event
+- **Cost:** 1
+- **Type:** Skill
+- **Rarity:** Ancient
+- **Target:** Self
+- **Keywords:** Exhaust
+- **Tags:** None
+- **Vars:** None
+- **Effect:** (see decompiled Abundance.cs)
+- **Upgrade:** Cost-1
+
 ### Accelerant
 - **ID:** ACCELERANT
 - **Color:** silent
 - **Cost:** 1
 - **Type:** Power
-- **Rarity:** Rare
+- **Rarity:** Uncommon
 - **Target:** Self
 - **Keywords:** None
 - **Tags:** None
@@ -139,7 +152,7 @@ Game version: see GAME_VERSIONS.md.
 ### Alignment
 - **ID:** ALIGNMENT
 - **Color:** regent
-- **Cost:** 0 | StarCost: 3
+- **Cost:** 0 | StarCost: 2
 - **Type:** Skill
 - **Rarity:** Uncommon
 - **Target:** Self
@@ -199,7 +212,7 @@ Game version: see GAME_VERSIONS.md.
 - **Tags:** None
 - **Vars:** {DexterityPower: 2}
 - **Effect:** (see decompiled Anticipate.cs)
-- **Upgrade:** Dexterity+1
+- **Upgrade:** Dexterity+2
 
 ### Apotheosis
 - **ID:** APOTHEOSIS
@@ -438,7 +451,7 @@ Game version: see GAME_VERSIONS.md.
 ### BeaconOfHope
 - **ID:** BEACON_OF_HOPE
 - **Color:** colorless
-- **Cost:** 1
+- **Cost:** 2
 - **Type:** Power
 - **Rarity:** Rare
 - **Target:** Self
@@ -535,7 +548,7 @@ Game version: see GAME_VERSIONS.md.
 - **Target:** Self
 - **Keywords:** None
 - **Tags:** None
-- **Vars:** {FocusPower: 4, BiasedCognitionPower: 1}
+- **Vars:** {FocusPower: 5, BiasedCognitionPower: 1}
 - **Effect:** (see decompiled BiasedCognition.cs)
 - **Upgrade:** FocusPower+1
 
@@ -591,6 +604,32 @@ Game version: see GAME_VERSIONS.md.
 - **Effect:** (see decompiled BladeOfInk.cs)
 - **Upgrade:** Cards+1
 
+### BladeSymphony
+- **ID:** BLADE_SYMPHONY
+- **Color:** silent
+- **Cost:** 2
+- **Type:** Skill
+- **Rarity:** Uncommon
+- **Target:** AllAllies
+- **Keywords:** None
+- **Tags:** None
+- **Vars:** {Cards: 2}
+- **Effect:** (see decompiled BladeSymphony.cs)
+- **Upgrade:** Cost-1
+
+### Blaze
+- **ID:** BLAZE
+- **Color:** ironclad
+- **Cost:** 2
+- **Type:** Skill
+- **Rarity:** Uncommon
+- **Target:** AnyAlly
+- **Keywords:** None
+- **Tags:** None
+- **Vars:** {StrengthPower: 5}
+- **Effect:** (see decompiled Blaze.cs)
+- **Upgrade:** Strength+2
+
 ### BlightStrike
 - **ID:** BLIGHT_STRIKE
 - **Color:** necrobinder
@@ -622,7 +661,7 @@ Game version: see GAME_VERSIONS.md.
 - **Color:** ironclad
 - **Cost:** 0
 - **Type:** Skill
-- **Rarity:** Common
+- **Rarity:** Uncommon
 - **Target:** Self
 - **Keywords:** None
 - **Tags:** None
@@ -821,7 +860,7 @@ Game version: see GAME_VERSIONS.md.
 - **Target:** Self
 - **Keywords:** None
 - **Tags:** None
-- **Vars:** {MaxHp: 1, Energy: 2, Cards: 2}
+- **Vars:** {MaxHp: 2, Energy: 2, Cards: 2}
 - **Effect:** (see decompiled BrightestFlame.cs)
 - **Upgrade:** Energy+1; Cards+1
 
@@ -993,6 +1032,19 @@ Game version: see GAME_VERSIONS.md.
 - **Vars:** None
 - **Effect:** (see decompiled ByrdonisEgg.cs)
 - **Upgrade:** Cannot be upgraded
+
+### Cacophony
+- **ID:** CACOPHONY
+- **Color:** necrobinder
+- **Cost:** 2
+- **Type:** Power
+- **Rarity:** Rare
+- **Target:** Self
+- **Keywords:** None
+- **Tags:** None
+- **Vars:** {Cards: 33, Damage: 66}
+- **Effect:** (see decompiled Cacophony.cs)
+- **Upgrade:** Damage+33
 
 ### Calamity
 - **ID:** CALAMITY_CARD
@@ -1302,7 +1354,7 @@ Game version: see GAME_VERSIONS.md.
 - **Target:** AnyEnemy
 - **Keywords:** None
 - **Tags:** None
-- **Vars:** {Damage: 11}
+- **Vars:** {Damage: 10}
 - **Effect:** (see decompiled CollisionCourse.cs)
 - **Upgrade:** Damage+4
 
@@ -1315,7 +1367,7 @@ Game version: see GAME_VERSIONS.md.
 - **Target:** Self
 - **Keywords:** None
 - **Tags:** None
-- **Vars:** {Colossus: 1, Block: 5}
+- **Vars:** {Colossus: 1, Block: 4}
 - **Effect:** (see decompiled Colossus.cs)
 - **Upgrade:** Block+3
 
@@ -1358,6 +1410,19 @@ Game version: see GAME_VERSIONS.md.
 - **Effect:** (see decompiled CompileDriver.cs)
 - **Upgrade:** Damage+3
 
+### Concoct
+- **ID:** CONCOCT
+- **Color:** silent
+- **Cost:** 0
+- **Type:** Skill
+- **Rarity:** Uncommon
+- **Target:** AnyAlly
+- **Keywords:** None
+- **Tags:** None
+- **Vars:** {ConcoctPower: 3}
+- **Effect:** (see decompiled Concoct.cs)
+- **Upgrade:** ConcoctPower+1
+
 ### Conflagration
 - **ID:** CONFLAGRATION
 - **Color:** ironclad
@@ -1383,6 +1448,19 @@ Game version: see GAME_VERSIONS.md.
 - **Vars:** {Forge: 3}
 - **Effect:** (see decompiled Conqueror.cs)
 - **Upgrade:** Forge+2
+
+### Constellation
+- **ID:** CONSTELLATION
+- **Color:** regent
+- **Cost:** 0 | StarCost: 2
+- **Type:** Skill
+- **Rarity:** Uncommon
+- **Target:** AnyAlly
+- **Keywords:** None
+- **Tags:** None
+- **Vars:** {Cards: 1, Energy: 1, Block: 9}
+- **Effect:** (see decompiled Constellation.cs)
+- **Upgrade:** Block+3
 
 ### ConsumingShadow
 - **ID:** CONSUMING_SHADOW
@@ -1549,16 +1627,16 @@ Game version: see GAME_VERSIONS.md.
 - **Target:** Self
 - **Keywords:** None
 - **Tags:** None
-- **Vars:** {CrimsonMantlePower: 8}
+- **Vars:** {CrimsonMantlePower: 7}
 - **Effect:** (see decompiled CrimsonMantle.cs)
-- **Upgrade:** CrimsonMantlePower+2
+- **Upgrade:** CrimsonMantlePower+3
 
 ### Cruelty
 - **ID:** CRUELTY_CARD
 - **Color:** ironclad
 - **Cost:** 1
 - **Type:** Power
-- **Rarity:** Rare
+- **Rarity:** Uncommon
 - **Target:** Self
 - **Keywords:** None
 - **Tags:** None
@@ -1575,7 +1653,7 @@ Game version: see GAME_VERSIONS.md.
 - **Target:** AllEnemies
 - **Keywords:** None
 - **Tags:** None
-- **Vars:** {StrengthLoss: 1, Damage: 7}
+- **Vars:** {StrengthLoss: 1, Damage: 8}
 - **Effect:** (see decompiled CrushUnder.cs)
 - **Upgrade:** Damage+1; StrengthLoss+1
 
@@ -1965,7 +2043,7 @@ Game version: see GAME_VERSIONS.md.
 - **Target:** Self
 - **Keywords:** None
 - **Tags:** None
-- **Vars:** {StrengthPower: 2}
+- **Vars:** {StrengthPower: 3}
 - **Effect:** (see decompiled DemonForm.cs)
 - **Upgrade:** StrengthPower+1
 
@@ -2004,7 +2082,7 @@ Game version: see GAME_VERSIONS.md.
 - **Target:** AnyEnemy
 - **Keywords:** None
 - **Tags:** None
-- **Vars:** {Damage: 30}
+- **Vars:** {Damage: 35}
 - **Effect:** (see decompiled Devastate.cs)
 - **Upgrade:** Damage+10
 
@@ -2104,7 +2182,7 @@ Game version: see GAME_VERSIONS.md.
 - **Color:** ironclad
 - **Cost:** 1
 - **Type:** Skill
-- **Rarity:** Uncommon
+- **Rarity:** Rare
 - **Target:** AnyEnemy
 - **Keywords:** Exhaust
 - **Tags:** None
@@ -2136,6 +2214,19 @@ Game version: see GAME_VERSIONS.md.
 - **Tags:** None
 - **Vars:** {WeakPower: 1}
 - **Effect:** (see decompiled Doubt.cs)
+- **Upgrade:** Cannot be upgraded
+
+### Dowsing
+- **ID:** DOWSING
+- **Color:** quest
+- **Cost:** Unplayable
+- **Type:** Quest
+- **Rarity:** Quest
+- **Target:** None
+- **Keywords:** Unplayable
+- **Tags:** None
+- **Vars:** {Rooms: 5}
+- **Effect:** (see decompiled Dowsing.cs)
 - **Upgrade:** Cannot be upgraded
 
 ### DrainPower
@@ -2247,7 +2338,7 @@ Game version: see GAME_VERSIONS.md.
 - **Color:** silent
 - **Cost:** 1
 - **Type:** Attack
-- **Rarity:** Rare
+- **Rarity:** Uncommon
 - **Target:** AllEnemies
 - **Keywords:** None
 - **Tags:** None
@@ -2262,7 +2353,7 @@ Game version: see GAME_VERSIONS.md.
 - **Type:** Skill
 - **Rarity:** Rare
 - **Target:** Self
-- **Keywords:** None
+- **Keywords:** Exhaust
 - **Tags:** None
 - **Vars:** None
 - **Effect:** (see decompiled Eidolon.cs)
@@ -2440,15 +2531,15 @@ Game version: see GAME_VERSIONS.md.
 ### ExpectAFight
 - **ID:** EXPECT_A_FIGHT
 - **Color:** ironclad
-- **Cost:** 2
+- **Cost:** 3
 - **Type:** Skill
 - **Rarity:** Uncommon
 - **Target:** Self
 - **Keywords:** None
 - **Tags:** None
-- **Vars:** {Energy: 0, CalcBase: 0, CalculationExtra: 1, CalculatedEnergy: dynamic}
+- **Vars:** {CalcBase: 15, CalculationExtra: 5, ValueProp.Move: dynamic}
 - **Effect:** (see decompiled ExpectAFight.cs)
-- **Upgrade:** Cost-1
+- **Upgrade:** CalcBase+1; CalculationExtra+3
 
 ### Expertise
 - **ID:** EXPERTISE
@@ -2459,7 +2550,7 @@ Game version: see GAME_VERSIONS.md.
 - **Target:** Self
 - **Keywords:** None
 - **Tags:** None
-- **Vars:** {Cards: 6}
+- **Vars:** {Cards: 2}
 - **Effect:** (see decompiled Expertise.cs)
 - **Upgrade:** Cards+1
 
@@ -2488,6 +2579,19 @@ Game version: see GAME_VERSIONS.md.
 - **Vars:** {Damage: 3, Repeat: 4}
 - **Effect:** (see decompiled Exterminate.cs)
 - **Upgrade:** Damage+1
+
+### Fade
+- **ID:** FADE
+- **Color:** silent
+- **Cost:** 0
+- **Type:** Skill
+- **Rarity:** Uncommon
+- **Target:** AnyAlly
+- **Keywords:** Retain
+- **Tags:** None
+- **Vars:** {DexterityPower: 6}
+- **Effect:** (see decompiled Fade.cs)
+- **Upgrade:** Dexterity+3
 
 ### FallingStar
 - **ID:** FALLING_STAR
@@ -2715,7 +2819,7 @@ Game version: see GAME_VERSIONS.md.
 - **Color:** silent
 - **Cost:** 2
 - **Type:** Skill
-- **Rarity:** Uncommon
+- **Rarity:** Rare
 - **Target:** AnyEnemy
 - **Keywords:** None
 - **Tags:** None
@@ -2771,7 +2875,7 @@ Game version: see GAME_VERSIONS.md.
 - **Target:** AllEnemies
 - **Keywords:** Sly
 - **Tags:** None
-- **Vars:** {Damage: 6}
+- **Vars:** {Damage: 7}
 - **Effect:** (see decompiled FlickFlack.cs)
 - **Upgrade:** Damage+2
 
@@ -2901,9 +3005,9 @@ Game version: see GAME_VERSIONS.md.
 - **Target:** Self
 - **Keywords:** Exhaust
 - **Tags:** None
-- **Vars:** {Energy: 1, Cards: 1}
+- **Vars:** {Energy: 1}
 - **Effect:** (see decompiled Fuel.cs)
-- **Upgrade:** Cards+1
+- **Upgrade:** Energy+1
 
 ### Furnace
 - **ID:** FURNACE
@@ -3005,7 +3109,7 @@ Game version: see GAME_VERSIONS.md.
 - **Target:** AnyEnemy
 - **Keywords:** None
 - **Tags:** None
-- **Vars:** {Damage: 16}
+- **Vars:** {Damage: 20}
 - **Effect:** (see decompiled GiantRock.cs)
 - **Upgrade:** Damage+4
 
@@ -3126,19 +3230,6 @@ Game version: see GAME_VERSIONS.md.
 - **Effect:** (see decompiled GrandFinale.cs)
 - **Upgrade:** Damage+15
 
-### Grapple
-- **ID:** GRAPPLE
-- **Color:** unknown
-- **Cost:** 1
-- **Type:** Attack
-- **Rarity:** Uncommon
-- **Target:** AnyEnemy
-- **Keywords:** None
-- **Tags:** None
-- **Vars:** {Damage: 7, GrapplePower: 5}
-- **Effect:** (see decompiled Grapple.cs)
-- **Upgrade:** Damage+2; GrapplePower+2
-
 ### GraveWarden
 - **ID:** GRAVE_WARDEN
 - **Color:** necrobinder
@@ -3194,7 +3285,7 @@ Game version: see GAME_VERSIONS.md.
 ### GuidingStar
 - **ID:** GUIDING_STAR
 - **Color:** regent
-- **Cost:** 1 | StarCost: 2
+- **Cost:** 1 | StarCost: 1
 - **Type:** Attack
 - **Rarity:** Common
 - **Target:** AnyEnemy
@@ -3304,7 +3395,7 @@ Game version: see GAME_VERSIONS.md.
 - **Target:** Self
 - **Keywords:** None
 - **Tags:** None
-- **Vars:** {HpLoss: 6}
+- **Vars:** {HpLoss: 7}
 - **Effect:** (see decompiled Haunt.cs)
 - **Upgrade:** HpLoss+2
 
@@ -3324,15 +3415,15 @@ Game version: see GAME_VERSIONS.md.
 ### Haze
 - **ID:** HAZE
 - **Color:** silent
-- **Cost:** 3
+- **Cost:** 2
 - **Type:** Skill
 - **Rarity:** Uncommon
 - **Target:** AllEnemies
-- **Keywords:** Sly
+- **Keywords:** None
 - **Tags:** None
-- **Vars:** {PoisonPower: 4}
+- **Vars:** {PoisonPower: 4, WeakPower: 1}
 - **Effect:** (see decompiled Haze.cs)
-- **Upgrade:** Poison+2
+- **Upgrade:** Poison+2; Weak+1
 
 ### Headbutt
 - **ID:** HEADBUTT
@@ -3438,6 +3529,19 @@ Game version: see GAME_VERSIONS.md.
 - **Effect:** (see decompiled Hemokinesis.cs)
 - **Upgrade:** Damage+5
 
+### Hibernate
+- **ID:** HIBERNATE
+- **Color:** defect
+- **Cost:** 2
+- **Type:** Skill
+- **Rarity:** Uncommon
+- **Target:** Self
+- **Keywords:** None
+- **Tags:** None
+- **Vars:** {Repeat: 2}
+- **Effect:** (see decompiled Hibernate.cs)
+- **Upgrade:** Repeat+1
+
 ### HiddenCache
 - **ID:** HIDDEN_CACHE
 - **Color:** regent
@@ -3525,9 +3629,9 @@ Game version: see GAME_VERSIONS.md.
 - **Target:** AllEnemies
 - **Keywords:** None
 - **Tags:** None
-- **Vars:** {Damage: 16}
+- **Vars:** {Damage: 18}
 - **Effect:** (see decompiled HowlFromBeyond.cs)
-- **Upgrade:** Damage+5
+- **Upgrade:** Damage+6
 
 ### HuddleUp
 - **ID:** HUDDLE_UP
@@ -3551,9 +3655,9 @@ Game version: see GAME_VERSIONS.md.
 - **Target:** AllEnemies
 - **Keywords:** None
 - **Tags:** None
-- **Vars:** {Damage: 28, FocusPower: 3}
+- **Vars:** {Damage: 24, FocusPower: 3}
 - **Effect:** (see decompiled Hyperbeam.cs)
-- **Upgrade:** Damage+8
+- **Upgrade:** Damage+6
 
 ### IAmInvincible
 - **ID:** I_AM_INVINCIBLE
@@ -3586,13 +3690,26 @@ Game version: see GAME_VERSIONS.md.
 - **Color:** defect
 - **Cost:** 1
 - **Type:** Skill
-- **Rarity:** Rare
+- **Rarity:** Uncommon
 - **Target:** AnyAlly
 - **Keywords:** Exhaust
 - **Tags:** None
 - **Vars:** None
 - **Effect:** (see decompiled Ignition.cs)
 - **Upgrade:** Remove Exhaust
+
+### ImitationLearning
+- **ID:** IMITATION_LEARNING
+- **Color:** defect
+- **Cost:** 1
+- **Type:** Skill
+- **Rarity:** Rare
+- **Target:** AnyAlly
+- **Keywords:** Exhaust
+- **Tags:** None
+- **Vars:** {ImitationLearningPower: 2}
+- **Effect:** (see decompiled ImitationLearning.cs)
+- **Upgrade:** ImitationLearningPower+1
 
 ### Impatience
 - **ID:** IMPATIENCE
@@ -3952,7 +4069,7 @@ Game version: see GAME_VERSIONS.md.
 - **Type:** Skill
 - **Rarity:** Uncommon
 - **Target:** AllAllies
-- **Keywords:** Exhaust
+- **Keywords:** None
 - **Tags:** None
 - **Vars:** {Summon: 6}
 - **Effect:** (see decompiled LegionOfBone.cs)
@@ -4097,9 +4214,9 @@ Game version: see GAME_VERSIONS.md.
 - **Target:** AnyEnemy
 - **Keywords:** None
 - **Tags:** None
-- **Vars:** {StrengthLoss: 10, Damage: 15}
+- **Vars:** {StrengthLoss: 10, Damage: 20}
 - **Effect:** (see decompiled Mangle.cs)
-- **Upgrade:** Damage+5; StrengthLoss+5
+- **Upgrade:** Damage+6; StrengthLoss+5
 
 ### ManifestAuthority
 - **ID:** MANIFEST_AUTHORITY
@@ -4149,7 +4266,7 @@ Game version: see GAME_VERSIONS.md.
 - **Target:** AnyEnemy
 - **Keywords:** None
 - **Tags:** None
-- **Vars:** {Increase: 1, Damage: 5}
+- **Vars:** {Increase: 2, Damage: 5}
 - **Effect:** (see decompiled Maul.cs)
 - **Upgrade:** Damage+1; Increase+1
 
@@ -4231,6 +4348,19 @@ Game version: see GAME_VERSIONS.md.
 - **Effect:** (see decompiled MeteorStrike.cs)
 - **Upgrade:** Damage+6
 
+### Midnight
+- **ID:** MIDNIGHT
+- **Color:** ironclad
+- **Cost:** 12
+- **Type:** Attack
+- **Rarity:** Rare
+- **Target:** AnyEnemy
+- **Keywords:** None
+- **Tags:** None
+- **Vars:** {Damage: 60}
+- **Effect:** (see decompiled Midnight.cs)
+- **Upgrade:** Damage+12
+
 ### Mimic
 - **ID:** MIMIC
 - **Color:** colorless
@@ -4292,7 +4422,7 @@ Game version: see GAME_VERSIONS.md.
 - **Target:** Self
 - **Keywords:** Exhaust
 - **Tags:** Minion
-- **Vars:** {Block: 8}
+- **Vars:** {Block: 7}
 - **Effect:** (see decompiled MinionSacrifice.cs)
 - **Upgrade:** Block+3
 
@@ -4320,7 +4450,7 @@ Game version: see GAME_VERSIONS.md.
 - **Tags:** None
 - **Vars:** {CalcBase: 0, CalculationExtra: 1, ValueProp.Move: dynamic}
 - **Effect:** (see decompiled Mirage.cs)
-- **Upgrade:** Cost-1
+- **Upgrade:** Remove Exhaust
 
 ### Misery
 - **ID:** MISERY
@@ -4370,9 +4500,9 @@ Game version: see GAME_VERSIONS.md.
 - **Target:** AnyEnemy
 - **Keywords:** None
 - **Tags:** Strike
-- **Vars:** {Damage: 10}
+- **Vars:** {Damage: 11}
 - **Effect:** (see decompiled MomentumStrike.cs)
-- **Upgrade:** Damage+3
+- **Upgrade:** Damage+4
 
 ### MonarchsGaze
 - **ID:** MONARCHS_GAZE_CARD
@@ -4591,7 +4721,7 @@ Game version: see GAME_VERSIONS.md.
 - **Target:** AnyEnemy
 - **Keywords:** None
 - **Tags:** None
-- **Vars:** {Damage: 10, WeakPower: 2}
+- **Vars:** {Damage: 10, WeakPower: 1}
 - **Effect:** (see decompiled Null.cs)
 - **Upgrade:** Damage+3; Weak+1
 
@@ -4634,6 +4764,19 @@ Game version: see GAME_VERSIONS.md.
 - **Effect:** (see decompiled Omnislice.cs)
 - **Upgrade:** Damage+3
 
+### OneForAll
+- **ID:** ONE_FOR_ALL
+- **Color:** defect
+- **Cost:** 1
+- **Type:** Power
+- **Rarity:** Rare
+- **Target:** AllAllies
+- **Keywords:** None
+- **Tags:** None
+- **Vars:** {OneForAllPower: 3}
+- **Effect:** (see decompiled OneForAll.cs)
+- **Upgrade:** OneForAllPower+1
+
 ### OneTwoPunch
 - **ID:** ONE_TWO_PUNCH_CARD
 - **Color:** ironclad
@@ -4663,15 +4806,15 @@ Game version: see GAME_VERSIONS.md.
 ### Outbreak
 - **ID:** OUTBREAK_CARD
 - **Color:** silent
-- **Cost:** 1
-- **Type:** Power
-- **Rarity:** Uncommon
-- **Target:** Self
+- **Cost:** 3
+- **Type:** Skill
+- **Rarity:** Rare
+- **Target:** AllEnemies
 - **Keywords:** None
 - **Tags:** None
-- **Vars:** {OutbreakPower: 11, Repeat: 3}
+- **Vars:** {PoisonPower: 9}
 - **Effect:** (see decompiled Outbreak.cs)
-- **Upgrade:** OutbreakPower+4
+- **Upgrade:** Poison+3
 
 ### Outmaneuver
 - **ID:** OUTMANEUVER
@@ -4685,6 +4828,19 @@ Game version: see GAME_VERSIONS.md.
 - **Vars:** {Energy: 2}
 - **Effect:** (see decompiled Outmaneuver.cs)
 - **Upgrade:** Energy+1
+
+### Outrage
+- **ID:** OUTRAGE
+- **Color:** ironclad
+- **Cost:** 0
+- **Type:** Attack
+- **Rarity:** Uncommon
+- **Target:** AnyEnemy
+- **Keywords:** None
+- **Tags:** None
+- **Vars:** {Damage: 9}
+- **Effect:** (see decompiled Outrage.cs)
+- **Upgrade:** Damage+4
 
 ### Overclock
 - **ID:** OVERCLOCK
@@ -4708,7 +4864,7 @@ Game version: see GAME_VERSIONS.md.
 - **Target:** AllEnemies
 - **Keywords:** None
 - **Tags:** None
-- **Vars:** {Damage: 17, Cards: 3}
+- **Vars:** {Damage: 18, Cards: 3}
 - **Effect:** (see decompiled PactsEnd.cs)
 - **Upgrade:** Damage+6
 
@@ -4903,7 +5059,7 @@ Game version: see GAME_VERSIONS.md.
 - **Target:** Self
 - **Keywords:** None
 - **Tags:** None
-- **Vars:** {Block: 3}
+- **Vars:** {Block: 2}
 - **Effect:** (see decompiled PillarOfCreation.cs)
 - **Upgrade:** Block+1
 
@@ -4919,6 +5075,19 @@ Game version: see GAME_VERSIONS.md.
 - **Vars:** {Damage: 15}
 - **Effect:** (see decompiled Pinpoint.cs)
 - **Upgrade:** Damage+4
+
+### Plot
+- **ID:** PLOT
+- **Color:** regent
+- **Cost:** 1
+- **Type:** Skill
+- **Rarity:** Uncommon
+- **Target:** AllAllies
+- **Keywords:** None
+- **Tags:** None
+- **Vars:** {Cards: 2}
+- **Effect:** (see decompiled Plot.cs)
+- **Upgrade:** Cards+1
 
 ### PoisonedStab
 - **ID:** POISONED_STAB
@@ -5267,9 +5436,9 @@ Game version: see GAME_VERSIONS.md.
 - **Target:** AnyEnemy
 - **Keywords:** None
 - **Tags:** None
-- **Vars:** {Increase: 5, Damage: 9}
+- **Vars:** {Increase: 5, Damage: 10}
 - **Effect:** (see decompiled Rampage.cs)
-- **Upgrade:** Increase+4
+- **Upgrade:** Increase+5
 
 ### Rattle
 - **ID:** RATTLE
@@ -5332,9 +5501,9 @@ Game version: see GAME_VERSIONS.md.
 - **Target:** AnyEnemy
 - **Keywords:** None
 - **Tags:** None
-- **Vars:** {Damage: 9, Cards: 1}
+- **Vars:** {Damage: 10, Cards: 1}
 - **Effect:** (see decompiled Reave.cs)
-- **Upgrade:** Damage+2
+- **Upgrade:** Damage+3
 
 ### Reboot
 - **ID:** REBOOT
@@ -5371,7 +5540,7 @@ Game version: see GAME_VERSIONS.md.
 - **Target:** Self
 - **Keywords:** None
 - **Tags:** None
-- **Vars:** {Forge: 9, Energy: 1}
+- **Vars:** {Forge: 8, Energy: 1}
 - **Effect:** (see decompiled RefineBlade.cs)
 - **Upgrade:** Forge+4
 
@@ -5410,7 +5579,7 @@ Game version: see GAME_VERSIONS.md.
 - **Target:** AnyEnemy
 - **Keywords:** None
 - **Tags:** None
-- **Vars:** {Repeat: 2, Damage: 9}
+- **Vars:** {Repeat: 2, Damage: 10}
 - **Effect:** (see decompiled Refract.cs)
 - **Upgrade:** Damage+3
 
@@ -5436,27 +5605,27 @@ Game version: see GAME_VERSIONS.md.
 - **Target:** Self
 - **Keywords:** Exhaust
 - **Tags:** None
-- **Vars:** {Block: 15, Cards: 2, Energy: 2}
+- **Vars:** {Block: 16, Cards: 2, Energy: 2}
 - **Effect:** (see decompiled Relax.cs)
 - **Upgrade:** Block+2; Cards+1; Energy+1
 
 ### Rend
 - **ID:** REND
 - **Color:** colorless
-- **Cost:** 2
+- **Cost:** 1
 - **Type:** Attack
 - **Rarity:** Rare
 - **Target:** AnyEnemy
 - **Keywords:** None
 - **Tags:** None
-- **Vars:** {CalcBase: 15, ExtraDamage: 5, CalculatedDamage: dynamic}
+- **Vars:** {CalcBase: 10, ExtraDamage: 5, CalculatedDamage: dynamic}
 - **Effect:** (see decompiled Rend.cs)
-- **Upgrade:** ExtraDamage+3; CalcBase+3
+- **Upgrade:** ExtraDamage+3; CalcBase+2
 
 ### Resonance
 - **ID:** RESONANCE
 - **Color:** regent
-- **Cost:** 1 | StarCost: 3
+- **Cost:** 1 | StarCost: 2
 - **Type:** Skill
 - **Rarity:** Uncommon
 - **Target:** AllEnemies
@@ -5601,26 +5770,13 @@ Game version: see GAME_VERSIONS.md.
 - **Color:** colorless
 - **Cost:** 1
 - **Type:** Attack
-- **Rarity:** Rare
+- **Rarity:** Uncommon
 - **Target:** AnyEnemy
 - **Keywords:** None
 - **Tags:** None
 - **Vars:** {Damage: 12}
 - **Effect:** (see decompiled Salvo.cs)
 - **Upgrade:** Damage+4
-
-### Scare
-- **ID:** SCARE
-- **Color:** silent
-- **Cost:** 0
-- **Type:** Skill
-- **Rarity:** Uncommon
-- **Target:** AllEnemies
-- **Keywords:** Exhaust
-- **Tags:** None
-- **Vars:** None
-- **Effect:** (see decompiled Scare.cs)
-- **Upgrade:** Remove Exhaust
 
 ### Scavenge
 - **ID:** SCAVENGE
@@ -5800,7 +5956,7 @@ Game version: see GAME_VERSIONS.md.
 - **Target:** AnyEnemy
 - **Keywords:** None
 - **Tags:** Strike
-- **Vars:** {Damage: 7, StrengthPower: 2}
+- **Vars:** {Damage: 7, StrengthPower: 3}
 - **Effect:** (see decompiled SetupStrike.cs)
 - **Upgrade:** Damage+2; Strength+1
 
@@ -5902,7 +6058,7 @@ Game version: see GAME_VERSIONS.md.
 - **Type:** Attack
 - **Rarity:** Rare
 - **Target:** AllEnemies
-- **Keywords:** None
+- **Keywords:** Exhaust
 - **Tags:** None
 - **Vars:** {Damage: 7}
 - **Effect:** (see decompiled Shatter.cs)
@@ -5956,7 +6112,7 @@ Game version: see GAME_VERSIONS.md.
 - **Target:** Self
 - **Keywords:** None
 - **Tags:** None
-- **Vars:** {Block: 2}
+- **Vars:** {Block: 3}
 - **Effect:** (see decompiled Shroud.cs)
 - **Upgrade:** Block+1
 
@@ -5985,6 +6141,19 @@ Game version: see GAME_VERSIONS.md.
 - **Vars:** {OstyDamage: 5, SicEmPower: 3}
 - **Effect:** (see decompiled SicEm.cs)
 - **Upgrade:** OstyDamage+1; SicEmPower+1
+
+### Sidestep
+- **ID:** SIDESTEP
+- **Color:** silent
+- **Cost:** 0
+- **Type:** Skill
+- **Rarity:** Uncommon
+- **Target:** Self
+- **Keywords:** None
+- **Tags:** None
+- **Vars:** {Energy: 1}
+- **Effect:** (see decompiled Sidestep.cs)
+- **Upgrade:** Energy+1
 
 ### SignalBoost
 - **ID:** SIGNAL_BOOST
@@ -6177,9 +6346,22 @@ Game version: see GAME_VERSIONS.md.
 - **Target:** AnyEnemy
 - **Keywords:** None
 - **Tags:** None
-- **Vars:** {CalcBase: 9, ExtraDamage: 2, CalculatedDamage: dynamic}
+- **Vars:** {CalcBase: 9, ExtraDamage: 4, CalculatedDamage: dynamic}
 - **Effect:** (see decompiled SoulStorm.cs)
-- **Upgrade:** ExtraDamage+1
+- **Upgrade:** ExtraDamage+2
+
+### Soulbound
+- **ID:** SOULBOUND
+- **Color:** necrobinder
+- **Cost:** 1
+- **Type:** Power
+- **Rarity:** Uncommon
+- **Target:** AnyAlly
+- **Keywords:** None
+- **Tags:** None
+- **Vars:** None
+- **Effect:** (see decompiled Soulbound.cs)
+- **Upgrade:** Add Innate
 
 ### SovereignBlade
 - **ID:** SOVEREIGN_BLADE
@@ -6277,7 +6459,7 @@ Game version: see GAME_VERSIONS.md.
 - **Color:** colorless
 - **Cost:** 1
 - **Type:** Skill
-- **Rarity:** Uncommon
+- **Rarity:** Rare
 - **Target:** Self
 - **Keywords:** None
 - **Tags:** None
@@ -6307,7 +6489,7 @@ Game version: see GAME_VERSIONS.md.
 - **Target:** Self
 - **Keywords:** None
 - **Tags:** None
-- **Vars:** {Forge: 5, Cards: 2}
+- **Vars:** {Forge: 6, Cards: 2}
 - **Effect:** (see decompiled SpoilsOfBattle.cs)
 - **Upgrade:** Forge+3
 
@@ -6606,7 +6788,7 @@ Game version: see GAME_VERSIONS.md.
 - **Target:** AnyEnemy
 - **Keywords:** None
 - **Tags:** None
-- **Vars:** {Damage: 24, Energy: 3}
+- **Vars:** {Damage: 26, Energy: 3}
 - **Effect:** (see decompiled Sunder.cs)
 - **Upgrade:** Damage+8
 
@@ -6721,11 +6903,11 @@ Game version: see GAME_VERSIONS.md.
 - **Type:** Skill
 - **Rarity:** Uncommon
 - **Target:** Self
-- **Keywords:** Exhaust
+- **Keywords:** None
 - **Tags:** None
-- **Vars:** {CalcBase: 0, CalculationExtra: 2, CalculatedFocus: dynamic}
+- **Vars:** {CalcBase: 0, CalculationExtra: 1, CalculatedFocus: dynamic}
 - **Effect:** (see decompiled Synchronize.cs)
-- **Upgrade:** Remove Exhaust
+- **Upgrade:** CalculationExtra+1
 
 ### Synthesis
 - **ID:** SYNTHESIS
@@ -6775,7 +6957,7 @@ Game version: see GAME_VERSIONS.md.
 - **Target:** Self
 - **Keywords:** None
 - **Tags:** None
-- **Vars:** None
+- **Vars:** {DamageIncrease: 1.5, DamageDecrease: 0.5}
 - **Effect:** (see decompiled Tank.cs)
 - **Upgrade:** Cost-1
 
@@ -6784,11 +6966,11 @@ Game version: see GAME_VERSIONS.md.
 - **Color:** ironclad
 - **Cost:** 1
 - **Type:** Skill
-- **Rarity:** Uncommon
+- **Rarity:** Common
 - **Target:** AnyEnemy
 - **Keywords:** None
 - **Tags:** None
-- **Vars:** {Block: 7, VulnerablePower: 1}
+- **Vars:** {Block: 6, VulnerablePower: 1}
 - **Effect:** (see decompiled Taunt.cs)
 - **Upgrade:** Block+1; Vulnerable+1
 
@@ -6827,9 +7009,9 @@ Game version: see GAME_VERSIONS.md.
 - **Target:** Self
 - **Keywords:** None
 - **Tags:** None
-- **Vars:** {VigorPower: 6}
+- **Vars:** {VigorPower: 7}
 - **Effect:** (see decompiled Terraforming.cs)
-- **Upgrade:** VigorPower+2
+- **Upgrade:** VigorPower+3
 
 ### TeslaCoil
 - **ID:** TESLA_COIL
@@ -6843,6 +7025,19 @@ Game version: see GAME_VERSIONS.md.
 - **Vars:** {Damage: 3}
 - **Effect:** (see decompiled TeslaCoil.cs)
 - **Upgrade:** Damage+1
+
+### TheBall
+- **ID:** THE_BALL
+- **Color:** colorless
+- **Cost:** 1
+- **Type:** Attack
+- **Rarity:** Uncommon
+- **Target:** AnyEnemy
+- **Keywords:** None
+- **Tags:** None
+- **Vars:** {Increase: 10, Damage: 10}
+- **Effect:** (see decompiled TheBall.cs)
+- **Upgrade:** Increase+5
 
 ### TheBomb
 - **ID:** THE_BOMB_CARD
@@ -6894,7 +7089,7 @@ Game version: see GAME_VERSIONS.md.
 - **Tags:** None
 - **Vars:** {CurrentDamage: dynamic, Increase: dynamic}
 - **Effect:** (see decompiled TheScythe.cs)
-- **Upgrade:** Increase+1
+- **Upgrade:** Increase+2
 
 ### TheSealedThrone
 - **ID:** THE_SEALED_THRONE
@@ -6970,9 +7165,9 @@ Game version: see GAME_VERSIONS.md.
 - **Target:** Self
 - **Keywords:** None
 - **Tags:** None
-- **Vars:** {ThunderPower: 6}
+- **Vars:** {ThunderPower: 8}
 - **Effect:** (see decompiled Thunder.cs)
-- **Upgrade:** ThunderPower+2
+- **Upgrade:** ThunderPower+3
 
 ### Thunderclap
 - **ID:** THUNDERCLAP
@@ -6994,7 +7189,7 @@ Game version: see GAME_VERSIONS.md.
 - **Type:** Attack
 - **Rarity:** Rare
 - **Target:** AnyEnemy
-- **Keywords:** Exhaust
+- **Keywords:** None
 - **Tags:** None
 - **Vars:** {CalcBase: 0, ExtraDamage: 1, CalculatedDamage: dynamic}
 - **Effect:** (see decompiled TimesUp.cs)
@@ -7076,7 +7271,7 @@ Game version: see GAME_VERSIONS.md.
 - **Tags:** None
 - **Vars:** None
 - **Effect:** (see decompiled TrashToTreasure.cs)
-- **Upgrade:** Add Innate
+- **Upgrade:** Cost-1
 
 ### Tremble
 - **ID:** TREMBLE
@@ -7116,6 +7311,19 @@ Game version: see GAME_VERSIONS.md.
 - **Vars:** {Energy: 2}
 - **Effect:** (see decompiled Turbo.cs)
 - **Upgrade:** Energy+1
+
+### Tutor
+- **ID:** TUTOR
+- **Color:** regent
+- **Cost:** 1
+- **Type:** Skill
+- **Rarity:** Rare
+- **Target:** AnyAlly
+- **Keywords:** None
+- **Tags:** None
+- **Vars:** None
+- **Effect:** (see decompiled Tutor.cs)
+- **Upgrade:** Cost-1
 
 ### TwinStrike
 - **ID:** TWIN_STRIKE
@@ -7181,6 +7389,19 @@ Game version: see GAME_VERSIONS.md.
 - **Vars:** {Block: 7}
 - **Effect:** (see decompiled Undeath.cs)
 - **Upgrade:** Block+2
+
+### Underworld
+- **ID:** UNDERWORLD
+- **Color:** necrobinder
+- **Cost:** 2
+- **Type:** Skill
+- **Rarity:** Uncommon
+- **Target:** Self
+- **Keywords:** Exhaust
+- **Tags:** None
+- **Vars:** None
+- **Effect:** (see decompiled Underworld.cs)
+- **Upgrade:** Remove Exhaust
 
 ### Unleash
 - **ID:** UNLEASH
@@ -7380,15 +7601,15 @@ Game version: see GAME_VERSIONS.md.
 ### WellLaidPlans
 - **ID:** WELL_LAID_PLANS
 - **Color:** silent
-- **Cost:** 1
+- **Cost:** 2
 - **Type:** Power
-- **Rarity:** Uncommon
+- **Rarity:** Rare
 - **Target:** Self
 - **Keywords:** None
 - **Tags:** None
-- **Vars:** {RetainAmount: 1}
+- **Vars:** None
 - **Effect:** (see decompiled WellLaidPlans.cs)
-- **Upgrade:** RetainAmount+1
+- **Upgrade:** Cost-1
 
 ### Whirlwind
 - **ID:** WHIRLWIND
@@ -7406,7 +7627,7 @@ Game version: see GAME_VERSIONS.md.
 ### Whistle
 - **ID:** WHISTLE
 - **Color:** event
-- **Cost:** 3
+- **Cost:** 2
 - **Type:** Attack
 - **Rarity:** Ancient
 - **Target:** AnyEnemy

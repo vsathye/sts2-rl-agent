@@ -257,14 +257,16 @@ def modify_damage(
         if is_relic:
             damage += listener.modify_damage_additive(owner, dealer, target, props, card_source)
         else:
-            damage += listener.modify_damage_additive(owner, dealer, target, props)
+            method = getattr(listener, "modify_damage_additive_from_card", None)
+            damage += method(owner, dealer, target, props, card_source) if method else listener.modify_damage_additive(owner, dealer, target, props)
 
     # Step 2: Multiplicative modifiers
     for owner, listener, is_relic in _iter_hook_listeners(combat):
         if is_relic:
             damage *= listener.modify_damage_multiplicative(owner, dealer, target, props, card_source)
         else:
-            damage *= listener.modify_damage_multiplicative(owner, dealer, target, props)
+            method = getattr(listener, "modify_damage_multiplicative_from_card", None)
+            damage *= method(owner, dealer, target, props, card_source) if method else listener.modify_damage_multiplicative(owner, dealer, target, props)
     if card_source is not None and hasattr(card_source, "enchantments"):
         damage *= enchant_damage_multiplicative(card_source, props)
 
@@ -743,7 +745,7 @@ def should_draw(combat: CombatState, drawing_owner: Creature, from_hand_draw: bo
 
 def should_take_extra_turn(combat: CombatState) -> bool:
     """Return whether the player should immediately take another turn."""
-    for owner, relic in _iter_relic_listeners(combat):
+    for owner, relic, _is_relic in _iter_hook_listeners(combat):
         result = relic.should_take_extra_turn(owner, combat)
         if result is True:
             return True
@@ -1109,6 +1111,6 @@ def fire_after_combat_end(combat: CombatState) -> None:
 
 
 def fire_after_taking_extra_turn(combat: CombatState) -> None:
-    for owner, relic in _iter_relic_listeners(combat):
+    for owner, relic, _is_relic in _iter_hook_listeners(combat):
         if relic.should_take_extra_turn(owner, combat):
             relic.after_taking_extra_turn(owner, combat)

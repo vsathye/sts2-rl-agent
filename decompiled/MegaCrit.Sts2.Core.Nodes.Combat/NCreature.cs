@@ -30,6 +30,7 @@ using MegaCrit.Sts2.Core.Nodes.Orbs;
 using MegaCrit.Sts2.Core.Nodes.Rooms;
 using MegaCrit.Sts2.Core.Nodes.Screens.ScreenContext;
 using MegaCrit.Sts2.Core.Nodes.Vfx;
+using MegaCrit.Sts2.Core.Nodes.Vfx.Ui;
 using MegaCrit.Sts2.Core.Random;
 using MegaCrit.Sts2.Core.Rooms;
 using MegaCrit.Sts2.Core.Runs;
@@ -126,6 +127,11 @@ public class NCreature : Control
 		/// Cached name for the 'ToggleIsInteractable' method.
 		/// </summary>
 		public static readonly StringName ToggleIsInteractable = "ToggleIsInteractable";
+
+		/// <summary>
+		/// Cached name for the 'DisableInteractionForDeath' method.
+		/// </summary>
+		public static readonly StringName DisableInteractionForDeath = "DisableInteractionForDeath";
 
 		/// <summary>
 		/// Cached name for the 'AnimDisableUi' method.
@@ -502,7 +508,7 @@ public class NCreature : Control
 		{
 			if (Entity.Player != null)
 			{
-				_spineAnimator = Entity.Player.Character.GenerateAnimator(Visuals.SpineBody);
+				_spineAnimator = Entity.Player.Character.GenerateAnimator(Visuals.SpineBody, Entity);
 			}
 			else
 			{
@@ -513,8 +519,8 @@ public class NCreature : Control
 			if (Entity.IsDead)
 			{
 				SetAnimationTrigger("Dead");
-				MegaTrackEntry currentTrack = SpineAnimation.GetCurrentTrack();
-				currentTrack?.SetTrackTime(currentTrack.GetAnimationEnd());
+				using MegaTrackEntry megaTrackEntry = SpineAnimation.GetCurrentTrack();
+				megaTrackEntry?.SetTrackTime(megaTrackEntry.GetAnimationEnd());
 			}
 		}
 		SetOrbManagerPosition();
@@ -697,7 +703,7 @@ public class NCreature : Control
 			NTargetManager.Instance.OnNodeHovered(this);
 			return;
 		}
-		if (NControllerManager.Instance.IsUsingController)
+		if (NControllerManager.Instance.IsUsingDirectionalNavigation)
 		{
 			ShowSingleSelectReticle();
 		}
@@ -875,12 +881,12 @@ public class NCreature : Control
 
 	public float GetCurrentAnimationTimeRemaining()
 	{
-		MegaTrackEntry currentTrack = SpineAnimation.GetCurrentTrack();
-		if (currentTrack == null)
+		using MegaTrackEntry megaTrackEntry = SpineAnimation.GetCurrentTrack();
+		if (megaTrackEntry == null)
 		{
 			return 0f;
 		}
-		return currentTrack.GetTrackComplete() - currentTrack.GetTrackTime();
+		return megaTrackEntry.GetTrackComplete() - megaTrackEntry.GetTrackTime();
 	}
 
 	public void ToggleIsInteractable(bool on)
@@ -888,6 +894,17 @@ public class NCreature : Control
 		IsInteractable = on;
 		_stateDisplay.Visible = !NCombatUi.IsDebugHidingHpBar && on;
 		Hitbox.MouseFilter = (MouseFilterEnum)(on ? 0 : 2);
+		Hitbox.FocusMode = (FocusModeEnum)(on ? 2 : 0);
+	}
+
+	public void DisableInteractionForDeath()
+	{
+		if (Hitbox.HasFocus())
+		{
+			ActiveScreenContext.Instance.FocusOnDefaultControl();
+		}
+		Hitbox.FocusMode = FocusModeEnum.None;
+		Hitbox.MouseFilter = MouseFilterEnum.Ignore;
 	}
 
 	public Tween AnimDisableUi()
@@ -913,11 +930,7 @@ public class NCreature : Control
 
 	public float StartDeathAnim(bool shouldRemove)
 	{
-		if (Hitbox.HasFocus())
-		{
-			ActiveScreenContext.Instance.FocusOnDefaultControl();
-		}
-		Hitbox.FocusMode = FocusModeEnum.None;
+		DisableInteractionForDeath();
 		foreach (NIntent item in IntentContainer.GetChildren().OfType<NIntent>())
 		{
 			item.SetFrozen(isFrozen: true);
@@ -938,6 +951,7 @@ public class NCreature : Control
 			if (Entity.Player != null)
 			{
 				SfxCmd.PlayDeath(Entity.Player);
+				Visuals.RemoveFormVfx();
 			}
 			SetAnimationTrigger("Dead");
 			a = GetCurrentAnimationLength();
@@ -981,18 +995,17 @@ public class NCreature : Control
 	private void ImmediatelySetIdle()
 	{
 		_spineAnimator?.SetTrigger("Idle");
-		MegaTrackEntry currentTrack = SpineAnimation.GetCurrentTrack();
-		if (currentTrack != null)
+		using MegaTrackEntry megaTrackEntry = SpineAnimation.GetCurrentTrack();
+		if (megaTrackEntry != null)
 		{
-			currentTrack.SetMixDuration(0f);
-			currentTrack.SetTrackTime(currentTrack.GetAnimationEnd());
+			megaTrackEntry.SetMixDuration(0f);
+			megaTrackEntry.SetTrackTime(megaTrackEntry.GetAnimationEnd());
 		}
 	}
 
 	private async Task AnimDie(bool shouldRemove, CancellationToken cancelToken)
 	{
 		Tween disableUiTween = AnimDisableUi();
-		Hitbox.MouseFilter = MouseFilterEnum.Ignore;
 		if (!RunManager.Instance.IsSingleplayerOrFakeMultiplayer)
 		{
 			OrbManager?.ClearOrbs();
@@ -1098,7 +1111,16 @@ public class NCreature : Control
 		float num = Mathf.Lerp(Osty.ScaleRange.X, Osty.ScaleRange.Y, Mathf.Clamp(ostyHealth / 150f, 0f, 1f));
 		NCreature nCreature = NCombatRoom.Instance?.GetCreatureNode(Entity.PetOwner.Creature);
 		_scaleTween = CreateTween();
-		_scaleTween.TweenProperty(Visuals, "scale", Vector2.One * num * Visuals.DefaultScale, duration).SetEase(Tween.EaseType.InOut).SetTrans(Tween.TransitionType.Sine);
+		Vector2 vector = Vector2.One * num * Visuals.DefaultScale;
+		if (NCombatRoom.Instance != null && !NCombatRoom.Instance.SceneContainer.IsAncestorOf(Visuals))
+		{
+			ICombatState combatState = Entity.CombatState;
+			if (combatState != null && combatState.Encounter != null)
+			{
+				vector *= Entity.CombatState.Encounter.GetCameraScaling();
+			}
+		}
+		_scaleTween.TweenProperty(Visuals, "scale", vector, duration).SetEase(Tween.EaseType.InOut).SetTrans(Tween.TransitionType.Sine);
 		if (LocalContext.IsMe(Entity.PetOwner))
 		{
 			_scaleTween.Parallel().TweenProperty(this, "position", nCreature.Position + GetOstyOffsetFromPlayer(Entity), duration);
@@ -1250,7 +1272,7 @@ public class NCreature : Control
 	[EditorBrowsable(EditorBrowsableState.Never)]
 	internal static List<MethodInfo> GetGodotMethodList()
 	{
-		List<MethodInfo> list = new List<MethodInfo>(41);
+		List<MethodInfo> list = new List<MethodInfo>(42);
 		list.Add(new MethodInfo(MethodName._Ready, new PropertyInfo(Variant.Type.Nil, "", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false), MethodFlags.Normal, null, null));
 		list.Add(new MethodInfo(MethodName._EnterTree, new PropertyInfo(Variant.Type.Nil, "", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false), MethodFlags.Normal, null, null));
 		list.Add(new MethodInfo(MethodName._ExitTree, new PropertyInfo(Variant.Type.Nil, "", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false), MethodFlags.Normal, null, null));
@@ -1279,6 +1301,7 @@ public class NCreature : Control
 		{
 			new PropertyInfo(Variant.Type.Bool, "on", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false)
 		}, null));
+		list.Add(new MethodInfo(MethodName.DisableInteractionForDeath, new PropertyInfo(Variant.Type.Nil, "", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false), MethodFlags.Normal, null, null));
 		list.Add(new MethodInfo(MethodName.AnimDisableUi, new PropertyInfo(Variant.Type.Object, "", PropertyHint.None, "", PropertyUsageFlags.Default, new StringName("Tween"), exported: false), MethodFlags.Normal, null, null));
 		list.Add(new MethodInfo(MethodName.AnimEnableUi, new PropertyInfo(Variant.Type.Object, "", PropertyHint.None, "", PropertyUsageFlags.Default, new StringName("Tween"), exported: false), MethodFlags.Normal, null, null));
 		list.Add(new MethodInfo(MethodName.StartDeathAnim, new PropertyInfo(Variant.Type.Float, "", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false), MethodFlags.Normal, new List<PropertyInfo>
@@ -1438,6 +1461,12 @@ public class NCreature : Control
 		if (method == MethodName.ToggleIsInteractable && args.Count == 1)
 		{
 			ToggleIsInteractable(VariantUtils.ConvertTo<bool>(in args[0]));
+			ret = default(godot_variant);
+			return true;
+		}
+		if (method == MethodName.DisableInteractionForDeath && args.Count == 0)
+		{
+			DisableInteractionForDeath();
 			ret = default(godot_variant);
 			return true;
 		}
@@ -1654,6 +1683,10 @@ public class NCreature : Control
 			return true;
 		}
 		if (method == MethodName.ToggleIsInteractable)
+		{
+			return true;
+		}
+		if (method == MethodName.DisableInteractionForDeath)
 		{
 			return true;
 		}

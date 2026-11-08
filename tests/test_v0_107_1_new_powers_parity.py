@@ -237,22 +237,16 @@ class TestNoEnergyGainPowerParity:
         combat.gain_energy(combat.player, 2)
         assert combat.energy == energy_before + 2
 
-    def test_applied_by_expect_a_fight(self):
-        """ExpectAFight.cs OnPlay: gain CalculatedEnergy (= Attacks in hand),
-        then `PowerCmd.Apply<NoEnergyGainPower>(1)` on the owner — the gained
-        energy stands, later gains this turn are blocked."""
+    def test_expect_a_fight_no_longer_applies_no_energy_gain(self):
         combat = _make_combat()
-        combat.hand = [make_expect_a_fight(), make_strike_ironclad(), make_strike_ironclad()]
-        combat.energy = 2
-
-        # 2 (cost) paid, +2 gained (two Attacks in hand incl. ExpectAFight? No:
-        # ExpectAFight is a Skill -> CalculatedEnergy counts the 2 Strikes).
+        combat.hand = [make_expect_a_fight(upgraded=True)]
+        combat.energy = 3
+        combat.apply_power_to(combat.player, PowerId.STRENGTH, 2)
         assert combat.play_card(0)
-        assert combat.energy == 2
-        assert combat.player.has_power(PowerId.NO_ENERGY_GAIN)
-
+        assert combat.player.block == 32
+        assert not combat.player.has_power(PowerId.NO_ENERGY_GAIN)
         combat.gain_energy(combat.player, 1)
-        assert combat.energy == 2
+        assert combat.energy == 1
 
 
 # ---------------------------------------------------------------------------

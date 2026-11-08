@@ -145,7 +145,7 @@ class TestRegentCardEffectsReferenceParity:
 
         assert combat.play_card(0, 0)
 
-        assert enemy.current_hp == 70
+        assert enemy.current_hp == 65
         assert combat.stars == 0
 
     def test_gamma_blast_spends_stars_then_applies_weak_and_vulnerable(self):
@@ -510,7 +510,7 @@ class TestRegentCardEffectsReferenceParity:
         assert combat.play_card(0)
         assert blocked.current_hp == 100
         assert blocked.get_power_amount(PowerId.CRUSH_UNDER) == 0
-        assert hittable.current_hp == 92
+        assert hittable.current_hp == 91
         assert hittable.get_power_amount(PowerId.CRUSH_UNDER) == 2
         assert hittable.get_power_amount(PowerId.STRENGTH) == -2
 
@@ -552,9 +552,9 @@ class TestRegentCardEffectsReferenceParity:
         owner_blade = next(card for card in combat.hand if card.card_id == CardId.SOVEREIGN_BLADE)
         ally_hand = combat._ally_player_zones[ally]["hand"]  # noqa: SLF001
         ally_blade = next(card for card in ally_hand if card.card_id == CardId.SOVEREIGN_BLADE)
-        # C# SpoilsOfBattle.cs:15: ForgeVar(5) => blade 10 + 5.
-        assert owner_blade.base_damage == 15
-        assert ally_blade.base_damage == 15
+        # C# SpoilsOfBattle.cs:15: ForgeVar(6) => blade 10 + 6.
+        assert owner_blade.base_damage == 16
+        assert ally_blade.base_damage == 16
 
     def test_monologue_gains_strength_per_card_played_then_resets_end_of_turn(self):
         combat = _make_combat()

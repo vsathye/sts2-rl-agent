@@ -239,7 +239,7 @@ public class GetLogsConsoleCmd : AbstractConsoleCmd
 		CollectionsMarshal.SetCount(list2, num);
 		Span<string> span = CollectionsMarshal.AsSpan(list2);
 		int num2 = 0;
-		span[num2] = ProfileSaveManager.ProfilePath;
+		span[num2] = ProfileSaveManager.GetProfileSavePath();
 		num2++;
 		span[num2] = "settings.save";
 		num2++;

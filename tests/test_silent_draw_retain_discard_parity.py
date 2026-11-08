@@ -116,14 +116,14 @@ class TestSilentDrawRetainDiscardParity:
         seen_scripted = sum(1 for card in combat.hand + combat.discard_pile if id(card) in scripted_ids)
         assert seen_scripted == 6
 
-    def test_well_laid_plans_retains_one_card_during_end_of_turn_flush(self):
+    def test_well_laid_plans_retains_all_cards_during_end_of_turn_flush(self):
         combat = _make_combat()
         keep = make_defend_silent()
         toss = make_strike_silent()
         combat.hand = [make_well_laid_plans(), keep, toss]
         combat.draw_pile = []
         combat.discard_pile = []
-        combat.energy = 1
+        combat.energy = 2
 
         assert combat.play_card(0)
         assert combat.player.get_power_amount(PowerId.WELL_LAID_PLANS) == 1
@@ -131,8 +131,8 @@ class TestSilentDrawRetainDiscardParity:
         fire_before_turn_end(CombatSide.PLAYER, combat)
         combat._resolve_end_of_turn_hand()  # noqa: SLF001
 
-        assert combat.hand == [keep]
-        assert combat.discard_pile == [toss]
+        assert combat.hand == [keep, toss]
+        assert combat.discard_pile == []
 
     def test_well_laid_plans_retains_extra_cards_beyond_existing_single_turn_retain(self):
         combat = _make_combat()
@@ -151,8 +151,8 @@ class TestSilentDrawRetainDiscardParity:
         fire_before_turn_end(CombatSide.PLAYER, combat)
         combat._resolve_end_of_turn_hand()  # noqa: SLF001
 
-        assert combat.hand == [already_retained, keep_a, keep_b]
-        assert combat.discard_pile == [toss]
+        assert combat.hand == [already_retained, keep_a, keep_b, toss]
+        assert combat.discard_pile == []
 
     def test_hand_trick_does_not_offer_already_sly_skills(self):
         combat = _make_combat()

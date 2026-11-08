@@ -156,8 +156,8 @@ class TestRegentParity:
         assert combat.play_card(0)
         assert combat.player.get_power_amount(PowerId.ENERGY_NEXT_TURN) == 1
         blade = next(card for card in combat.hand if card.card_id.name == "SOVEREIGN_BLADE")
-        # C# RefineBlade.cs:16: ForgeVar(9) => blade 10 + 9.
-        assert blade.base_damage == 19
+        # C# RefineBlade.cs:16: ForgeVar(8) => blade 10 + 8.
+        assert blade.base_damage == 18
 
     def test_seeking_edge_forges_and_applies_seeking_edge_power(self):
         """Matches SeekingEdge.cs: forge immediately, then apply SeekingEdgePower."""
@@ -206,8 +206,8 @@ class TestRegentParity:
 
         assert combat.play_card(0)
         blade = next(card for card in combat.hand if card.card_id.name == "SOVEREIGN_BLADE")
-        # C# SpoilsOfBattle.cs:15: ForgeVar(5) => blade 10 + 5.
-        assert blade.base_damage == 15
+        # C# SpoilsOfBattle.cs:15: ForgeVar(6) => blade 10 + 6.
+        assert blade.base_damage == 16
         assert first_draw in combat.hand
         assert second_draw in combat.hand
 

@@ -11,6 +11,7 @@ using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Context;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
+using MegaCrit.Sts2.Core.Entities.Multiplayer;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
@@ -145,7 +146,7 @@ public abstract class CardModel : AbstractModel
 
 	public static string MissingPortraitPath => ImageHelper.GetImagePath("atlases/card_atlas.sprites/beta.tres");
 
-	private string PortraitPngPath => ImageHelper.GetImagePath($"packed/card_portraits/{Pool.Title.ToLowerInvariant()}/{base.Id.Entry.ToLowerInvariant()}.png");
+	protected virtual string PortraitPngPath => ImageHelper.GetImagePath($"packed/card_portraits/{Pool.Title.ToLowerInvariant()}/{base.Id.Entry.ToLowerInvariant()}.png");
 
 	private string BetaPortraitPngPath => ImageHelper.GetImagePath($"packed/card_portraits/{Pool.Title.ToLowerInvariant()}/beta/{base.Id.Entry.ToLowerInvariant()}.png");
 
@@ -584,7 +585,7 @@ public abstract class CardModel : AbstractModel
 
 	/// <summary>
 	/// Should this card be retained this turn?
-	/// True if the card has the Retain keyword, or if some effect like Well-Laid Plans has made it retain for a single
+	/// True if the card has the Retain keyword, or if some effect like Expertise has made it retain for a single
 	/// turn and it's still that turn.
 	/// </summary>
 	public bool ShouldRetainThisTurn
@@ -1679,22 +1680,12 @@ public abstract class CardModel : AbstractModel
 		return Task.CompletedTask;
 	}
 
-	public async Task OnTurnEndInHandWrapper(PlayerChoiceContext choiceContext)
+	/// <summary>
+	/// This can probably get removed if it stays this way, but I didn't want to change OnTurnEndInHand to public.
+	/// </summary>
+	public Task OnTurnEndInHandWrapper(PlayerChoiceContext choiceContext)
 	{
-		await CardPileCmd.Add(this, PileType.Play);
-		if (LocalContext.IsMe(Owner))
-		{
-			await Cmd.CustomScaledWait(0.3f, 0.6f);
-		}
-		await OnTurnEndInHand(choiceContext);
-		if (Keywords.Contains(CardKeyword.Ethereal))
-		{
-			await CardCmd.Exhaust(choiceContext, this, causedByEthereal: true);
-		}
-		else
-		{
-			await CardPileCmd.Add(this, PileType.Discard.GetPile(Owner));
-		}
+		return OnTurnEndInHand(choiceContext);
 	}
 
 	/// <summary>
@@ -1887,10 +1878,11 @@ public abstract class CardModel : AbstractModel
 		{
 			return;
 		}
-		var (resultPileType, resultPilePosition) = Hook.ModifyCardPlayResultPileTypeAndPosition(combatState, this, isAutoPlay, resources, GetResultPileTypeForCardPlay(), CardPilePosition.Bottom, out IEnumerable<AbstractModel> modifiers);
+		CardLocation resultLocation = GetResultLocationForCardPlay();
+		resultLocation = Hook.ModifyCardPlayResultLocation(combatState, this, isAutoPlay, resources, resultLocation, out IEnumerable<AbstractModel> modifiers);
 		foreach (AbstractModel item in modifiers)
 		{
-			await item.AfterModifyingCardPlayResultPileOrPosition(this, resultPileType, resultPilePosition);
+			await item.AfterModifyingCardPlayResultLocation(this, resultLocation);
 		}
 		int playCount = await GeneratePlayCount(combatState, target);
 		if (Owner.Creature.IsDead)
@@ -1898,11 +1890,15 @@ public abstract class CardModel : AbstractModel
 			return;
 		}
 		ulong playStartTime = Time.GetTicksMsec();
-		CombatManager.Instance.BeginCardOrPotionEffect(Owner);
+		CombatId? effectCombatId = CombatManager.Instance.BeginCardOrPotionEffect(Owner);
 		try
 		{
 			for (int i = 0; i < playCount; i++)
 			{
+				if (CombatManager.Instance.IsOverOrEnding)
+				{
+					break;
+				}
 				CurrentPlayIndex = i;
 				if (Type == CardType.Power)
 				{
@@ -1919,16 +1915,23 @@ public abstract class CardModel : AbstractModel
 				CardPlay cardPlay = new CardPlay
 				{
 					Card = this,
+					Player = Owner,
 					Target = target,
-					ResultPile = resultPileType,
+					ResultPile = resultLocation.pileType,
 					Resources = resources,
 					IsAutoPlay = isAutoPlay,
 					PlayIndex = i,
 					PlayCount = playCount
 				};
 				await Hook.BeforeCardPlayed(combatState, cardPlay);
-				CombatManager.Instance.History.CardPlayStarted(combatState, cardPlay);
-				await OnPlay(choiceContext, cardPlay);
+				if (CombatManager.Instance.IsCurrentLiveCombat(effectCombatId))
+				{
+					CombatManager.Instance.History.CardPlayStarted(combatState, cardPlay);
+				}
+				BranchingPlayerChoiceContext branchingPlayerChoiceContext = new BranchingPlayerChoiceContext(this, LocalContext.NetId.Value, GameActionType.Combat, choiceContext);
+				branchingPlayerChoiceContext.PushModel(this);
+				Task task = OnPlay(branchingPlayerChoiceContext, cardPlay);
+				await branchingPlayerChoiceContext.AssignTaskAndWaitForPauseOrCompletion(task);
 				if (Owner.Creature.IsDead)
 				{
 					return;
@@ -1953,7 +1956,10 @@ public abstract class CardModel : AbstractModel
 					}
 					affliction.InvokeExecutionFinished();
 				}
-				CombatManager.Instance.History.CardPlayFinished(combatState, cardPlay);
+				if (CombatManager.Instance.IsCurrentLiveCombat(effectCombatId))
+				{
+					CombatManager.Instance.History.CardPlayFinished(combatState, cardPlay);
+				}
 				if (CombatManager.Instance.IsInProgress)
 				{
 					await Hook.AfterCardPlayed(combatState, choiceContext, cardPlay);
@@ -1966,30 +1972,38 @@ public abstract class CardModel : AbstractModel
 		}
 		finally
 		{
-			CombatManager.Instance.EndCardOrPotionEffect(Owner);
+			await CombatManager.Instance.EndCardOrPotionEffect(effectCombatId, Owner);
 		}
 		if (!skipCardPileVisuals)
 		{
 			float num = (float)(Time.GetTicksMsec() - playStartTime) / 1000f;
 			await Cmd.CustomScaledWait(0.15f - num, 0.3f - num);
 		}
-		CardPile? pile = Pile;
-		if (pile != null && pile.Type == PileType.Play)
+		Player originalOwner = Owner;
+		if (CombatManager.Instance.CurrentCombatId == effectCombatId)
 		{
-			switch (resultPileType)
+			if (originalOwner != resultLocation.player && resultLocation.pileType != PileType.None)
 			{
-			case PileType.None:
-				await CardPileCmd.RemoveFromCombat(this, skipCardPileVisuals);
-				break;
-			case PileType.Exhaust:
-				await CardCmd.Exhaust(choiceContext, this, causedByEthereal: false, skipCardPileVisuals);
-				break;
-			default:
-				await CardPileCmd.Add(this, resultPileType, resultPilePosition, null, skipCardPileVisuals);
-				break;
+				await CardPileCmd.GiveToAnotherPlayer(this, resultLocation.player, resultLocation.pileType, resultLocation.position);
+			}
+			CardPile? pile = Pile;
+			if (pile != null && pile.Type == PileType.Play)
+			{
+				switch (resultLocation.pileType)
+				{
+				case PileType.None:
+					await CardPileCmd.RemoveFromCombat(this, skipCardPileVisuals);
+					break;
+				case PileType.Exhaust:
+					await CardCmd.Exhaust(choiceContext, this, causedByEthereal: false, skipCardPileVisuals);
+					break;
+				default:
+					await CardPileCmd.Add(this, resultLocation.pileType, resultLocation.position, null, skipCardPileVisuals);
+					break;
+				}
 			}
 		}
-		await CombatManager.Instance.CheckForEmptyHand(choiceContext, Owner);
+		await CombatManager.Instance.CheckForEmptyHand(effectCombatId, choiceContext, originalOwner);
 		if (EnergyCost.AfterCardPlayedCleanup())
 		{
 			this.EnergyCostChanged?.Invoke();
@@ -2065,20 +2079,20 @@ public abstract class CardModel : AbstractModel
 	}
 
 	/// <summary>
-	/// Get the pile that this card should be moved to after being played.
+	/// Get the pile that this card should be moved to after being played, and the position it should be added to.
 	/// </summary>
-	protected virtual PileType GetResultPileTypeForCardPlay()
+	protected virtual CardLocation GetResultLocationForCardPlay()
 	{
 		if (IsDupe || Type == CardType.Power)
 		{
-			return PileType.None;
+			return new CardLocation(Owner, PileType.None, CardPilePosition.Bottom);
 		}
 		if (ExhaustOnNextPlay || Keywords.Contains(CardKeyword.Exhaust))
 		{
 			ExhaustOnNextPlay = false;
-			return PileType.Exhaust;
+			return new CardLocation(Owner, PileType.Exhaust, CardPilePosition.Bottom);
 		}
-		return PileType.Discard;
+		return new CardLocation(Owner, PileType.Discard, CardPilePosition.Bottom);
 	}
 
 	/// <summary>
@@ -2179,17 +2193,33 @@ public abstract class CardModel : AbstractModel
 	}
 
 	/// <summary>
+	/// Creates a clone of this card for a given player.
+	/// Required because normally clone cards retain the same player as the original.
+	/// </summary>
+	public CardModel CreateCloneForPlayer(Player player)
+	{
+		CardModel cardModel = CreateClone();
+		cardModel._owner = player;
+		return cardModel;
+	}
+
+	public void GiveToAnotherPlayer(Player player)
+	{
+		_owner = player;
+	}
+
+	/// <summary>
 	/// Create a dupe of this card.
 	/// See <see cref="P:MegaCrit.Sts2.Core.Models.CardModel.DupeOf" /> for more info on dupes, and the difference between a clone and a dupe.
 	/// </summary>
-	public CardModel CreateDupe()
+	public CardModel CreateDupe(Player newOwner)
 	{
 		if (IsDupe)
 		{
-			return DupeOf.CreateDupe();
+			return DupeOf.CreateDupe(newOwner);
 		}
 		AssertMutable();
-		CardModel cardModel = CreateClone();
+		CardModel cardModel = CreateCloneForPlayer(newOwner);
 		cardModel.IsDupe = true;
 		cardModel.RemoveKeyword(CardKeyword.Exhaust);
 		return cardModel;

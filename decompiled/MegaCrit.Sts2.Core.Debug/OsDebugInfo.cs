@@ -6,8 +6,6 @@ using System.Threading.Tasks;
 using Godot;
 using Godot.Collections;
 using MegaCrit.Sts2.Core.Logging;
-using SharpGen.Runtime;
-using Vortice.DXGI;
 
 namespace MegaCrit.Sts2.Core.Debug;
 
@@ -209,39 +207,17 @@ public static class OsDebugInfo
 		handler.AppendLiteral("Rendering device name: ");
 		handler.AppendFormatted(renderingDevice?.GetDeviceName() ?? "N/A (headless)");
 		stringBuilder30.AppendLine(ref handler);
-		if (DXGI.CreateDXGIFactory1<IDXGIFactory1>(out IDXGIFactory1 factory) == Result.Ok)
-		{
-			IDXGIAdapter1 adapterOut;
-			for (uint num = 0u; factory.EnumAdapters1(num, out adapterOut) == Result.Ok; num++)
-			{
-				adapterOut.CheckInterfaceSupport(typeof(IDXGIDevice), out var userModeDriverVersion);
-				stringBuilder2 = stringBuilder;
-				StringBuilder stringBuilder31 = stringBuilder2;
-				handler = new StringBuilder.AppendInterpolatedStringHandler(21, 2, stringBuilder2);
-				handler.AppendLiteral("  Graphics adapter ");
-				handler.AppendFormatted(num);
-				handler.AppendLiteral(": ");
-				handler.AppendFormatted(adapterOut.Description.Description);
-				stringBuilder31.AppendLine(ref handler);
-				global::_003C_003Ey__InlineArray4<object> buffer = default(global::_003C_003Ey__InlineArray4<object>);
-				global::_003CPrivateImplementationDetails_003E.InlineArrayElementRef<global::_003C_003Ey__InlineArray4<object>, object>(ref buffer, 0) = userModeDriverVersion >> 48;
-				global::_003CPrivateImplementationDetails_003E.InlineArrayElementRef<global::_003C_003Ey__InlineArray4<object>, object>(ref buffer, 1) = (userModeDriverVersion >> 32) & 0xFFFF;
-				global::_003CPrivateImplementationDetails_003E.InlineArrayElementRef<global::_003C_003Ey__InlineArray4<object>, object>(ref buffer, 2) = (userModeDriverVersion >> 16) & 0xFFFF;
-				global::_003CPrivateImplementationDetails_003E.InlineArrayElementRef<global::_003C_003Ey__InlineArray4<object>, object>(ref buffer, 3) = (userModeDriverVersion >> 32) & 0xFFFF;
-				stringBuilder.AppendLine(string.Format("  version: {0}.{1}.{2}.{3}", global::_003CPrivateImplementationDetails_003E.InlineArrayAsReadOnlySpan<global::_003C_003Ey__InlineArray4<object>, object>(in buffer, 4)));
-			}
-		}
 		stringBuilder2 = stringBuilder;
-		StringBuilder stringBuilder32 = stringBuilder2;
+		StringBuilder stringBuilder31 = stringBuilder2;
 		handler = new StringBuilder.AppendInterpolatedStringHandler(23, 1, stringBuilder2);
 		handler.AppendLiteral("Screen info (primary ");
 		handler.AppendFormatted(DisplayServer.GetPrimaryScreen());
 		handler.AppendLiteral("):");
-		stringBuilder32.AppendLine(ref handler);
+		stringBuilder31.AppendLine(ref handler);
 		for (int i = 0; i < DisplayServer.GetScreenCount(); i++)
 		{
 			stringBuilder2 = stringBuilder;
-			StringBuilder stringBuilder33 = stringBuilder2;
+			StringBuilder stringBuilder32 = stringBuilder2;
 			handler = new StringBuilder.AppendInterpolatedStringHandler(59, 6, stringBuilder2);
 			handler.AppendLiteral("  Index ");
 			handler.AppendFormatted(i);
@@ -256,15 +232,15 @@ public static class OsDebugInfo
 			handler.AppendFormatted(DisplayServer.ScreenGetDpi());
 			handler.AppendLiteral(" Refresh Rate: ");
 			handler.AppendFormatted(DisplayServer.ScreenGetRefreshRate());
-			stringBuilder33.AppendLine(ref handler);
+			stringBuilder32.AppendLine(ref handler);
 		}
 		ulong renderingInfo = RenderingServer.GetRenderingInfo(RenderingServer.RenderingInfo.VideoMemUsed);
 		stringBuilder2 = stringBuilder;
-		StringBuilder stringBuilder34 = stringBuilder2;
+		StringBuilder stringBuilder33 = stringBuilder2;
 		handler = new StringBuilder.AppendInterpolatedStringHandler(19, 1, stringBuilder2);
 		handler.AppendLiteral("Video Memory Used: ");
 		handler.AppendFormatted(FormatBytes(renderingInfo));
-		stringBuilder34.AppendLine(ref handler);
+		stringBuilder33.AppendLine(ref handler);
 		Dictionary memoryInfo = OS.GetMemoryInfo();
 		if (memoryInfo.Count > 0)
 		{
@@ -272,27 +248,27 @@ public static class OsDebugInfo
 			foreach (KeyValuePair<Variant, Variant> item in memoryInfo)
 			{
 				stringBuilder2 = stringBuilder;
-				StringBuilder stringBuilder35 = stringBuilder2;
+				StringBuilder stringBuilder34 = stringBuilder2;
 				handler = new StringBuilder.AppendInterpolatedStringHandler(4, 2, stringBuilder2);
 				handler.AppendLiteral("  ");
 				handler.AppendFormatted(item.Key);
 				handler.AppendLiteral(": ");
 				handler.AppendFormatted(FormatBytes((ulong)item.Value));
-				stringBuilder35.AppendLine(ref handler);
+				stringBuilder34.AppendLine(ref handler);
 			}
 		}
 		stringBuilder2 = stringBuilder;
-		StringBuilder stringBuilder36 = stringBuilder2;
+		StringBuilder stringBuilder35 = stringBuilder2;
 		handler = new StringBuilder.AppendInterpolatedStringHandler(23, 1, stringBuilder2);
 		handler.AppendLiteral("  Static Memory Usage: ");
 		handler.AppendFormatted(FormatBytes(OS.GetStaticMemoryUsage()));
-		stringBuilder36.AppendLine(ref handler);
+		stringBuilder35.AppendLine(ref handler);
 		stringBuilder2 = stringBuilder;
-		StringBuilder stringBuilder37 = stringBuilder2;
+		StringBuilder stringBuilder36 = stringBuilder2;
 		handler = new StringBuilder.AppendInterpolatedStringHandler(28, 1, stringBuilder2);
 		handler.AppendLiteral("  Static Memory Peak Usage: ");
 		handler.AppendFormatted(FormatBytes(OS.GetStaticMemoryPeakUsage()));
-		stringBuilder37.AppendLine(ref handler);
+		stringBuilder36.AppendLine(ref handler);
 		try
 		{
 			stringBuilder.AppendLine("Disk Info:");
@@ -304,7 +280,7 @@ public static class OsDebugInfo
 				if ((uint)(driveType - 2) <= 1u)
 				{
 					stringBuilder2 = stringBuilder;
-					StringBuilder stringBuilder38 = stringBuilder2;
+					StringBuilder stringBuilder37 = stringBuilder2;
 					handler = new StringBuilder.AppendInterpolatedStringHandler(23, 3, stringBuilder2);
 					handler.AppendLiteral("  Index ");
 					handler.AppendFormatted(j);
@@ -312,11 +288,11 @@ public static class OsDebugInfo
 					handler.AppendFormatted(driveInfo.Name);
 					handler.AppendLiteral(" Type: ");
 					handler.AppendFormatted(driveInfo.DriveType);
-					stringBuilder38.Append(ref handler);
+					stringBuilder37.Append(ref handler);
 					if (driveInfo.IsReady)
 					{
 						stringBuilder2 = stringBuilder;
-						StringBuilder stringBuilder39 = stringBuilder2;
+						StringBuilder stringBuilder38 = stringBuilder2;
 						handler = new StringBuilder.AppendInterpolatedStringHandler(47, 4, stringBuilder2);
 						handler.AppendLiteral(" Format: ");
 						handler.AppendFormatted(driveInfo.DriveFormat);
@@ -329,7 +305,7 @@ public static class OsDebugInfo
 						handler.AppendLiteral(" ");
 						handler.AppendLiteral("Total Size: ");
 						handler.AppendFormatted(FormatBytes((ulong)driveInfo.TotalSize));
-						stringBuilder39.AppendLine(ref handler);
+						stringBuilder38.AppendLine(ref handler);
 					}
 					else
 					{
@@ -351,11 +327,11 @@ public static class OsDebugInfo
 			foreach (string value2 in array)
 			{
 				stringBuilder2 = stringBuilder;
-				StringBuilder stringBuilder40 = stringBuilder2;
+				StringBuilder stringBuilder39 = stringBuilder2;
 				handler = new StringBuilder.AppendInterpolatedStringHandler(2, 1, stringBuilder2);
 				handler.AppendLiteral("  ");
 				handler.AppendFormatted(value2);
-				stringBuilder40.AppendLine(ref handler);
+				stringBuilder39.AppendLine(ref handler);
 			}
 		}
 		string[] array2 = new string[5] { "PATH", "GODOT_ROOT_DIR", "HOME", "DYLD_LIBRARY_PATH", "LD_LIBRARY_PATH" };
@@ -364,54 +340,54 @@ public static class OsDebugInfo
 		foreach (string text in array3)
 		{
 			stringBuilder2 = stringBuilder;
-			StringBuilder stringBuilder41 = stringBuilder2;
+			StringBuilder stringBuilder40 = stringBuilder2;
 			handler = new StringBuilder.AppendInterpolatedStringHandler(4, 2, stringBuilder2);
 			handler.AppendLiteral("  ");
 			handler.AppendFormatted(text);
 			handler.AppendLiteral(": ");
 			handler.AppendFormatted(LogSanitizer.Sanitize(OS.GetEnvironment(text)));
-			stringBuilder41.AppendLine(ref handler);
+			stringBuilder40.AppendLine(ref handler);
 		}
 		if (OS.GetName() == "Linux")
 		{
 			stringBuilder.AppendLine("Linux Environment:");
 			bool value3 = !string.IsNullOrEmpty(OS.GetEnvironment("STEAM_COMPAT_DATA_PATH"));
 			stringBuilder2 = stringBuilder;
-			StringBuilder stringBuilder42 = stringBuilder2;
+			StringBuilder stringBuilder41 = stringBuilder2;
 			handler = new StringBuilder.AppendInterpolatedStringHandler(24, 1, stringBuilder2);
 			handler.AppendLiteral("  Running under Proton: ");
 			handler.AppendFormatted(value3);
+			stringBuilder41.AppendLine(ref handler);
+			stringBuilder2 = stringBuilder;
+			StringBuilder stringBuilder42 = stringBuilder2;
+			handler = new StringBuilder.AppendInterpolatedStringHandler(18, 1, stringBuilder2);
+			handler.AppendLiteral("  PROTON_VERSION: ");
+			handler.AppendFormatted(OS.GetEnvironment("PROTON_VERSION"));
 			stringBuilder42.AppendLine(ref handler);
 			stringBuilder2 = stringBuilder;
 			StringBuilder stringBuilder43 = stringBuilder2;
 			handler = new StringBuilder.AppendInterpolatedStringHandler(18, 1, stringBuilder2);
-			handler.AppendLiteral("  PROTON_VERSION: ");
-			handler.AppendFormatted(OS.GetEnvironment("PROTON_VERSION"));
+			handler.AppendLiteral("  WINEPREFIX set: ");
+			handler.AppendFormatted(!string.IsNullOrEmpty(OS.GetEnvironment("WINEPREFIX")));
 			stringBuilder43.AppendLine(ref handler);
 			stringBuilder2 = stringBuilder;
 			StringBuilder stringBuilder44 = stringBuilder2;
-			handler = new StringBuilder.AppendInterpolatedStringHandler(18, 1, stringBuilder2);
-			handler.AppendLiteral("  WINEPREFIX set: ");
-			handler.AppendFormatted(!string.IsNullOrEmpty(OS.GetEnvironment("WINEPREFIX")));
-			stringBuilder44.AppendLine(ref handler);
-			stringBuilder2 = stringBuilder;
-			StringBuilder stringBuilder45 = stringBuilder2;
 			handler = new StringBuilder.AppendInterpolatedStringHandler(20, 1, stringBuilder2);
 			handler.AppendLiteral("  XDG_SESSION_TYPE: ");
 			handler.AppendFormatted(OS.GetEnvironment("XDG_SESSION_TYPE"));
-			stringBuilder45.AppendLine(ref handler);
+			stringBuilder44.AppendLine(ref handler);
 			stringBuilder2 = stringBuilder;
-			StringBuilder stringBuilder46 = stringBuilder2;
+			StringBuilder stringBuilder45 = stringBuilder2;
 			handler = new StringBuilder.AppendInterpolatedStringHandler(23, 1, stringBuilder2);
 			handler.AppendLiteral("  XDG_CURRENT_DESKTOP: ");
 			handler.AppendFormatted(OS.GetEnvironment("XDG_CURRENT_DESKTOP"));
-			stringBuilder46.AppendLine(ref handler);
+			stringBuilder45.AppendLine(ref handler);
 			stringBuilder2 = stringBuilder;
-			StringBuilder stringBuilder47 = stringBuilder2;
+			StringBuilder stringBuilder46 = stringBuilder2;
 			handler = new StringBuilder.AppendInterpolatedStringHandler(19, 1, stringBuilder2);
 			handler.AppendLiteral("  WAYLAND_DISPLAY: ");
 			handler.AppendFormatted(OS.GetEnvironment("WAYLAND_DISPLAY"));
-			stringBuilder47.AppendLine(ref handler);
+			stringBuilder46.AppendLine(ref handler);
 		}
 		return stringBuilder.ToString();
 	}

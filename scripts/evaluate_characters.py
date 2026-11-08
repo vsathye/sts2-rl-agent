@@ -5,6 +5,7 @@ import json
 from pathlib import Path
 
 from sts2_env.gym_env.character_observation import CHARACTERS
+from sts2_env.game_version import require_compatible_manifest
 from sts2_env.training import EnvConfig, evaluate, write_json
 
 
@@ -32,7 +33,9 @@ def main() -> None:
     model = None
     if args.checkpoint:
         from sb3_contrib import MaskablePPO
-        config = EnvConfig(**json.loads(args.manifest.read_text())["config"])
+        manifest = json.loads(args.manifest.read_text())
+        require_compatible_manifest(manifest)
+        config = EnvConfig(**manifest["config"])
         model = MaskablePPO.load(args.checkpoint, device="cpu")
     reports = [evaluate(replace(config, character=c),
                         range(args.seed_start, args.seed_start + args.episodes), model)

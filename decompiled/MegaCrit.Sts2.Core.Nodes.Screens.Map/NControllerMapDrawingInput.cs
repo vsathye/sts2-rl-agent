@@ -5,6 +5,7 @@ using Godot.Bridge;
 using Godot.NativeInterop;
 using MegaCrit.Sts2.Core.Assets;
 using MegaCrit.Sts2.Core.ControllerInput;
+using MegaCrit.Sts2.Core.Nodes.CommonUi;
 using MegaCrit.Sts2.Core.Nodes.GodotExtensions;
 using MegaCrit.Sts2.Core.Nodes.Screens.ScreenContext;
 
@@ -27,6 +28,11 @@ public class NControllerMapDrawingInput : NMapDrawingInput
 		/// Cached name for the '_Ready' method.
 		/// </summary>
 		public new static readonly StringName _Ready = "_Ready";
+
+		/// <summary>
+		/// Cached name for the 'OnGuiFocusChanged' method.
+		/// </summary>
+		public static readonly StringName OnGuiFocusChanged = "OnGuiFocusChanged";
 
 		/// <summary>
 		/// Cached name for the '_Process' method.
@@ -113,10 +119,7 @@ public class NControllerMapDrawingInput : NMapDrawingInput
 		base._Ready();
 		_cursor = GetNode<Control>("%Cursor");
 		this.TryGrabFocus();
-		GetViewport().Connect(Viewport.SignalName.GuiFocusChanged, Callable.From<Control>(delegate
-		{
-			StopDrawing();
-		}));
+		GetViewport().Connect(Viewport.SignalName.GuiFocusChanged, Callable.From<Control>(OnGuiFocusChanged));
 		if (base.DrawingMode == DrawingMode.Drawing)
 		{
 			_cursorTex = ImageTexture.CreateFromImage(PreloadManager.Cache.GetAsset<Image>("res://images/packed/common_ui/cursor_quill.png"));
@@ -129,6 +132,11 @@ public class NControllerMapDrawingInput : NMapDrawingInput
 		}
 		_cursor.GetNode<TextureRect>("TextureRect").Texture = _cursorTex;
 		_cursor.GetNode<TextureRect>("TextureRect").Position = ((base.DrawingMode == DrawingMode.Drawing) ? _drawingIconPos : _eraserIconPos);
+	}
+
+	private void OnGuiFocusChanged(Control _)
+	{
+		StopDrawing();
 	}
 
 	public override void _Process(double delta)
@@ -148,10 +156,17 @@ public class NControllerMapDrawingInput : NMapDrawingInput
 			_cursor.GetNode<TextureRect>("TextureRect").Texture = _cursorTex;
 			_isPressed = false;
 		}
-		_direction = Input.GetVector(Controller.joystickLeft, Controller.joystickRight, Controller.joystickUp, Controller.joystickDown);
+		_direction = NControllerManager.Instance.GetLeftAnalogStickDirection();
 		if (_direction.Length() < 0.1f)
 		{
-			_direction += Input.GetVector(Controller.dPadWest, Controller.dPadEast, Controller.dPadNorth, Controller.dPadSouth);
+			if (NControllerManager.Instance.InputType == InputType.KeyboardOnlyMode)
+			{
+				_direction += Input.GetVector(MegaInput.left, MegaInput.right, MegaInput.up, MegaInput.down);
+			}
+			else
+			{
+				_direction += Input.GetVector(Controller.dPadLeft, Controller.dPadRight, Controller.dPadUp, Controller.dPadDown);
+			}
 		}
 		if (_direction.Length() > 0f)
 		{
@@ -181,9 +196,13 @@ public class NControllerMapDrawingInput : NMapDrawingInput
 	[EditorBrowsable(EditorBrowsableState.Never)]
 	internal new static List<MethodInfo> GetGodotMethodList()
 	{
-		List<MethodInfo> list = new List<MethodInfo>(4);
+		List<MethodInfo> list = new List<MethodInfo>(5);
 		list.Add(new MethodInfo(MethodName.Create, new PropertyInfo(Variant.Type.Object, "", PropertyHint.None, "", PropertyUsageFlags.Default, new StringName("Control"), exported: false), MethodFlags.Normal | MethodFlags.Static, null, null));
 		list.Add(new MethodInfo(MethodName._Ready, new PropertyInfo(Variant.Type.Nil, "", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false), MethodFlags.Normal, null, null));
+		list.Add(new MethodInfo(MethodName.OnGuiFocusChanged, new PropertyInfo(Variant.Type.Nil, "", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false), MethodFlags.Normal, new List<PropertyInfo>
+		{
+			new PropertyInfo(Variant.Type.Object, "_", PropertyHint.None, "", PropertyUsageFlags.Default, new StringName("Control"), exported: false)
+		}, null));
 		list.Add(new MethodInfo(MethodName._Process, new PropertyInfo(Variant.Type.Nil, "", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false), MethodFlags.Normal, new List<PropertyInfo>
 		{
 			new PropertyInfo(Variant.Type.Float, "delta", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false)
@@ -207,6 +226,12 @@ public class NControllerMapDrawingInput : NMapDrawingInput
 		if (method == MethodName._Ready && args.Count == 0)
 		{
 			_Ready();
+			ret = default(godot_variant);
+			return true;
+		}
+		if (method == MethodName.OnGuiFocusChanged && args.Count == 1)
+		{
+			OnGuiFocusChanged(VariantUtils.ConvertTo<Control>(in args[0]));
 			ret = default(godot_variant);
 			return true;
 		}
@@ -246,6 +271,10 @@ public class NControllerMapDrawingInput : NMapDrawingInput
 			return true;
 		}
 		if (method == MethodName._Ready)
+		{
+			return true;
+		}
+		if (method == MethodName.OnGuiFocusChanged)
 		{
 			return true;
 		}

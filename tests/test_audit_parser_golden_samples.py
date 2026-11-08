@@ -43,8 +43,8 @@ CARD_STATIC_GOLDEN = [
     (CardId.NOT_YET, False, dict(cost=2, card_type=CardType.SKILL, rarity=CardRarity.RARE,
                                  target_type=TargetType.SELF, keywords=frozenset({"exhaust"}))),
     (CardId.NOT_YET, True, dict(keywords=frozenset({"exhaust"}))),
-    # Scare.cs: base(0, Skill, Uncommon, AllEnemies), Exhaust; upgrade removes Exhaust.
-    (CardId.SCARE, False, {}),
+    # Sidestep.cs: base(0, Skill, Uncommon, Self).
+    (CardId.SIDESTEP, False, dict(cost=0, card_type=CardType.SKILL, rarity=CardRarity.UNCOMMON, target_type=TargetType.SELF)),
     # Wither.cs: base(-1, Status, Status, None), Unplayable, MaxUpgradeLevel => 0.
     (CardId.WITHER, False, dict(cost=-1, card_type=CardType.STATUS, rarity=CardRarity.STATUS,
                                 target_type=TargetType.NONE, keywords=frozenset({"unplayable"}),
@@ -55,11 +55,11 @@ CARD_STATIC_GOLDEN = [
                                            rarity=CardRarity.ANCIENT,
                                            target_type=TargetType.SELF, star_cost=3)),
     (CardId.THE_SEALED_THRONE, True, dict(cost=0)),
-    # Alignment.cs: base(0, Skill, Uncommon, Self), CanonicalStarCost 3,
+    # Alignment.cs: base(0, Skill, Uncommon, Self), CanonicalStarCost 2,
     # OnUpgrade: Energy +1 (cost unchanged).
     (CardId.ALIGNMENT, False, dict(cost=0, card_type=CardType.SKILL,
                                    rarity=CardRarity.UNCOMMON,
-                                   target_type=TargetType.SELF, star_cost=3)),
+                                   target_type=TargetType.SELF, star_cost=2)),
     (CardId.ALIGNMENT, True, dict(cost=0)),
     # Arsenal.cs: base(1, Power, Rare, Self), PowerVar<ArsenalPower>(1);
     # OnUpgrade: AddKeyword(Innate).
@@ -83,8 +83,8 @@ CARD_DYNAMIC_GOLDEN = [
     (CardId.BASH, {"damage": 8, "vulnerable": 2}, {"damage": 10, "vulnerable": 3}),
     # NotYet.cs: HealVar(10); OnUpgrade Heal.UpgradeValueBy(3).
     (CardId.NOT_YET, {"heal": 10}, {"heal": 13}),
-    # Scare.cs: no CanonicalVars at all.
-    (CardId.SCARE if "SCARE" in CardId.__members__ else CardId.SCAR_E, {}, {}),
+    # Sidestep.cs: EnergyVar(1), upgrade +1.
+    (CardId.SIDESTEP, {"energy": 1}, {"energy": 2}),
     # Wither.cs: DamageVar(3, Unpowered|Move); FakeUpgrade +3 is NOT OnUpgrade,
     # so the parsed upgrade vars stay at 3 (MaxUpgradeLevel 0).
     (CardId.WITHER, {"damage": 3}, {"damage": 3}),
@@ -163,14 +163,14 @@ MONSTER_GOLDEN = {
         },
     },
     # Aeonglass.cs (`private int` instance style — the style the parser used
-    # to miss entirely): Min (512,535), Max alias; EbbDamage (26,32),
+    # to miss entirely): Min (512,535), Max alias; EbbDamage (22,26),
     # EbbBlock 33 plain, EyeLasersDamage (11,12), EyeLasersRepeat 2 plain,
     # IncreasingIntensityBaseStrength (3,4), WitherAmount (1,2).
     "Aeonglass": {
         "MinInitialHp": (512, 535),
         "MaxInitialHp": "ALIAS_MIN",
         "consts": {
-            "EbbDamage": (26, 32),
+            "EbbDamage": (22, 26),
             "EbbBlock": (33, 33),
             "EyeLasersDamage": (11, 12),
             "EyeLasersRepeat": (2, 2),

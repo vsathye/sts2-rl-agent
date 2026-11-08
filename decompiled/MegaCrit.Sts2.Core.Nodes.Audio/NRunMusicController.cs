@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using Godot;
 using Godot.Bridge;
-using Godot.Collections;
 using Godot.NativeInterop;
 using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Helpers;
@@ -152,6 +151,11 @@ public class NRunMusicController : Node
 		/// Cached name for the '_currentAmbience' field.
 		/// </summary>
 		public static readonly StringName _currentAmbience = "_currentAmbience";
+
+		/// <summary>
+		/// Cached name for the '_failedTrack' field.
+		/// </summary>
+		public static readonly StringName _failedTrack = "_failedTrack";
 	}
 
 	/// <summary>
@@ -179,7 +183,7 @@ public class NRunMusicController : Node
 
 	private const string _updateCustomTrack = "update_custom_track";
 
-	private const string _loadActBanksCallback = "load_act_banks";
+	private const string _loadActBankCallback = "load_act_bank";
 
 	private const string _unloadActBanksCallback = "unload_act_banks";
 
@@ -192,6 +196,8 @@ public class NRunMusicController : Node
 	private string? _currentTrack;
 
 	private string _currentAmbience;
+
+	private string? _failedTrack;
 
 	public static NRunMusicController? Instance => NRun.Instance?.RunMusicController;
 
@@ -249,7 +255,7 @@ public class NRunMusicController : Node
 	/// a no-op instead of stopping and recreating the FMOD event, which restarts the track from
 	/// the top. Two such calls fire on run start, from NRun._Ready and the act-entry path.
 	/// </summary>
-	public static MusicSelection? ResolveMusic(string? currentTrack, string[] options, string[] bankPaths, uint seed)
+	public static MusicSelection? ResolveMusic(string? currentTrack, string[] options, string[] bankPaths, ulong seed)
 	{
 		if (options.Length == 0)
 		{
@@ -266,17 +272,23 @@ public class NRunMusicController : Node
 
 	public void UpdateMusic()
 	{
-		if (!NonInteractiveMode.IsActive)
+		if (NonInteractiveMode.IsActive)
 		{
-			MusicSelection? musicSelection = ResolveMusic(_currentTrack, _runState.Act.BgMusicOptions, _runState.Act.MusicBankPaths, _runState.Rng.Seed);
-			if (musicSelection.HasValue)
+			return;
+		}
+		MusicSelection? musicSelection = ResolveMusic(_currentTrack, _runState.Act.BgMusicOptions, _runState.Act.MusicBankPaths, _runState.Rng.Seed);
+		if (musicSelection.HasValue && !(musicSelection.Value.Track == _failedTrack))
+		{
+			if (!LoadActBank(musicSelection.Value.BankPath, musicSelection.Value.Track))
 			{
-				LoadActBank(musicSelection.Value.BankPath);
-				_currentTrack = musicSelection.Value.Track;
-				_proxy.Call("update_music", _currentTrack);
-				_proxy.Call("update_global_parameter", "Progress", 0);
-				UpdateAmbience();
+				_failedTrack = musicSelection.Value.Track;
+				return;
 			}
+			_failedTrack = null;
+			_currentTrack = musicSelection.Value.Track;
+			_proxy.Call("update_music", _currentTrack);
+			_proxy.Call("update_global_parameter", "Progress", 0);
+			UpdateAmbience();
 		}
 	}
 
@@ -396,17 +408,18 @@ public class NRunMusicController : Node
 	{
 		if (!NonInteractiveMode.IsActive)
 		{
+			_proxy.Call("update_global_parameter", "Progress", 0);
 			_proxy.Call(_stopMusic);
 			_proxy.Call(_stopAmbience);
 			_currentTrack = null;
+			_failedTrack = null;
 			UnloadActBanks();
 		}
 	}
 
-	private void LoadActBank(string bankPath)
+	private bool LoadActBank(string bankPath, string verifyEvent)
 	{
-		Godot.Collections.Array array = new Godot.Collections.Array { bankPath };
-		_proxy.Call("load_act_banks", array);
+		return ActBankLoadRetry.Run(bankPath, () => _proxy.Call("load_act_bank", bankPath, verifyEvent).AsBool());
 	}
 
 	private void UnloadActBanks()
@@ -456,9 +469,10 @@ public class NRunMusicController : Node
 		list.Add(new MethodInfo(MethodName.TriggerEliteSecondPhase, new PropertyInfo(Variant.Type.Nil, "", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false), MethodFlags.Normal, null, null));
 		list.Add(new MethodInfo(MethodName.TriggerCampfireGoingOut, new PropertyInfo(Variant.Type.Nil, "", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false), MethodFlags.Normal, null, null));
 		list.Add(new MethodInfo(MethodName.StopMusic, new PropertyInfo(Variant.Type.Nil, "", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false), MethodFlags.Normal, null, null));
-		list.Add(new MethodInfo(MethodName.LoadActBank, new PropertyInfo(Variant.Type.Nil, "", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false), MethodFlags.Normal, new List<PropertyInfo>
+		list.Add(new MethodInfo(MethodName.LoadActBank, new PropertyInfo(Variant.Type.Bool, "", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false), MethodFlags.Normal, new List<PropertyInfo>
 		{
-			new PropertyInfo(Variant.Type.String, "bankPath", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false)
+			new PropertyInfo(Variant.Type.String, "bankPath", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false),
+			new PropertyInfo(Variant.Type.String, "verifyEvent", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false)
 		}, null));
 		list.Add(new MethodInfo(MethodName.UnloadActBanks, new PropertyInfo(Variant.Type.Nil, "", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false), MethodFlags.Normal, null, null));
 		return list;
@@ -557,10 +571,9 @@ public class NRunMusicController : Node
 			ret = default(godot_variant);
 			return true;
 		}
-		if (method == MethodName.LoadActBank && args.Count == 1)
+		if (method == MethodName.LoadActBank && args.Count == 2)
 		{
-			LoadActBank(VariantUtils.ConvertTo<string>(in args[0]));
-			ret = default(godot_variant);
+			ret = VariantUtils.CreateFrom<bool>(LoadActBank(VariantUtils.ConvertTo<string>(in args[0]), VariantUtils.ConvertTo<string>(in args[1])));
 			return true;
 		}
 		if (method == MethodName.UnloadActBanks && args.Count == 0)
@@ -662,6 +675,11 @@ public class NRunMusicController : Node
 			_currentAmbience = VariantUtils.ConvertTo<string>(in value);
 			return true;
 		}
+		if (name == PropertyName._failedTrack)
+		{
+			_failedTrack = VariantUtils.ConvertTo<string>(in value);
+			return true;
+		}
 		return base.SetGodotClassPropertyValue(in name, in value);
 	}
 
@@ -684,6 +702,11 @@ public class NRunMusicController : Node
 			value = VariantUtils.CreateFrom(in _currentAmbience);
 			return true;
 		}
+		if (name == PropertyName._failedTrack)
+		{
+			value = VariantUtils.CreateFrom(in _failedTrack);
+			return true;
+		}
 		return base.GetGodotClassPropertyValue(in name, out value);
 	}
 
@@ -699,6 +722,7 @@ public class NRunMusicController : Node
 		list.Add(new PropertyInfo(Variant.Type.Object, PropertyName._proxy, PropertyHint.None, "", PropertyUsageFlags.ScriptVariable, exported: false));
 		list.Add(new PropertyInfo(Variant.Type.String, PropertyName._currentTrack, PropertyHint.None, "", PropertyUsageFlags.ScriptVariable, exported: false));
 		list.Add(new PropertyInfo(Variant.Type.String, PropertyName._currentAmbience, PropertyHint.None, "", PropertyUsageFlags.ScriptVariable, exported: false));
+		list.Add(new PropertyInfo(Variant.Type.String, PropertyName._failedTrack, PropertyHint.None, "", PropertyUsageFlags.ScriptVariable, exported: false));
 		return list;
 	}
 
@@ -710,6 +734,7 @@ public class NRunMusicController : Node
 		info.AddProperty(PropertyName._proxy, Variant.From(in _proxy));
 		info.AddProperty(PropertyName._currentTrack, Variant.From(in _currentTrack));
 		info.AddProperty(PropertyName._currentAmbience, Variant.From(in _currentAmbience));
+		info.AddProperty(PropertyName._failedTrack, Variant.From(in _failedTrack));
 	}
 
 	/// <inheritdoc />
@@ -728,6 +753,10 @@ public class NRunMusicController : Node
 		if (info.TryGetProperty(PropertyName._currentAmbience, out var value3))
 		{
 			_currentAmbience = value3.As<string>();
+		}
+		if (info.TryGetProperty(PropertyName._failedTrack, out var value4))
+		{
+			_failedTrack = value4.As<string>();
 		}
 	}
 }

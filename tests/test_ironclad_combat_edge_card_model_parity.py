@@ -68,8 +68,8 @@ from sts2_env.relics.registry import create_relic_by_name
 from sts2_env.run.run_state import PlayerState
 
 
-COLOSSUS_BLOCK = 5
-COLOSSUS_UPGRADED_BLOCK = 8
+COLOSSUS_BLOCK = 4
+COLOSSUS_UPGRADED_BLOCK = 7
 COLOSSUS_POWER_AMOUNT = 1
 DOMINATE_TARGET_VULNERABLE = 3
 # Dominate.cs OnPlay: apply Vulnerable (PowerVar, 1) to the target first, then gain
@@ -267,8 +267,8 @@ class TestIroncladCombatEdgeCardModelParity:
 
         assert combat.play_card(0, 0)
         assert enemy.current_hp == 91
-        assert combat.player.get_power_amount(PowerId.SETUP_STRIKE) == 3
-        assert combat.player.get_power_amount(PowerId.STRENGTH) == 3
+        assert combat.player.get_power_amount(PowerId.SETUP_STRIKE) == 4
+        assert combat.player.get_power_amount(PowerId.STRENGTH) == 4
 
         combat.player.powers[PowerId.SETUP_STRIKE].after_turn_end(combat.player, CombatSide.PLAYER, combat)
 
@@ -341,7 +341,7 @@ class TestIroncladCombatEdgeCardModelParity:
         taunt_combat.energy = 1
 
         assert taunt_combat.play_card(0, 0)
-        assert taunt_combat.player.block == 8
+        assert taunt_combat.player.block == 7
         assert taunt_enemy.get_power_amount(PowerId.VULNERABLE) == 2
 
     def test_unrelenting_makes_next_owner_attack_free(self):
@@ -549,7 +549,7 @@ class TestIroncladCombatEdgeCardModelParity:
         combat.player.block = 0
         combat._start_player_turn()  # noqa: SLF001
         assert combat.player.current_hp == start_hp - 1
-        assert combat.player.block == 8
+        assert combat.player.block == 7
 
     def test_thrash_exhausts_random_attack_and_adds_its_damage(self):
         combat = _make_combat()
@@ -680,13 +680,13 @@ class TestIroncladCombatEdgeCardModelParity:
         combat.energy = 3
 
         assert combat.play_card(0)
-        assert combat.player.get_power_amount(PowerId.DEMON_FORM) == 3
+        assert combat.player.get_power_amount(PowerId.DEMON_FORM) == 4
         combat.player.powers[PowerId.DEMON_FORM].after_side_turn_start(
             combat.player,
             CombatSide.PLAYER,
             combat,
         )
-        assert combat.player.get_power_amount(PowerId.STRENGTH) == 3
+        assert combat.player.get_power_amount(PowerId.STRENGTH) == 4
 
     def test_corruption_applies_skill_cost_and_exhaust_rules(self):
         combat = _make_combat()
@@ -861,7 +861,7 @@ class TestIroncladCombatEdgeCardModelParity:
         combat.energy = 3
 
         assert combat.play_card(0, 0)
-        assert enemy.current_hp == 80
+        assert enemy.current_hp == 74
         assert enemy.get_power_amount(PowerId.MANGLE) == 15
         assert enemy.get_power_amount(PowerId.STRENGTH) == -11
 
@@ -899,7 +899,7 @@ class TestIroncladCombatEdgeCardModelParity:
 
         combat.end_player_turn()
 
-        assert [enemy.current_hp for enemy in combat.enemies] == [84, 84]
+        assert [enemy.current_hp for enemy in combat.enemies] == [82, 82]
         # The replay went through the full play pipeline (no Exhaust keyword, so
         # it left the exhaust pile and moved on to the next result pile).
         assert card not in combat.exhaust_pile
@@ -1028,51 +1028,25 @@ class TestIroncladCombatEdgeCardModelParity:
         assert upgraded_combat.play_card(0, 1)
         assert enemy.current_hp == 85  # RepeatVar(2) + 1 hits when upgraded
 
-    def test_expect_a_fight_gains_energy_for_attacks_in_hand_not_skills(self):
+    def test_expect_a_fight_scales_block_with_strength(self):
         combat = _make_combat()
-        combat.hand = [
-            make_expect_a_fight(),
-            make_strike_ironclad(),
-            make_strike_ironclad(),
-            make_defend_ironclad(),
-        ]
-        combat.energy = 2
-
+        combat.hand = [make_expect_a_fight(), make_strike_ironclad(), make_defend_ironclad()]
+        combat.energy = 3
+        combat.apply_power_to(combat.player, PowerId.STRENGTH, 2)
         assert combat.play_card(0)
-        assert combat.energy == 2
+        assert combat.energy == 0
+        assert combat.player.block == 25
 
-    def test_expect_a_fight_blocks_further_energy_gain_until_side_turn_end(self):
-        """C# ExpectAFight.cs OnPlay (lines 36-38): gain CalculatedEnergy (attack
-        count in hand), then PowerCmd.Apply<NoEnergyGainPower>(1) on the owner's
-        own creature. NoEnergyGainPower.cs ModifyEnergyGain returns 0 for the
-        owner's player, and AfterSideTurnEnd removes the power at the end of the
-        owner's side turn."""
+    def test_upgraded_expect_a_fight_scales_block_and_allows_energy_gain(self):
         combat = _make_combat()
-        combat.hand = [
-            make_expect_a_fight(),
-            make_strike_ironclad(),
-            make_strike_ironclad(),
-        ]
-        combat.energy = 2
-
+        combat.hand = [make_expect_a_fight(upgraded=True)]
+        combat.energy = 3
+        combat.apply_power_to(combat.player, PowerId.STRENGTH, 2)
         assert combat.play_card(0)
-        # Cost 2 paid, then CalculatedEnergy (2 attacks in hand) gained.
-        assert combat.energy == 2
-        assert combat.player.has_power(PowerId.NO_ENERGY_GAIN)
-
-        # Any later energy gain this turn is zeroed (C# ModifyEnergyGain -> 0).
-        combat.gain_energy(combat.player, 3)
-        assert combat.energy == 2
-
-        # The power is removed at the end of the owner's side turn
-        # (AfterSideTurnEnd removes when the owner participates).
-        combat.end_player_turn()
+        assert combat.player.block == 32
         assert not combat.player.has_power(PowerId.NO_ENERGY_GAIN)
-
-        # After removal, energy gain works again (round 2 restored base energy).
-        before = combat.energy
         combat.gain_energy(combat.player, 1)
-        assert combat.energy == before + 1
+        assert combat.energy == 1
 
     def test_brand_still_gains_strength_when_selection_returns_none(self):
         combat = _make_combat()
@@ -1129,15 +1103,15 @@ class TestIroncladCombatEdgeCardModelParity:
         combat.exhaust_pile.append(make_anger())
         combat.hand = [make_pacts_end()]
         assert combat.play_card(0) is True
-        assert [enemy.current_hp for enemy in combat.enemies] == [83, 83]
+        assert [enemy.current_hp for enemy in combat.enemies] == [82, 82]
 
-    def test_forgotten_ritual_only_gains_energy_after_owner_exhausted_card_this_turn(self):
+    def test_forgotten_ritual_gains_energy_without_exhaust_requirement(self):
         combat = _make_combat()
         combat.hand = [make_forgotten_ritual()]
         combat.energy = 1
 
         assert combat.play_card(0)
-        assert combat.energy == 0
+        assert combat.energy == 3
 
         exhausted_combat = _make_combat()
         fodder = make_defend_ironclad()

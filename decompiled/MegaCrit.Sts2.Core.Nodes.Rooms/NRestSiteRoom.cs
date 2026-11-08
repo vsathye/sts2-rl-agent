@@ -57,6 +57,11 @@ public class NRestSiteRoom : Control, IScreenContext, IRoomWithProceedButton
 		public new static readonly StringName _ExitTree = "_ExitTree";
 
 		/// <summary>
+		/// Cached name for the 'BeforeExitingRoom' method.
+		/// </summary>
+		public static readonly StringName BeforeExitingRoom = "BeforeExitingRoom";
+
+		/// <summary>
 		/// Cached name for the 'DisableOptions' method.
 		/// </summary>
 		public static readonly StringName DisableOptions = "DisableOptions";
@@ -203,6 +208,11 @@ public class NRestSiteRoom : Control, IScreenContext, IRoomWithProceedButton
 		public static readonly StringName _originalDescriptionYPos = "_originalDescriptionYPos";
 
 		/// <summary>
+		/// Cached name for the '_roomExiting' field.
+		/// </summary>
+		public static readonly StringName _roomExiting = "_roomExiting";
+
+		/// <summary>
 		/// Cached name for the '_lastFocused' field.
 		/// </summary>
 		public static readonly StringName _lastFocused = "_lastFocused";
@@ -246,6 +256,8 @@ public class NRestSiteRoom : Control, IScreenContext, IRoomWithProceedButton
 	private Tween? _choicesTween;
 
 	private float _originalDescriptionYPos;
+
+	private bool _roomExiting;
 
 	private Control? _lastFocused;
 
@@ -387,6 +399,15 @@ public class NRestSiteRoom : Control, IScreenContext, IRoomWithProceedButton
 	}
 
 	/// <summary>
+	/// Called before the room exit begins to disable all buttons.
+	/// </summary>
+	public void BeforeExitingRoom()
+	{
+		_roomExiting = true;
+		DisableOptions();
+	}
+
+	/// <summary>
 	/// Grays out options so that they can't be selected while an option is being executed.
 	/// </summary>
 	public void DisableOptions()
@@ -403,6 +424,10 @@ public class NRestSiteRoom : Control, IScreenContext, IRoomWithProceedButton
 	/// </summary>
 	public void EnableOptions()
 	{
+		if (_roomExiting)
+		{
+			return;
+		}
 		foreach (NRestSiteButton item in _choicesContainer.GetChildren().OfType<NRestSiteButton>())
 		{
 			item.Enable();
@@ -666,10 +691,11 @@ public class NRestSiteRoom : Control, IScreenContext, IRoomWithProceedButton
 	[EditorBrowsable(EditorBrowsableState.Never)]
 	internal static List<MethodInfo> GetGodotMethodList()
 	{
-		List<MethodInfo> list = new List<MethodInfo>(18);
+		List<MethodInfo> list = new List<MethodInfo>(19);
 		list.Add(new MethodInfo(MethodName._Ready, new PropertyInfo(Variant.Type.Nil, "", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false), MethodFlags.Normal, null, null));
 		list.Add(new MethodInfo(MethodName._EnterTree, new PropertyInfo(Variant.Type.Nil, "", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false), MethodFlags.Normal, null, null));
 		list.Add(new MethodInfo(MethodName._ExitTree, new PropertyInfo(Variant.Type.Nil, "", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false), MethodFlags.Normal, null, null));
+		list.Add(new MethodInfo(MethodName.BeforeExitingRoom, new PropertyInfo(Variant.Type.Nil, "", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false), MethodFlags.Normal, null, null));
 		list.Add(new MethodInfo(MethodName.DisableOptions, new PropertyInfo(Variant.Type.Nil, "", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false), MethodFlags.Normal, null, null));
 		list.Add(new MethodInfo(MethodName.EnableOptions, new PropertyInfo(Variant.Type.Nil, "", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false), MethodFlags.Normal, null, null));
 		list.Add(new MethodInfo(MethodName.AnimateDescriptionDown, new PropertyInfo(Variant.Type.Nil, "", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false), MethodFlags.Normal, null, null));
@@ -725,6 +751,12 @@ public class NRestSiteRoom : Control, IScreenContext, IRoomWithProceedButton
 		if (method == MethodName._ExitTree && args.Count == 0)
 		{
 			_ExitTree();
+			ret = default(godot_variant);
+			return true;
+		}
+		if (method == MethodName.BeforeExitingRoom && args.Count == 0)
+		{
+			BeforeExitingRoom();
 			ret = default(godot_variant);
 			return true;
 		}
@@ -834,6 +866,10 @@ public class NRestSiteRoom : Control, IScreenContext, IRoomWithProceedButton
 			return true;
 		}
 		if (method == MethodName._ExitTree)
+		{
+			return true;
+		}
+		if (method == MethodName.BeforeExitingRoom)
 		{
 			return true;
 		}
@@ -959,6 +995,11 @@ public class NRestSiteRoom : Control, IScreenContext, IRoomWithProceedButton
 			_originalDescriptionYPos = VariantUtils.ConvertTo<float>(in value);
 			return true;
 		}
+		if (name == PropertyName._roomExiting)
+		{
+			_roomExiting = VariantUtils.ConvertTo<bool>(in value);
+			return true;
+		}
 		if (name == PropertyName._lastFocused)
 		{
 			_lastFocused = VariantUtils.ConvertTo<Control>(in value);
@@ -1039,6 +1080,11 @@ public class NRestSiteRoom : Control, IScreenContext, IRoomWithProceedButton
 			value = VariantUtils.CreateFrom(in _originalDescriptionYPos);
 			return true;
 		}
+		if (name == PropertyName._roomExiting)
+		{
+			value = VariantUtils.CreateFrom(in _roomExiting);
+			return true;
+		}
 		if (name == PropertyName._lastFocused)
 		{
 			value = VariantUtils.CreateFrom(in _lastFocused);
@@ -1065,6 +1111,7 @@ public class NRestSiteRoom : Control, IScreenContext, IRoomWithProceedButton
 		list.Add(new PropertyInfo(Variant.Type.Object, PropertyName._descriptionPositionTween, PropertyHint.None, "", PropertyUsageFlags.ScriptVariable, exported: false));
 		list.Add(new PropertyInfo(Variant.Type.Object, PropertyName._choicesTween, PropertyHint.None, "", PropertyUsageFlags.ScriptVariable, exported: false));
 		list.Add(new PropertyInfo(Variant.Type.Float, PropertyName._originalDescriptionYPos, PropertyHint.None, "", PropertyUsageFlags.ScriptVariable, exported: false));
+		list.Add(new PropertyInfo(Variant.Type.Bool, PropertyName._roomExiting, PropertyHint.None, "", PropertyUsageFlags.ScriptVariable, exported: false));
 		list.Add(new PropertyInfo(Variant.Type.Object, PropertyName._lastFocused, PropertyHint.None, "", PropertyUsageFlags.ScriptVariable, exported: false));
 		list.Add(new PropertyInfo(Variant.Type.Object, PropertyName.Header, PropertyHint.None, "", PropertyUsageFlags.ScriptVariable, exported: false));
 		list.Add(new PropertyInfo(Variant.Type.Object, PropertyName.Description, PropertyHint.None, "", PropertyUsageFlags.ScriptVariable, exported: false));
@@ -1089,6 +1136,7 @@ public class NRestSiteRoom : Control, IScreenContext, IRoomWithProceedButton
 		info.AddProperty(PropertyName._descriptionPositionTween, Variant.From(in _descriptionPositionTween));
 		info.AddProperty(PropertyName._choicesTween, Variant.From(in _choicesTween));
 		info.AddProperty(PropertyName._originalDescriptionYPos, Variant.From(in _originalDescriptionYPos));
+		info.AddProperty(PropertyName._roomExiting, Variant.From(in _roomExiting));
 		info.AddProperty(PropertyName._lastFocused, Variant.From(in _lastFocused));
 	}
 
@@ -1141,9 +1189,13 @@ public class NRestSiteRoom : Control, IScreenContext, IRoomWithProceedButton
 		{
 			_originalDescriptionYPos = value11.As<float>();
 		}
-		if (info.TryGetProperty(PropertyName._lastFocused, out var value12))
+		if (info.TryGetProperty(PropertyName._roomExiting, out var value12))
 		{
-			_lastFocused = value12.As<Control>();
+			_roomExiting = value12.As<bool>();
+		}
+		if (info.TryGetProperty(PropertyName._lastFocused, out var value13))
+		{
+			_lastFocused = value13.As<Control>();
 		}
 	}
 }

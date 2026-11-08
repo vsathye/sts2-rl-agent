@@ -133,18 +133,18 @@ class TestNecrobinderScytheXCostAndDebuffParity:
 
         assert combat.play_card(0, 0)
         assert enemy.current_hp == 187
-        assert card.base_damage == 17
+        assert card.base_damage == 18
         assert card in combat.exhaust_pile
 
         combat.exhaust_pile.remove(card)
         combat.hand = [card]
         combat.energy = 2
         assert combat.play_card(0, 0)
-        assert enemy.current_hp == 170
-        assert card.base_damage == 21
+        assert enemy.current_hp == 169
+        assert card.base_damage == 23
 
     def test_the_scythe_upgrade_preserves_grown_damage(self):
-        """Matches TheScythe.cs OnUpgrade: only Increase +1 (4 -> 5); CurrentDamage
+        """Matches TheScythe.cs OnUpgrade: only Increase +2 (5 -> 7); CurrentDamage
         (13 + grown amount) is a SavedProperty and is preserved through the upgrade."""
         combat = _make_combat()
         card = make_the_scythe()
@@ -152,10 +152,10 @@ class TestNecrobinderScytheXCostAndDebuffParity:
         combat.energy = 2
 
         assert combat.play_card(0, 0)
-        assert card.base_damage == 17
+        assert card.base_damage == 18
 
         combat.upgrade_card(card)
 
         assert card.upgraded is True
-        assert card.base_damage == 17
-        assert card.effect_vars["increase"] == 5
+        assert card.base_damage == 18
+        assert card.effect_vars["increase"] == 7

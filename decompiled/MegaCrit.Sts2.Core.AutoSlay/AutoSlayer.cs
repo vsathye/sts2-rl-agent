@@ -23,6 +23,8 @@ using MegaCrit.Sts2.Core.Nodes.Screens.CharacterSelect;
 using MegaCrit.Sts2.Core.Nodes.Screens.GameOverScreen;
 using MegaCrit.Sts2.Core.Nodes.Screens.Map;
 using MegaCrit.Sts2.Core.Nodes.Screens.Overlays;
+using MegaCrit.Sts2.Core.Nodes.Screens.PauseMenu;
+using MegaCrit.Sts2.Core.Nodes.TopBar;
 using MegaCrit.Sts2.Core.Random;
 using MegaCrit.Sts2.Core.Rooms;
 using MegaCrit.Sts2.Core.Runs;
@@ -47,6 +49,8 @@ public class AutoSlayer
 
 	private CancellationTokenSource? _cts;
 
+	private string? _seed;
+
 	private Rng? _random;
 
 	private Watchdog? _watchdog;
@@ -54,6 +58,9 @@ public class AutoSlayer
 	private IDisposable? _cardSelectorScope;
 
 	private static int _exitCode;
+
+	/// <summary>How often to re-check a pending task while draining the screens it opens.</summary>
+	private const int _drainPollIntervalMs = 50;
 
 	/// <summary>Static flag indicating if AutoSlay is currently running.</summary>
 	public static bool IsActive { get; private set; }
@@ -75,7 +82,7 @@ public class AutoSlayer
 			[RoomType.Elite] = value,
 			[RoomType.Boss] = value,
 			[RoomType.Event] = new EventRoomHandler(),
-			[RoomType.Shop] = new ShopRoomHandler(),
+			[RoomType.Shop] = new ShopRoomHandler(DrainOverlayScreensUntilAsync),
 			[RoomType.Treasure] = new TreasureRoomHandler(),
 			[RoomType.RestSite] = new RestSiteRoomHandler()
 		};
@@ -121,9 +128,17 @@ public class AutoSlayer
 	}
 
 	/// <summary>Gets the current overlay screen cast to the expected type.</summary>
+	/// <exception cref="T:System.InvalidOperationException">
+	/// The top of the overlay stack is not a <typeparamref name="T" />, or there is no stack to peek.
+	/// </exception>
 	public static T GetCurrentScreen<T>() where T : Node
 	{
-		return (T)NOverlayStack.Instance.Peek();
+		IOverlayScreen overlayScreen = NOverlayStack.Instance?.Peek();
+		if (!(overlayScreen is T result))
+		{
+			throw new InvalidOperationException($"Expected {typeof(T).Name} on top of the overlay stack, found {overlayScreen?.GetType().Name ?? "nothing"}.");
+		}
+		return result;
 	}
 
 	private async Task RunAsync(string seed, CancellationToken ct)
@@ -156,14 +171,16 @@ public class AutoSlayer
 	private async Task PlayRunAsync(string seed, CancellationToken ct)
 	{
 		await WaitHelper.Until(() => NGame.Instance != null, ct, AutoSlayConfig.gameInitTimeout, "Game instance not initialized");
+		_seed = seed;
 		NGame.Instance.DebugSeedOverride = seed;
 		SaveManager.Instance.PrefsSave.FastMode = FastModeType.Fast;
 		SaveManager.Instance.SetFtuesEnabled(enabled: false);
+		SaveManager.Instance.MarkFtueAsComplete("ascension_singleplayer_ftue");
 		SaveManager.Instance.ObtainEpochOverride(EpochModel.GetId<Silent1Epoch>(), EpochState.Revealed);
 		SaveManager.Instance.ObtainEpochOverride(EpochModel.GetId<Regent1Epoch>(), EpochState.Revealed);
 		SaveManager.Instance.ObtainEpochOverride(EpochModel.GetId<Defect1Epoch>(), EpochState.Revealed);
 		SaveManager.Instance.ObtainEpochOverride(EpochModel.GetId<Necrobinder1Epoch>(), EpochState.Revealed);
-		_random = new Rng((uint)StringHelper.GetDeterministicHashCode(seed));
+		_random = new Rng(StringHelper.GetDeterministicHashCode(seed));
 		_cardSelectorScope = CardSelectCmd.UseSelector(new AutoSlayCardSelector(_random));
 		_watchdog = new Watchdog();
 		CurrentWatchdog = _watchdog;
@@ -220,7 +237,7 @@ public class AutoSlayer
 					_watchdog.Reset($"Entering {postBossRoomType} room (Act {runState.CurrentActIndex + 1}, Floor {runState.ActFloor})");
 					AutoSlayLog.EnterRoom(postBossRoomType, runState.CurrentActIndex, runState.ActFloor);
 					await HandleRoomAsync(postBossRoomType, ct);
-					await Task.Delay(500, ct);
+					await WaitForGameOverScreenAsync(ct);
 					await DrainOverlayScreensAsync(ct);
 					_watchdog.Reset("Waiting for main menu after victory");
 					await WaitForMainMenuAsync(ct);
@@ -250,56 +267,106 @@ public class AutoSlayer
 		}
 	}
 
-	private async Task DrainOverlayScreensAsync(CancellationToken ct)
+	/// <summary>
+	/// Drains overlay screens until <paramref name="pending" /> completes.
+	/// </summary>
+	/// <remarks>
+	/// A room handler that awaits something which opens a screen cannot rely on the drain
+	/// between rooms: the run loop does not reach it until the room finishes, and the room is
+	/// blocked on that task. Buying Orrery or Cauldron does exactly this, since both await
+	/// <c>RewardsCmd.OfferCustom</c> when obtained. Driving the drain alongside the task breaks
+	/// the cycle. The drain runs in fail-when-stuck mode here, because a screen it cannot close
+	/// will never be closed by anyone else from this call site.
+	/// </remarks>
+	private async Task DrainOverlayScreensUntilAsync(Task pending, CancellationToken ct)
+	{
+		_ = 2;
+		try
+		{
+			while (!pending.IsCompleted)
+			{
+				ct.ThrowIfCancellationRequested();
+				NOverlayStack? instance = NOverlayStack.Instance;
+				if (instance != null && instance.ScreenCount > 0)
+				{
+					await DrainOverlayScreensAsync(ct, failWhenStuck: true);
+				}
+				await Task.Delay(50, ct);
+			}
+			await pending;
+		}
+		finally
+		{
+			if (!pending.IsCompleted)
+			{
+				pending.ContinueWith((Task t) => t.Exception, TaskContinuationOptions.OnlyOnFaulted);
+			}
+		}
+	}
+
+	/// <param name="ct">Cancels the drain.</param>
+	/// <param name="failWhenStuck">
+	/// Throw instead of returning when the drain cannot close the screen on top. Callers that
+	/// are waiting on that screen have no way to recover, so returning would spin them until an
+	/// outer timeout fires with the real reason buried.
+	/// </param>
+	private async Task DrainOverlayScreensAsync(CancellationToken ct, bool failWhenStuck = false)
 	{
 		if (NOverlayStack.Instance == null)
 		{
 			await WaitHelper.Until(() => NOverlayStack.Instance != null, ct, AutoSlayConfig.nodeWaitTimeout, "Overlay stack not initialized");
 		}
-		HashSet<IOverlayScreen> handledScreens = new HashSet<IOverlayScreen>();
-		int consecutiveFailures = 0;
+		int consecutiveNoProgress = 0;
 		while (true)
 		{
-			NOverlayStack? instance = NOverlayStack.Instance;
-			if (instance == null || instance.ScreenCount <= 0)
+			NOverlayStack instance = NOverlayStack.Instance;
+			if (instance == null || instance.ScreenCount == 0)
 			{
 				break;
 			}
 			ct.ThrowIfCancellationRequested();
-			IOverlayScreen currentOverlay = NOverlayStack.Instance.Peek();
+			IOverlayScreen currentOverlay = instance.Peek();
 			if (currentOverlay == null)
 			{
 				break;
 			}
-			if (handledScreens.Contains(currentOverlay))
-			{
-				consecutiveFailures++;
-				if (consecutiveFailures >= 3)
-				{
-					AutoSlayLog.Error($"Infinite loop detected: screen {currentOverlay.GetType().Name} not closing after {3} attempts");
-					throw new InvalidOperationException("Screen " + currentOverlay.GetType().Name + " not closing after being handled");
-				}
-				AutoSlayLog.Warn($"Screen {currentOverlay.GetType().Name} still present after handling (attempt {consecutiveFailures})");
-			}
-			else
-			{
-				handledScreens.Add(currentOverlay);
-				consecutiveFailures = 0;
-			}
 			Node node = (Node)currentOverlay;
-			Type type = node.GetType();
-			if (!_screenHandlers.TryGetValue(type, out IScreenHandler handler))
+			Type screenType = node.GetType();
+			if (!_screenHandlers.TryGetValue(screenType, out IScreenHandler handler))
 			{
-				AutoSlayLog.Warn("No handler for screen type: " + type.Name);
+				AutoSlayLog.Warn("No handler for screen type: " + screenType.Name);
+				if (failWhenStuck)
+				{
+					throw new InvalidOperationException("No handler for screen " + screenType.Name + ", which is blocking a pending action");
+				}
 				break;
 			}
-			_watchdog.Reset("Handling screen: " + type.Name);
-			AutoSlayLog.Info("Handling screen: " + type.Name);
+			_watchdog.Reset("Handling screen: " + screenType.Name);
+			int screenCountBefore = instance.ScreenCount;
 			await WaitHelper.WithTimeout((CancellationToken token) => handler.HandleAsync(_random, token), handler.Timeout, ct);
 			if (currentOverlay is NRewardsScreen && (NMapScreen.Instance?.IsOpen ?? false))
 			{
 				AutoSlayLog.Info("Rewards screen handled and map is open, exiting drain loop");
+				if (failWhenStuck)
+				{
+					throw new InvalidOperationException("Map opened while a pending action was still waiting on the rewards screen");
+				}
 				break;
+			}
+			NOverlayStack instance2 = NOverlayStack.Instance;
+			if (instance2 == null || instance2.ScreenCount != screenCountBefore || instance2.Peek() != currentOverlay)
+			{
+				consecutiveNoProgress = 0;
+			}
+			else
+			{
+				consecutiveNoProgress++;
+				if (consecutiveNoProgress >= 3)
+				{
+					AutoSlayLog.Error($"Infinite loop detected: screen {screenType.Name} left the overlay stack unchanged after {3} handler attempts");
+					throw new InvalidOperationException("Screen " + screenType.Name + " not closing after being handled");
+				}
+				AutoSlayLog.Warn($"Screen {screenType.Name} left the overlay stack unchanged after handling (attempt {consecutiveNoProgress})");
 			}
 			await Task.Delay(100, ct);
 		}
@@ -358,6 +425,12 @@ public class AutoSlayer
 	{
 		AutoSlayLog.Action("Waiting for rewards screen");
 		await WaitHelper.Until(() => NOverlayStack.Instance?.Peek() is NRewardsScreen || (NMapScreen.Instance?.IsOpen ?? false), ct, TimeSpan.FromSeconds(10L), "Rewards screen did not appear after combat");
+	}
+
+	private async Task WaitForGameOverScreenAsync(CancellationToken ct)
+	{
+		AutoSlayLog.Action("Waiting for game over screen");
+		await WaitHelper.Until(() => NOverlayStack.Instance?.Peek() is NGameOverScreen, ct, TimeSpan.FromSeconds(10L), "Game over screen did not appear");
 	}
 
 	private async Task WaitForMainMenuAsync(CancellationToken ct)
@@ -425,6 +498,7 @@ public class AutoSlayer
 		nCharacterSelectButton.Select();
 		await Task.Delay(100, ct);
 		NButton button = await WaitHelper.ForNode<NButton>(mainMenu, "Submenus/CharacterSelectScreen/ConfirmButton", ct);
+		NGame.Instance.DebugSeedOverride = _seed;
 		AutoSlayLog.Action("Confirming character");
 		await UiHelper.Click(button);
 	}
@@ -433,9 +507,18 @@ public class AutoSlayer
 	{
 		Node root = ((SceneTree)Engine.GetMainLoop()).Root;
 		await Task.Delay(1000, ct);
-		await UiHelper.Click(await WaitHelper.ForNode<NButton>(root, "/root/Game/RootSceneContainer/Run/GlobalUi/TopBar/RightAlignedStuff/Options", ct));
-		await UiHelper.Click(await WaitHelper.ForNode<NButton>(root, "/root/Game/RootSceneContainer/Run/GlobalUi/CapstoneScreenContainer/OptionsScreen/AbandonRunButton", ct));
-		await UiHelper.Click(await WaitHelper.ForNode<NButton>(root, "/root/Game/RootSceneContainer/Run/GlobalUi/OverlayScreensContainer/GameOverScreen/UI/ProceedButton", ct));
+		await UiHelper.Click(await WaitHelper.ForNode<NTopBarPauseButton>(root, "/root/Game/RootSceneContainer/Run/GlobalUi/TopBar/RightAlignedStuff/PauseButton", ct));
+		NPauseMenu pauseMenu = null;
+		await WaitHelper.Until(() => (pauseMenu = UiHelper.FindFirst<NPauseMenu>(root)) != null && pauseMenu.IsVisibleInTree(), ct, null, "Pause menu did not open");
+		NPauseMenuButton node = pauseMenu.GetNode<Control>("%ButtonContainer").GetNode<NPauseMenuButton>("GiveUp");
+		await UiHelper.Click(node);
+		NAbandonRunConfirmPopup confirmPopup = null;
+		await WaitHelper.Until(() => (confirmPopup = UiHelper.FindFirst<NAbandonRunConfirmPopup>(root)) != null, ct, null, "Abandon confirm popup did not appear");
+		NVerticalPopup node2 = confirmPopup.GetNode<NVerticalPopup>("VerticalPopup");
+		await UiHelper.Click(node2.YesButton);
+		await WaitForGameOverScreenAsync(ct);
+		await DrainOverlayScreensAsync(ct);
+		await WaitForMainMenuAsync(ct);
 	}
 
 	private static void QuitGame(int exitCode)

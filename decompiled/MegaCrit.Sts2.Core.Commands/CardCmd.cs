@@ -234,15 +234,17 @@ public static class CardCmd
 	/// This should always be false except the specific case in <see cref="T:MegaCrit.Sts2.Core.Combat.CombatManager" />.
 	/// </param>
 	/// <param name="skipVisuals">Skip card pile visuals (tween to/from pile, smoke puff VFX, etc).</param>
-	public static async Task Exhaust(PlayerChoiceContext choiceContext, CardModel card, bool causedByEthereal = false, bool skipVisuals = false)
+	public static async Task<CardPileAddResult?> Exhaust(PlayerChoiceContext choiceContext, CardModel card, bool causedByEthereal = false, bool skipVisuals = false)
 	{
-		if (!CombatManager.Instance.IsOverOrEnding)
+		if (CombatManager.Instance.IsOverOrEnding)
 		{
-			ICombatState combatState = card.CombatState ?? card.Owner.Creature.CombatState;
-			await CardPileCmd.Add(card, PileType.Exhaust, CardPilePosition.Bottom, null, skipVisuals);
-			CombatManager.Instance.History.CardExhausted(combatState, card);
-			await Hook.AfterCardExhausted(combatState, choiceContext, card, causedByEthereal);
+			return null;
 		}
+		ICombatState combatState = card.CombatState ?? card.Owner.Creature.CombatState;
+		CardPileAddResult result = await CardPileCmd.Add(card, PileType.Exhaust, CardPilePosition.Bottom, null, skipVisuals);
+		CombatManager.Instance.History.CardExhausted(combatState, card);
+		await Hook.AfterCardExhausted(combatState, choiceContext, card, causedByEthereal);
+		return result;
 	}
 
 	/// <summary>
@@ -450,7 +452,7 @@ public static class CardCmd
 			replacement2.AfterTransformedTo();
 			results.Add(result);
 		}
-		float num = 0f;
+		List<Task> vfxTasks = new List<Task>();
 		for (int j = 0; j < results.Count; j++)
 		{
 			CardModel original2 = transformationsWithOriginalData[j].Item1.Original;
@@ -478,8 +480,8 @@ public static class CardCmd
 					NCardTransformShineVfx nCardTransformShineVfx = NCardTransformShineVfx.Create(nCard, cardAdded2, Array.Empty<RelicModel>());
 					if (nCardTransformShineVfx != null)
 					{
-						num += nCardTransformShineVfx.GetEffectiveDuration(shortVersion: true);
-						TaskHelper.RunSafely(nCardTransformShineVfx.PlayAnimation(shortVersion: true));
+						vfxTasks.Add(nCardTransformShineVfx.PlayAnimationWithoutWaitingForEnd());
+						await Cmd.CustomScaledWait(0.1f, 0.25f);
 					}
 				}
 			}
@@ -495,15 +497,15 @@ public static class CardCmd
 				}))?.AddChildSafely(NCardTransformVfx.Create(original2, cardAdded2, results[j].modifyingModels?.OfType<RelicModel>()));
 			}
 		}
-		await Cmd.Wait(num);
-		for (int k = 0; k < results.Count; k++)
+		await Task.WhenAll(vfxTasks);
+		for (int j = 0; j < results.Count; j++)
 		{
-			CardPileAddResult cardPileAddResult = results[k];
+			CardPileAddResult cardPileAddResult = results[j];
 			if (cardPileAddResult.success && cardPileAddResult.cardAdded.Pile.Type.IsCombatPile())
 			{
 				await Hook.AfterCardGeneratedForCombat(cardPileAddResult.cardAdded.CombatState, cardPileAddResult.cardAdded, cardPileAddResult.cardAdded.Owner);
 			}
-			transformationsWithOriginalData[k].Item1.Original.RemoveFromState();
+			transformationsWithOriginalData[j].Item1.Original.RemoveFromState();
 		}
 		return results;
 	}
@@ -702,6 +704,16 @@ public static class CardCmd
 	}
 
 	/// <summary>
+	/// Apply Retain to a card for the current turn only.
+	/// </summary>
+	/// <param name="card">Card to apply single-turn Retain to.</param>
+	public static void ApplySingleTurnRetain(CardModel card)
+	{
+		card.GiveSingleTurnRetain();
+		NCard.FindOnTable(card)?.UpdateVisuals(card.Pile.Type, CardPreviewMode.Normal);
+	}
+
+	/// <summary>
 	/// Creates a set of NCards that spawn in the middle of the screen, then fly to the pile they're in.
 	/// Useful for when you want to preview cards that are being added to a pile.
 	/// </summary>
@@ -840,10 +852,10 @@ public static class CardCmd
 			if (nCardFlyVfx != null && node2 != null)
 			{
 				node2.AddChildSafely(nCardFlyVfx);
-				nCardFlyVfx.SwooshAwayCompletion.Task.ContinueWith(delegate
+				TaskHelper.RunSafely(nCardFlyVfx.SwooshAwayCompletion.Task.ContinueWith(delegate
 				{
 					source.SetResult();
-				});
+				}));
 			}
 			else
 			{

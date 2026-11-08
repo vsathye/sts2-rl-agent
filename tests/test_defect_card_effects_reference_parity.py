@@ -84,8 +84,8 @@ ITERATION_UPGRADED_POWER_AMOUNT = 3
 SPINNER_POWER_AMOUNT = 1
 NULL_DAMAGE = 10
 NULL_UPGRADED_DAMAGE = 13
-NULL_WEAK = 2
-NULL_UPGRADED_WEAK = 3
+NULL_WEAK = 1
+NULL_UPGRADED_WEAK = 2
 RAINBOW_ORBS = (OrbType.LIGHTNING, OrbType.FROST, OrbType.DARK)
 TEST_ENEMY_HP = 100
 EXHAUST_KEYWORD = "exhaust"
@@ -94,8 +94,8 @@ COLD_SNAP_UPGRADED_DAMAGE = 9
 FIGHT_THROUGH_BLOCK = 13
 FIGHT_THROUGH_UPGRADED_BLOCK = 17
 FIGHT_THROUGH_WOUND_COUNT = 2
-REFRACT_DAMAGE = 9
-REFRACT_UPGRADED_DAMAGE = 12
+REFRACT_DAMAGE = 10
+REFRACT_UPGRADED_DAMAGE = 13
 REFRACT_HITS = 2
 REFRACT_GLASS_ORBS = 2
 ICE_LANCE_DAMAGE = 19
@@ -415,7 +415,7 @@ class TestDefectCardEffectsReferenceParity:
         # Hyperbeam.cs CanonicalVars: DamageVar(28m, ValueProp.Move) in v0.107.1
         # (was 26 in the older decompile); no damage modifiers present, so flat 28.
         assert blocked.current_hp == 100
-        assert hittable.current_hp == 72
+        assert hittable.current_hp == 76
         assert combat.player.get_power_amount(PowerId.FOCUS) == 1
 
     def test_shatter_hits_only_hittable_enemies(self):
@@ -806,7 +806,7 @@ class TestDefectCardEffectsReferenceParity:
 
         assert combat.play_card(0, 0)
 
-        assert enemy.current_hp == starting_hp - 10
+        assert enemy.current_hp == starting_hp - 11
         assert card.cost == 0
 
     def test_tesla_coil_triggers_only_lightning_passives_against_target(self):
@@ -969,7 +969,7 @@ class TestDefectCardEffectsReferenceParity:
         combat.energy = 1
 
         assert combat.play_card(0)
-        assert combat.player.get_power_amount(PowerId.THUNDER) == 6
+        assert combat.player.get_power_amount(PowerId.THUNDER) == 8
 
     def test_thunder_adds_damage_to_lightning_orb_evoke_targets(self):
         """Matches ThunderPower.cs: after Lightning evoke, damage the living evoke targets."""
@@ -1115,7 +1115,7 @@ class TestDefectCardEffectsReferenceParity:
         assert combat.hand == [first_status, drawn_from_iteration, second_status, undrawn]
         assert combat.draw_pile == []
 
-    def test_rocket_punch_costs_zero_until_played_after_status_generation(self):
+    def test_rocket_punch_reduces_cost_until_played_after_status_generation(self):
         """RocketPunch.cs AfterCardGeneratedForCombat (v0.107.1): each friendly
         Status generation calls base.EnergyCost.SetUntilPlayed(0) — a WhenPlayed
         LocalCostModifier on RocketPunch itself (CardEnergyCost.cs:175), so it
@@ -1126,14 +1126,14 @@ class TestDefectCardEffectsReferenceParity:
         combat.energy = 1
 
         combat.add_generated_card_to_creature_hand(combat.player, make_burn())
-        assert card.cost == 0
+        assert card.cost == 1
 
         combat.energy = 5
         assert combat.play_card(0, 0)
         assert card.cost == 2
         assert "_until_played_cost" not in card.combat_vars
 
-    def test_rocket_punch_zero_cost_survives_end_of_turn_cleanup(self):
+    def test_rocket_punch_reduced_cost_survives_end_of_turn_cleanup(self):
         """RocketPunch.cs uses SetUntilPlayed (WhenPlayed), not a this-turn
         modifier — the 0 cost persists through end-of-turn cleanup until the
         card is played (RocketPunch.cs:2736-2752, CardEnergyCost.cs:175)."""
@@ -1143,10 +1143,10 @@ class TestDefectCardEffectsReferenceParity:
         combat.energy = 1
 
         combat.add_generated_card_to_creature_hand(combat.player, make_slimed())
-        assert card.cost == 0
+        assert card.cost == 1
 
         combat._cleanup_cards_end_of_turn()
-        assert card.cost == 0
+        assert card.cost == 1
 
     def test_spinner_base_and_upgraded_immediate_channel_match_reference(self):
         combat = _make_combat()
@@ -1183,12 +1183,12 @@ class TestDefectCardEffectsReferenceParity:
 
         assert combat.play_card(0)
 
-        assert combat.player.get_power_amount(PowerId.FOCUS) == 4
+        assert combat.player.get_power_amount(PowerId.FOCUS) == 5
         assert combat.player.get_power_amount(PowerId.BIASED_COGNITION) == 1
 
         combat.end_player_turn()
 
-        assert combat.player.get_power_amount(PowerId.FOCUS) == 3
+        assert combat.player.get_power_amount(PowerId.FOCUS) == 4
 
     def test_creative_ai_applies_power(self):
         """Matches CreativeAI.cs: apply CreativeAiPower(1)."""
@@ -1250,7 +1250,7 @@ class TestDefectCardEffectsReferenceParity:
         creative_ai = create_card(CardId.CREATIVE_AI_CARD, upgraded=True)
         machine_learning = create_card(CardId.MACHINE_LEARNING_CARD, upgraded=True)
 
-        assert biased.effect_vars["focus_power"] == 5
+        assert biased.effect_vars["focus_power"] == 6
         assert biased.cost == 1
         assert creative_ai.cost == 2
         assert creative_ai.effect_vars["creative_ai"] == 1

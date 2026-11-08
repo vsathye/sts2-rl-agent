@@ -1,6 +1,8 @@
 using System;
 using System.CodeDom.Compiler;
 using System.Globalization;
+using System.IO.Hashing;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Text.RegularExpressions.Generated;
 using MegaCrit.Sts2.Core.Localization;
@@ -10,6 +12,9 @@ namespace MegaCrit.Sts2.Core.Helpers;
 
 public static class StringHelper
 {
+	[ThreadStatic]
+	private static byte[]? _stringHashCache;
+
 	/// <remarks>
 	/// Pattern:<br />
 	/// <code>([A-Za-z0-9]|\\G(?!^))([A-Z])</code><br />
@@ -30,7 +35,7 @@ public static class StringHelper
 	[GeneratedCode("System.Text.RegularExpressions.Generator", "9.0.12.31616")]
 	private static Regex CamelCaseRegex()
 	{
-		return _003CRegexGenerator_g_003EFACC081AAF3D765EFF87A82C4FBB77F6FD3EA759AA2D03D993988F88E97CC0B5B__CamelCaseRegex_0.Instance;
+		return _003CRegexGenerator_g_003EFDF0533EE0711AEDB383B6CD4472EB7858DDC4C8D92DA17B11D90839AAF25C6DD__CamelCaseRegex_0.Instance;
 	}
 
 	/// <remarks>
@@ -49,7 +54,7 @@ public static class StringHelper
 	[GeneratedCode("System.Text.RegularExpressions.Generator", "9.0.12.31616")]
 	private static Regex SnakeCaseRegex()
 	{
-		return _003CRegexGenerator_g_003EFACC081AAF3D765EFF87A82C4FBB77F6FD3EA759AA2D03D993988F88E97CC0B5B__SnakeCaseRegex_1.Instance;
+		return _003CRegexGenerator_g_003EFDF0533EE0711AEDB383B6CD4472EB7858DDC4C8D92DA17B11D90839AAF25C6DD__SnakeCaseRegex_1.Instance;
 	}
 
 	/// <remarks>
@@ -64,7 +69,7 @@ public static class StringHelper
 	[GeneratedCode("System.Text.RegularExpressions.Generator", "9.0.12.31616")]
 	private static Regex WhitespaceRegex()
 	{
-		return _003CRegexGenerator_g_003EFACC081AAF3D765EFF87A82C4FBB77F6FD3EA759AA2D03D993988F88E97CC0B5B__WhitespaceRegex_2.Instance;
+		return _003CRegexGenerator_g_003EFDF0533EE0711AEDB383B6CD4472EB7858DDC4C8D92DA17B11D90839AAF25C6DD__WhitespaceRegex_2.Instance;
 	}
 
 	/// <remarks>
@@ -79,7 +84,7 @@ public static class StringHelper
 	[GeneratedCode("System.Text.RegularExpressions.Generator", "9.0.12.31616")]
 	private static Regex SpecialCharRegex()
 	{
-		return _003CRegexGenerator_g_003EFACC081AAF3D765EFF87A82C4FBB77F6FD3EA759AA2D03D993988F88E97CC0B5B__SpecialCharRegex_3.Instance;
+		return _003CRegexGenerator_g_003EFDF0533EE0711AEDB383B6CD4472EB7858DDC4C8D92DA17B11D90839AAF25C6DD__SpecialCharRegex_3.Instance;
 	}
 
 	public static string SnakeCase(string txt)
@@ -128,12 +133,28 @@ public static class StringHelper
 	///
 	/// This is NOT guaranteed to be unique or cryptographically safe or anything like that. Its only guarantee is
 	/// to be deterministic.
-	///
-	/// Algorithm lifted from https://andrewlock.net/why-is-string-gethashcode-different-each-time-i-run-my-program-in-net-core/
 	/// </summary>
 	/// <param name="str">String to hash.</param>
 	/// <returns>Hash value.</returns>
-	public static int GetDeterministicHashCode(string str)
+	public static ulong GetDeterministicHashCode(string str)
+	{
+		if (_stringHashCache == null)
+		{
+			_stringHashCache = new byte[1024];
+		}
+		int byteCount = Encoding.UTF8.GetByteCount(str);
+		if (byteCount > _stringHashCache.Length)
+		{
+			_stringHashCache = new byte[(int)Math.Round((double)byteCount * 1.5)];
+		}
+		byteCount = Encoding.UTF8.GetBytes(str, _stringHashCache);
+		return XxHash64.HashToUInt64(_stringHashCache.AsSpan().Slice(0, byteCount), 0L);
+	}
+
+	/// <summary>
+	/// This should not be used for any new code. It is for backwards compatibility only.
+	/// </summary>
+	public static int GetDeterministicHashCodeOld(string str)
 	{
 		int num = 352654597;
 		int num2 = num;

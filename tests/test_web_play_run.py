@@ -92,6 +92,8 @@ def _reach_first_combat_reward(session: RunSession) -> dict:
     state = session.take_action(0)
     assert state["screen"]["title"] == "Relic Reward"
     state = session.take_action(0)
+    assert state["screen"]["title"] == "Choose"
+    state = session.take_action(0)
     assert state["screen"]["title"] == "Map"
     state = _take_first_map_node(state, session)
     assert state["screen"]["title"] == "Combat"
@@ -125,15 +127,17 @@ def test_web_session_starts_at_neow_and_advances_to_map() -> None:
     assert state["phase"] == RunManager.PHASE_EVENT
     assert state["screen"]["type"] == "event"
     assert state["screen"]["title"] == "Neow"
-    assert state["actions"][0]["label"] == "Fishing Rod - Gain a positive relic"
+    assert state["actions"][0]["label"] == "Pomander - Gain a positive relic"
 
     reward = session.take_action(0)
     assert reward["phase"] == RunManager.PHASE_CARD_REWARD
     assert reward["screen"]["type"] == "reward"
     assert reward["screen"]["items"] == [
-        {"name": "Fishing Rod", "action_index": 0},
+        {"name": "Pomander", "action_index": 0},
     ]
 
+    choice_state = session.take_action(0)
+    assert choice_state["screen"]["title"] == "Choose"
     map_state = session.take_action(0)
     assert map_state["phase"] == RunManager.PHASE_MAP_CHOICE
     assert map_state["screen"]["type"] == "map"

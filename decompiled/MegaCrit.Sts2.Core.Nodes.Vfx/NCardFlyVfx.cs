@@ -9,10 +9,12 @@ using Godot.NativeInterop;
 using MegaCrit.Sts2.Core.Assets;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.Nodes.Cards;
 using MegaCrit.Sts2.Core.Nodes.Combat;
 using MegaCrit.Sts2.Core.Nodes.GodotExtensions;
+using MegaCrit.Sts2.Core.Nodes.Rooms;
 using MegaCrit.Sts2.Core.Random;
 using MegaCrit.Sts2.Core.TestSupport;
 
@@ -173,6 +175,30 @@ public class NCardFlyVfx : Node2D
 		nCardFlyVfx._endPos = pileType.GetTargetPosition(card);
 		nCardFlyVfx._card = card;
 		nCardFlyVfx._isAddingToPile = isAddingToPile;
+		nCardFlyVfx._trailPath = trailPath;
+		return nCardFlyVfx;
+	}
+
+	public static NCardFlyVfx? Create(NCard card, Creature target, string trailPath)
+	{
+		if (TestMode.IsOn)
+		{
+			return null;
+		}
+		if (NCombatRoom.Instance == null)
+		{
+			return null;
+		}
+		NCreature creatureNode = NCombatRoom.Instance.GetCreatureNode(target);
+		if (creatureNode == null)
+		{
+			return null;
+		}
+		NCardFlyVfx nCardFlyVfx = PreloadManager.Cache.GetScene(_scenePath).Instantiate<NCardFlyVfx>(PackedScene.GenEditState.Disabled);
+		nCardFlyVfx._startPos = card.GlobalPosition;
+		nCardFlyVfx._endPos = creatureNode.VfxSpawnPosition;
+		nCardFlyVfx._card = card;
+		nCardFlyVfx._isAddingToPile = false;
 		nCardFlyVfx._trailPath = trailPath;
 		return nCardFlyVfx;
 	}

@@ -397,10 +397,7 @@ public class NNormalMapPoint : NMapPoint
 		{
 			_elapsedTime = 3.926991f;
 		}
-		if (IsInputAllowed())
-		{
-			AnimUnhover();
-		}
+		AnimUnhover();
 	}
 
 	protected override void OnPress()
@@ -462,9 +459,10 @@ public class NNormalMapPoint : NMapPoint
 	{
 		if (_circleVfx == null)
 		{
-			_circleVfx = NMapCircleVfx.Create(playAnim);
+			_circleVfx = NMapCircleVfx.Create(_runState, base.Point.coord, playAnim);
 			this.AddChildSafely(_circleVfx);
 			_circleVfx.Position += base.PivotOffset;
+			this.MoveChildSafely(_circleVfx, base.VoteContainer.GetIndex());
 		}
 	}
 

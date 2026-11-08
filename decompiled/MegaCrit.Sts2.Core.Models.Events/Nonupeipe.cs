@@ -140,7 +140,7 @@ public class Nonupeipe : AncientEventModel
 	protected override IReadOnlyList<EventOption> GenerateInitialOptions()
 	{
 		List<EventOption> list = OptionPool.ToList();
-		if (base.Owner.Deck.Cards.Count(ModelDb.Enchantment<Swift>().CanEnchant) >= 4)
+		if (base.Owner.Deck.Cards.Count(ModelDb.Enchantment<MegaCrit.Sts2.Core.Models.Enchantments.Swift>().CanEnchant) >= 4)
 		{
 			list.Add(BeautifulBraceletEventOption);
 		}

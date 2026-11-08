@@ -1711,14 +1711,17 @@ class TrackingPower(PowerInstance):
     def modify_damage_multiplicative(
         self, owner: Creature, dealer: Creature | None, target: Creature, props: ValueProp
     ) -> float:
-        if not props.is_powered_attack():
+        return self.modify_damage_multiplicative_from_card(owner, dealer, target, props, owner.combat_state.active_card_source)
+
+    def modify_damage_multiplicative_from_card(self, owner, dealer, target, props, card_source):
+        if not props.is_powered_attack() or card_source is None:
             return 1.0
         if dealer is not owner:
             if not (dealer is not None and getattr(dealer, "pet_owner", None) is owner):
                 return 1.0
         if target is None or not target.has_power(PowerId.WEAK):
             return 1.0
-        return float(self.amount)
+        return 1.0 + self.amount / 100.0
 
 
 # ---------------------------------------------------------------------------
