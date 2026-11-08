@@ -381,14 +381,14 @@ class TestNecrobinderCardEffectsReferenceParity:
         assert combat.play_card(0, 0)
         assert enemy.current_hp == 93
 
-    def test_upgraded_times_up_adds_retain_only(self):
+    def test_upgraded_times_up_adds_retain_and_removes_exhaust(self):
         card = make_times_up(upgraded=True)
 
         assert card.cost == 2
         assert card.base_damage == 0
         assert card.effect_vars["extra_damage"] == 1
         assert card.is_retain
-        assert card.exhausts
+        assert not card.exhausts
 
     def test_blight_strike_applies_doom_equal_to_damage_dealt(self):
         combat = _make_combat()

@@ -6,7 +6,7 @@
       "simulator": {
         "game_version": "0.111.0",
         "game_build": "24724944",
-        "simulator_revision": "v111-migration-1",
+        "simulator_revision": "v111-migration-2",
         "validation_status": "migration_in_progress"
       },
       "config": {
@@ -44,7 +44,7 @@
       "simulator": {
         "game_version": "0.111.0",
         "game_build": "24724944",
-        "simulator_revision": "v111-migration-1",
+        "simulator_revision": "v111-migration-2",
         "validation_status": "migration_in_progress"
       },
       "config": {
@@ -82,7 +82,7 @@
       "simulator": {
         "game_version": "0.111.0",
         "game_build": "24724944",
-        "simulator_revision": "v111-migration-1",
+        "simulator_revision": "v111-migration-2",
         "validation_status": "migration_in_progress"
       },
       "config": {
@@ -120,7 +120,7 @@
       "simulator": {
         "game_version": "0.111.0",
         "game_build": "24724944",
-        "simulator_revision": "v111-migration-1",
+        "simulator_revision": "v111-migration-2",
         "validation_status": "migration_in_progress"
       },
       "config": {
@@ -158,7 +158,7 @@
       "simulator": {
         "game_version": "0.111.0",
         "game_build": "24724944",
-        "simulator_revision": "v111-migration-1",
+        "simulator_revision": "v111-migration-2",
         "validation_status": "migration_in_progress"
       },
       "config": {

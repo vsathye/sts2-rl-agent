@@ -458,7 +458,8 @@ def _factory_registry() -> dict[CardId, tuple[CardFactory, bool, str]]:
                 continue
             if not isinstance(card, CardInstance):
                 continue
-            registry[card.card_id] = (obj, _supports_upgraded_arg(obj), module_name)
+            logical_module = _reference_source_module(card.card_id) if module_name == "sts2_env.cards.v111" else module_name
+            registry[card.card_id] = (obj, _supports_upgraded_arg(obj), logical_module)
 
     return registry
 

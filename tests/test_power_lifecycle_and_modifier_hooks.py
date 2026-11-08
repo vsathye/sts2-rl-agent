@@ -1336,6 +1336,7 @@ class TestPowerAmountChangedHooks:
 
     def test_rolling_boulder_keeps_separate_instances_like_reference(self, simple_combat):
         enemy = simple_combat.enemies[0]
+        enemy.max_hp = enemy.current_hp = 100
         starting_hp = enemy.current_hp
         simple_combat.apply_power_to(simple_combat.player, PowerId.ROLLING_BOULDER, 5)
         simple_combat.apply_power_to(simple_combat.player, PowerId.ROLLING_BOULDER, 10)
@@ -1652,18 +1653,19 @@ class TestPowerAmountChangedHooks:
         assert enemy.current_hp == start_hp - 5
 
     def test_regen_power_heals_on_owner_side_turn_end_and_decrements(self, simple_combat):
+        from sts2_env.core.hooks import fire_before_turn_end
         damaged_hp = 70
         regen_amount = 4
         player = simple_combat.player
         player.current_hp = damaged_hp
         simple_combat.apply_power_to(player, PowerId.REGEN, regen_amount)
 
-        fire_after_turn_end(CombatSide.ENEMY, simple_combat)
+        fire_before_turn_end(CombatSide.ENEMY, simple_combat)
 
         assert player.current_hp == damaged_hp
         assert player.get_power_amount(PowerId.REGEN) == regen_amount
 
-        fire_after_turn_end(CombatSide.PLAYER, simple_combat)
+        fire_before_turn_end(CombatSide.PLAYER, simple_combat)
 
         assert player.current_hp == damaged_hp + regen_amount
         assert player.get_power_amount(PowerId.REGEN) == regen_amount - 1

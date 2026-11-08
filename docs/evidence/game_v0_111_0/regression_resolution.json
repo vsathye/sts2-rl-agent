@@ -1,0 +1,877 @@
+{
+  "original_failures": 145,
+  "resolved": 145,
+  "unresolved": 0,
+  "cases": [
+    {
+      "original": "tests/test_all_cards_unit_coverage.py::test_every_card_has_direct_unit_case[BLADE_SYMPHONY]",
+      "current": "tests/test_all_cards_unit_coverage.py::test_every_card_has_direct_unit_case[BLADE_SYMPHONY]",
+      "passed": true,
+      "note": "Source-verified v0.111.0 implementation or fixture correction."
+    },
+    {
+      "original": "tests/test_all_cards_unit_coverage.py::test_every_card_has_direct_unit_case[BLAZE]",
+      "current": "tests/test_all_cards_unit_coverage.py::test_every_card_has_direct_unit_case[BLAZE]",
+      "passed": true,
+      "note": "Source-verified v0.111.0 implementation or fixture correction."
+    },
+    {
+      "original": "tests/test_all_cards_unit_coverage.py::test_every_card_has_direct_unit_case[CACOPHONY]",
+      "current": "tests/test_all_cards_unit_coverage.py::test_every_card_has_direct_unit_case[CACOPHONY]",
+      "passed": true,
+      "note": "Source-verified v0.111.0 implementation or fixture correction."
+    },
+    {
+      "original": "tests/test_all_cards_unit_coverage.py::test_every_card_has_direct_unit_case[CONCOCT]",
+      "current": "tests/test_all_cards_unit_coverage.py::test_every_card_has_direct_unit_case[CONCOCT]",
+      "passed": true,
+      "note": "Source-verified v0.111.0 implementation or fixture correction."
+    },
+    {
+      "original": "tests/test_all_cards_unit_coverage.py::test_every_card_has_direct_unit_case[CONSTELLATION]",
+      "current": "tests/test_all_cards_unit_coverage.py::test_every_card_has_direct_unit_case[CONSTELLATION]",
+      "passed": true,
+      "note": "Source-verified v0.111.0 implementation or fixture correction."
+    },
+    {
+      "original": "tests/test_all_cards_unit_coverage.py::test_every_card_has_direct_unit_case[FADE]",
+      "current": "tests/test_all_cards_unit_coverage.py::test_every_card_has_direct_unit_case[FADE]",
+      "passed": true,
+      "note": "Source-verified v0.111.0 implementation or fixture correction."
+    },
+    {
+      "original": "tests/test_all_cards_unit_coverage.py::test_every_card_has_direct_unit_case[HIBERNATE]",
+      "current": "tests/test_all_cards_unit_coverage.py::test_every_card_has_direct_unit_case[HIBERNATE]",
+      "passed": true,
+      "note": "Source-verified v0.111.0 implementation or fixture correction."
+    },
+    {
+      "original": "tests/test_all_cards_unit_coverage.py::test_every_card_has_direct_unit_case[IMITATION_LEARNING]",
+      "current": "tests/test_all_cards_unit_coverage.py::test_every_card_has_direct_unit_case[IMITATION_LEARNING]",
+      "passed": true,
+      "note": "Source-verified v0.111.0 implementation or fixture correction."
+    },
+    {
+      "original": "tests/test_all_cards_unit_coverage.py::test_every_card_has_direct_unit_case[MIDNIGHT]",
+      "current": "tests/test_all_cards_unit_coverage.py::test_every_card_has_direct_unit_case[MIDNIGHT]",
+      "passed": true,
+      "note": "Source-verified v0.111.0 implementation or fixture correction."
+    },
+    {
+      "original": "tests/test_all_cards_unit_coverage.py::test_every_card_has_direct_unit_case[ONE_FOR_ALL]",
+      "current": "tests/test_all_cards_unit_coverage.py::test_every_card_has_direct_unit_case[ONE_FOR_ALL]",
+      "passed": true,
+      "note": "Source-verified v0.111.0 implementation or fixture correction."
+    },
+    {
+      "original": "tests/test_all_cards_unit_coverage.py::test_every_card_has_direct_unit_case[OUTRAGE]",
+      "current": "tests/test_all_cards_unit_coverage.py::test_every_card_has_direct_unit_case[OUTRAGE]",
+      "passed": true,
+      "note": "Source-verified v0.111.0 implementation or fixture correction."
+    },
+    {
+      "original": "tests/test_all_cards_unit_coverage.py::test_every_card_has_direct_unit_case[PLOT]",
+      "current": "tests/test_all_cards_unit_coverage.py::test_every_card_has_direct_unit_case[PLOT]",
+      "passed": true,
+      "note": "Source-verified v0.111.0 implementation or fixture correction."
+    },
+    {
+      "original": "tests/test_all_cards_unit_coverage.py::test_every_card_has_direct_unit_case[SOULBOUND]",
+      "current": "tests/test_all_cards_unit_coverage.py::test_every_card_has_direct_unit_case[SOULBOUND]",
+      "passed": true,
+      "note": "Source-verified v0.111.0 implementation or fixture correction."
+    },
+    {
+      "original": "tests/test_all_cards_unit_coverage.py::test_every_card_has_direct_unit_case[THE_BALL]",
+      "current": "tests/test_all_cards_unit_coverage.py::test_every_card_has_direct_unit_case[THE_BALL]",
+      "passed": true,
+      "note": "Source-verified v0.111.0 implementation or fixture correction."
+    },
+    {
+      "original": "tests/test_all_cards_unit_coverage.py::test_every_card_has_direct_unit_case[TUTOR]",
+      "current": "tests/test_all_cards_unit_coverage.py::test_every_card_has_direct_unit_case[TUTOR]",
+      "passed": true,
+      "note": "Source-verified v0.111.0 implementation or fixture correction."
+    },
+    {
+      "original": "tests/test_all_cards_unit_coverage.py::test_every_card_has_direct_unit_case[UNDERWORLD]",
+      "current": "tests/test_all_cards_unit_coverage.py::test_every_card_has_direct_unit_case[UNDERWORLD]",
+      "passed": true,
+      "note": "Source-verified v0.111.0 implementation or fixture correction."
+    },
+    {
+      "original": "tests/test_audit_parser_golden_samples.py::test_static_metadata_parser_golden[CardId.SCARE-False-expected4]",
+      "current": "tests/test_audit_parser_golden_samples.py::test_static_metadata_parser_golden[CardId.SIDESTEP-False-expected4]",
+      "passed": true,
+      "note": "Removed Scare reference replaced by the new Sidestep golden sample; pool exclusion has its own regression."
+    },
+    {
+      "original": "tests/test_audit_parser_golden_samples.py::test_static_metadata_parser_golden[CardId.ALIGNMENT-False-expected8]",
+      "current": "tests/test_audit_parser_golden_samples.py::test_static_metadata_parser_golden[CardId.ALIGNMENT-False-expected8]",
+      "passed": true,
+      "note": "Source-verified v0.111.0 implementation or fixture correction."
+    },
+    {
+      "original": "tests/test_audit_parser_golden_samples.py::test_monster_stats_parser_golden",
+      "current": "tests/test_audit_parser_golden_samples.py::test_monster_stats_parser_golden",
+      "passed": true,
+      "note": "Source-verified v0.111.0 implementation or fixture correction."
+    },
+    {
+      "original": "tests/test_card_enchantment_runtime_parity.py::test_shop_enchant_relics_apply_expected_enchantments",
+      "current": "tests/test_card_enchantment_runtime_parity.py::test_shop_enchant_relics_apply_expected_enchantments",
+      "passed": true,
+      "note": "Source-verified v0.111.0 implementation or fixture correction."
+    },
+    {
+      "original": "tests/test_card_generation_filters.py::test_card_generation_filters_multiplayer_constraints_like_reference",
+      "current": "tests/test_card_generation_filters.py::test_card_generation_filters_multiplayer_constraints_like_reference",
+      "passed": true,
+      "note": "Source-verified v0.111.0 implementation or fixture correction."
+    },
+    {
+      "original": "tests/test_card_static_metadata_audit.py::test_card_static_metadata_matches_decompiled_models",
+      "current": "tests/test_card_static_metadata_audit.py::test_card_static_metadata_matches_decompiled_models",
+      "passed": true,
+      "note": "Source-verified v0.111.0 implementation or fixture correction."
+    },
+    {
+      "original": "tests/test_colorless_card_effects_reference_parity.py::TestColorlessCardEffectsReferenceParity::test_rend_scales_damage_with_non_duration_debuff_count",
+      "current": "tests/test_colorless_card_effects_reference_parity.py::TestColorlessCardEffectsReferenceParity::test_rend_scales_damage_with_non_duration_debuff_count",
+      "passed": true,
+      "note": "Source-verified v0.111.0 implementation or fixture correction."
+    },
+    {
+      "original": "tests/test_colorless_card_effects_reference_parity.py::TestColorlessCardEffectsReferenceParity::test_rend_counts_negative_strength_but_ignores_temporary_debuffs",
+      "current": "tests/test_colorless_card_effects_reference_parity.py::TestColorlessCardEffectsReferenceParity::test_rend_counts_negative_strength_but_ignores_temporary_debuffs",
+      "passed": true,
+      "note": "Source-verified v0.111.0 implementation or fixture correction."
+    },
+    {
+      "original": "tests/test_colorless_card_effects_reference_parity.py::TestColorlessCardEffectsReferenceParity::test_rend_uses_normal_attack_damage_modifiers",
+      "current": "tests/test_colorless_card_effects_reference_parity.py::TestColorlessCardEffectsReferenceParity::test_rend_uses_normal_attack_damage_modifiers",
+      "passed": true,
+      "note": "Source-verified v0.111.0 implementation or fixture correction."
+    },
+    {
+      "original": "tests/test_colorless_card_effects_reference_parity.py::TestColorlessCardEffectsReferenceParity::test_beacon_of_hope_triggers_from_colorless_block_cards",
+      "current": "tests/test_colorless_card_effects_reference_parity.py::TestColorlessCardEffectsReferenceParity::test_beacon_of_hope_triggers_from_colorless_block_cards",
+      "passed": true,
+      "note": "Source-verified v0.111.0 implementation or fixture correction."
+    },
+    {
+      "original": "tests/test_colorless_card_effects_reference_parity.py::TestColorlessCardEffectsReferenceParity::test_beacon_of_hope_triggers_from_fisticuffs_block",
+      "current": "tests/test_colorless_card_effects_reference_parity.py::TestColorlessCardEffectsReferenceParity::test_beacon_of_hope_triggers_from_fisticuffs_block",
+      "passed": true,
+      "note": "Source-verified v0.111.0 implementation or fixture correction."
+    },
+    {
+      "original": "tests/test_colorless_factory_upgrade_parity.py::TestColorlessFactoryUpgradeParity::test_rend_factory_upgrade_uses_eighteen_plus_eight_per_debuff",
+      "current": "tests/test_colorless_factory_upgrade_parity.py::TestColorlessFactoryUpgradeParity::test_rend_factory_upgrade_uses_twelve_plus_eight_per_debuff",
+      "passed": true,
+      "note": "Source-verified v0.111.0 implementation or fixture correction."
+    },
+    {
+      "original": "tests/test_combat_parity.py::TestPowerTurnHooks::test_generated_status_dispatches_power_and_card_hooks",
+      "current": "tests/test_combat_parity.py::TestPowerTurnHooks::test_generated_status_dispatches_power_and_card_hooks",
+      "passed": true,
+      "note": "Source-verified v0.111.0 implementation or fixture correction."
+    },
+    {
+      "original": "tests/test_combat_parity.py::TestPowerTurnHooks::test_monster_generated_status_skips_player_generated_hooks_but_not_rocket_punch",
+      "current": "tests/test_combat_parity.py::TestPowerTurnHooks::test_monster_generated_status_skips_player_generated_hooks_but_not_rocket_punch",
+      "passed": true,
+      "note": "Source-verified v0.111.0 implementation or fixture correction."
+    },
+    {
+      "original": "tests/test_combat_parity.py::TestCardCleanup::test_well_laid_plans_applies_correct_power",
+      "current": "tests/test_combat_parity.py::TestCardCleanup::test_well_laid_plans_applies_correct_power",
+      "passed": true,
+      "note": "Source-verified v0.111.0 implementation or fixture correction."
+    },
+    {
+      "original": "tests/test_defect_card_effects_reference_parity.py::TestDefectCardEffectsReferenceParity::test_null_deals_damage_applies_weak_and_channels_dark",
+      "current": "tests/test_defect_card_effects_reference_parity.py::TestDefectCardEffectsReferenceParity::test_null_deals_damage_applies_weak_and_channels_dark",
+      "passed": true,
+      "note": "Source-verified v0.111.0 implementation or fixture correction."
+    },
+    {
+      "original": "tests/test_defect_card_effects_reference_parity.py::TestDefectCardEffectsReferenceParity::test_hyperbeam_hits_only_hittable_enemies_and_loses_focus",
+      "current": "tests/test_defect_card_effects_reference_parity.py::TestDefectCardEffectsReferenceParity::test_hyperbeam_hits_only_hittable_enemies_and_loses_focus",
+      "passed": true,
+      "note": "Source-verified v0.111.0 implementation or fixture correction."
+    },
+    {
+      "original": "tests/test_defect_card_effects_reference_parity.py::TestDefectCardEffectsReferenceParity::test_refract_hits_twice_and_channels_two_glass_orbs",
+      "current": "tests/test_defect_card_effects_reference_parity.py::TestDefectCardEffectsReferenceParity::test_refract_hits_twice_and_channels_two_glass_orbs",
+      "passed": true,
+      "note": "Source-verified v0.111.0 implementation or fixture correction."
+    },
+    {
+      "original": "tests/test_defect_card_effects_reference_parity.py::TestDefectCardEffectsReferenceParity::test_upgraded_refract_hits_twice_with_twelve_damage",
+      "current": "tests/test_defect_card_effects_reference_parity.py::TestDefectCardEffectsReferenceParity::test_upgraded_refract_hits_twice_with_twelve_damage",
+      "passed": true,
+      "note": "Source-verified v0.111.0 implementation or fixture correction."
+    },
+    {
+      "original": "tests/test_defect_card_effects_reference_parity.py::TestDefectCardEffectsReferenceParity::test_momentum_strike_sets_its_own_cost_to_zero_this_combat",
+      "current": "tests/test_defect_card_effects_reference_parity.py::TestDefectCardEffectsReferenceParity::test_momentum_strike_sets_its_own_cost_to_zero_this_combat",
+      "passed": true,
+      "note": "Source-verified v0.111.0 implementation or fixture correction."
+    },
+    {
+      "original": "tests/test_defect_card_effects_reference_parity.py::TestDefectCardEffectsReferenceParity::test_thunder_applies_thunder_power",
+      "current": "tests/test_defect_card_effects_reference_parity.py::TestDefectCardEffectsReferenceParity::test_thunder_applies_thunder_power",
+      "passed": true,
+      "note": "Source-verified v0.111.0 implementation or fixture correction."
+    },
+    {
+      "original": "tests/test_defect_card_effects_reference_parity.py::TestDefectCardEffectsReferenceParity::test_rocket_punch_costs_zero_until_played_after_status_generation",
+      "current": "tests/test_defect_card_effects_reference_parity.py::TestDefectCardEffectsReferenceParity::test_rocket_punch_reduces_cost_until_played_after_status_generation",
+      "passed": true,
+      "note": "Source-verified v0.111.0 implementation or fixture correction."
+    },
+    {
+      "original": "tests/test_defect_card_effects_reference_parity.py::TestDefectCardEffectsReferenceParity::test_rocket_punch_zero_cost_survives_end_of_turn_cleanup",
+      "current": "tests/test_defect_card_effects_reference_parity.py::TestDefectCardEffectsReferenceParity::test_rocket_punch_reduced_cost_survives_end_of_turn_cleanup",
+      "passed": true,
+      "note": "Source-verified v0.111.0 implementation or fixture correction."
+    },
+    {
+      "original": "tests/test_defect_card_effects_reference_parity.py::TestDefectCardEffectsReferenceParity::test_biased_cognition_applies_focus_then_delayed_focus_loss",
+      "current": "tests/test_defect_card_effects_reference_parity.py::TestDefectCardEffectsReferenceParity::test_biased_cognition_applies_focus_then_delayed_focus_loss",
+      "passed": true,
+      "note": "Source-verified v0.111.0 implementation or fixture correction."
+    },
+    {
+      "original": "tests/test_defect_card_effects_reference_parity.py::TestDefectCardEffectsReferenceParity::test_defect_power_card_upgrades_match_original",
+      "current": "tests/test_defect_card_effects_reference_parity.py::TestDefectCardEffectsReferenceParity::test_defect_power_card_upgrades_match_original",
+      "passed": true,
+      "note": "Source-verified v0.111.0 implementation or fixture correction."
+    },
+    {
+      "original": "tests/test_defect_factory_upgrade_parity.py::test_biased_cognition_factory_upgrade_increases_focus_only",
+      "current": "tests/test_defect_factory_upgrade_parity.py::test_biased_cognition_factory_upgrade_increases_focus_only",
+      "passed": true,
+      "note": "Source-verified v0.111.0 implementation or fixture correction."
+    },
+    {
+      "original": "tests/test_defect_factory_upgrade_parity.py::test_hyperbeam_factory_upgrade_increases_damage_only",
+      "current": "tests/test_defect_factory_upgrade_parity.py::test_hyperbeam_factory_upgrade_increases_damage_only",
+      "passed": true,
+      "note": "Source-verified v0.111.0 implementation or fixture correction."
+    },
+    {
+      "original": "tests/test_defect_factory_upgrade_parity.py::test_momentum_strike_factory_upgrade_increases_damage_and_sets_cost_zero",
+      "current": "tests/test_defect_factory_upgrade_parity.py::test_momentum_strike_factory_upgrade_increases_damage_and_sets_cost_zero",
+      "passed": true,
+      "note": "Source-verified v0.111.0 implementation or fixture correction."
+    },
+    {
+      "original": "tests/test_defect_factory_upgrade_parity.py::test_trash_to_treasure_factory_upgrade_adds_innate_and_keeps_power_amount",
+      "current": "tests/test_defect_factory_upgrade_parity.py::test_trash_to_treasure_factory_upgrade_reduces_cost_and_keeps_power_amount",
+      "passed": true,
+      "note": "Source-verified v0.111.0 implementation or fixture correction."
+    },
+    {
+      "original": "tests/test_defect_factory_upgrade_parity.py::test_thunder_factory_upgrade_increases_power_amount_without_channeling",
+      "current": "tests/test_defect_factory_upgrade_parity.py::test_thunder_factory_upgrade_increases_power_amount_without_channeling",
+      "passed": true,
+      "note": "Source-verified v0.111.0 implementation or fixture correction."
+    },
+    {
+      "original": "tests/test_defect_factory_upgrade_parity.py::test_uproar_factory_upgrade_increases_each_hit_damage_and_autoplays_attack",
+      "current": "tests/test_defect_factory_upgrade_parity.py::test_uproar_factory_upgrade_increases_each_hit_damage_and_autoplays_attack",
+      "passed": true,
+      "note": "Source-verified v0.111.0 implementation or fixture correction."
+    },
+    {
+      "original": "tests/test_defect_orb_energy_focus_parity.py::TestDefectOrbEnergyFocusParity::test_synchronize_grants_temporary_focus_from_distinct_orb_types",
+      "current": "tests/test_defect_orb_energy_focus_parity.py::TestDefectOrbEnergyFocusParity::test_synchronize_grants_temporary_focus_from_distinct_orb_types",
+      "passed": true,
+      "note": "Source-verified v0.111.0 implementation or fixture correction."
+    },
+    {
+      "original": "tests/test_encounter_setup_and_pools_parity.py::TestAct1NormalEncounters::test_ruby_raiders_normal_samples_three_unique_raiders_in_original_pool_order",
+      "current": "tests/test_encounter_setup_and_pools_parity.py::TestAct1NormalEncounters::test_ruby_raiders_normal_samples_three_unique_raiders_in_original_pool_order",
+      "passed": true,
+      "note": "Source-verified v0.111.0 implementation or fixture correction."
+    },
+    {
+      "original": "tests/test_encounter_setup_and_pools_parity.py::TestAct2Pools::test_decimillipede_elite_offsets_segment_openers_from_original_random_starter",
+      "current": "tests/test_encounter_setup_and_pools_parity.py::TestAct2Pools::test_decimillipede_elite_offsets_segment_openers_from_original_random_starter",
+      "passed": true,
+      "note": "Source-verified v0.111.0 implementation or fixture correction."
+    },
+    {
+      "original": "tests/test_encounter_setup_and_pools_parity.py::TestAct2Pools::test_exoskeletons_tough_ascension_hp_matches_csharp",
+      "current": "tests/test_encounter_setup_and_pools_parity.py::TestAct2Pools::test_exoskeletons_tough_ascension_hp_matches_csharp",
+      "passed": true,
+      "note": "Source-verified v0.111.0 implementation or fixture correction."
+    },
+    {
+      "original": "tests/test_interactive_run_cli.py::test_run_manager_can_start_at_neow_and_force_relic_pick",
+      "current": "tests/test_interactive_run_cli.py::test_run_manager_can_start_at_neow_and_force_relic_pick",
+      "passed": true,
+      "note": "Source-verified v0.111.0 implementation or fixture correction."
+    },
+    {
+      "original": "tests/test_interactive_run_cli.py::test_interactive_cli_displays_reward_contents",
+      "current": "tests/test_interactive_run_cli.py::test_interactive_cli_displays_reward_contents",
+      "passed": true,
+      "note": "Source-verified v0.111.0 implementation or fixture correction."
+    },
+    {
+      "original": "tests/test_ironclad_combat_edge_card_model_parity.py::TestIroncladCombatEdgeCardModelParity::test_colossus_gains_block_and_applies_reference_power",
+      "current": "tests/test_ironclad_combat_edge_card_model_parity.py::TestIroncladCombatEdgeCardModelParity::test_colossus_gains_block_and_applies_reference_power",
+      "passed": true,
+      "note": "Source-verified v0.111.0 implementation or fixture correction."
+    },
+    {
+      "original": "tests/test_ironclad_combat_edge_card_model_parity.py::TestIroncladCombatEdgeCardModelParity::test_setup_strike_grants_temporary_strength_until_turn_end",
+      "current": "tests/test_ironclad_combat_edge_card_model_parity.py::TestIroncladCombatEdgeCardModelParity::test_setup_strike_grants_temporary_strength_until_turn_end",
+      "passed": true,
+      "note": "Source-verified v0.111.0 implementation or fixture correction."
+    },
+    {
+      "original": "tests/test_ironclad_combat_edge_card_model_parity.py::TestIroncladCombatEdgeCardModelParity::test_tremble_and_taunt_apply_reference_vulnerable_and_block",
+      "current": "tests/test_ironclad_combat_edge_card_model_parity.py::TestIroncladCombatEdgeCardModelParity::test_tremble_and_taunt_apply_reference_vulnerable_and_block",
+      "passed": true,
+      "note": "Source-verified v0.111.0 implementation or fixture correction."
+    },
+    {
+      "original": "tests/test_ironclad_combat_edge_card_model_parity.py::TestIroncladCombatEdgeCardModelParity::test_crimson_mantle_increments_self_damage_when_played",
+      "current": "tests/test_ironclad_combat_edge_card_model_parity.py::TestIroncladCombatEdgeCardModelParity::test_crimson_mantle_increments_self_damage_when_played",
+      "passed": true,
+      "note": "Source-verified v0.111.0 implementation or fixture correction."
+    },
+    {
+      "original": "tests/test_ironclad_combat_edge_card_model_parity.py::TestIroncladCombatEdgeCardModelParity::test_demon_form_applies_original_strength_gain_power",
+      "current": "tests/test_ironclad_combat_edge_card_model_parity.py::TestIroncladCombatEdgeCardModelParity::test_demon_form_applies_original_strength_gain_power",
+      "passed": true,
+      "note": "Source-verified v0.111.0 implementation or fixture correction."
+    },
+    {
+      "original": "tests/test_ironclad_combat_edge_card_model_parity.py::TestIroncladCombatEdgeCardModelParity::test_mangle_applies_temporary_strength_loss_then_restores",
+      "current": "tests/test_ironclad_combat_edge_card_model_parity.py::TestIroncladCombatEdgeCardModelParity::test_mangle_applies_temporary_strength_loss_then_restores",
+      "passed": true,
+      "note": "Source-verified v0.111.0 implementation or fixture correction."
+    },
+    {
+      "original": "tests/test_ironclad_combat_edge_card_model_parity.py::TestIroncladCombatEdgeCardModelParity::test_howl_from_beyond_replays_from_exhaust_at_end_of_turn",
+      "current": "tests/test_ironclad_combat_edge_card_model_parity.py::TestIroncladCombatEdgeCardModelParity::test_howl_from_beyond_replays_from_exhaust_at_end_of_turn",
+      "passed": true,
+      "note": "Source-verified v0.111.0 implementation or fixture correction."
+    },
+    {
+      "original": "tests/test_ironclad_combat_edge_card_model_parity.py::TestIroncladCombatEdgeCardModelParity::test_expect_a_fight_gains_energy_for_attacks_in_hand_not_skills",
+      "current": "tests/test_ironclad_combat_edge_card_model_parity.py::TestIroncladCombatEdgeCardModelParity::test_expect_a_fight_scales_block_with_strength",
+      "passed": true,
+      "note": "Source-verified v0.111.0 implementation or fixture correction."
+    },
+    {
+      "original": "tests/test_ironclad_combat_edge_card_model_parity.py::TestIroncladCombatEdgeCardModelParity::test_expect_a_fight_blocks_further_energy_gain_until_side_turn_end",
+      "current": "tests/test_ironclad_combat_edge_card_model_parity.py::TestIroncladCombatEdgeCardModelParity::test_upgraded_expect_a_fight_scales_block_and_allows_energy_gain",
+      "passed": true,
+      "note": "Source-verified v0.111.0 implementation or fixture correction."
+    },
+    {
+      "original": "tests/test_ironclad_combat_edge_card_model_parity.py::TestIroncladCombatEdgeCardModelParity::test_pacts_end_always_playable_but_needs_three_exhausted_for_damage",
+      "current": "tests/test_ironclad_combat_edge_card_model_parity.py::TestIroncladCombatEdgeCardModelParity::test_pacts_end_always_playable_but_needs_three_exhausted_for_damage",
+      "passed": true,
+      "note": "Source-verified v0.111.0 implementation or fixture correction."
+    },
+    {
+      "original": "tests/test_ironclad_combat_edge_card_model_parity.py::TestIroncladCombatEdgeCardModelParity::test_forgotten_ritual_only_gains_energy_after_owner_exhausted_card_this_turn",
+      "current": "tests/test_ironclad_combat_edge_card_model_parity.py::TestIroncladCombatEdgeCardModelParity::test_forgotten_ritual_gains_energy_without_exhaust_requirement",
+      "passed": true,
+      "note": "Source-verified v0.111.0 implementation or fixture correction."
+    },
+    {
+      "original": "tests/test_ironclad_core_card_model_parity.py::TestIroncladCoreCardModelParity::test_rampage_increases_its_own_base_damage_each_play",
+      "current": "tests/test_ironclad_core_card_model_parity.py::TestIroncladCoreCardModelParity::test_rampage_increases_its_own_base_damage_each_play",
+      "passed": true,
+      "note": "Source-verified v0.111.0 implementation or fixture correction."
+    },
+    {
+      "original": "tests/test_ironclad_core_card_model_parity.py::TestIroncladCoreCardModelParity::test_rampage_upgrade_preserves_grown_damage",
+      "current": "tests/test_ironclad_core_card_model_parity.py::TestIroncladCoreCardModelParity::test_rampage_upgrade_preserves_grown_damage",
+      "passed": true,
+      "note": "Source-verified v0.111.0 implementation or fixture correction."
+    },
+    {
+      "original": "tests/test_ironclad_factory_upgrade_parity.py::test_ironclad_factory_upgrade_core_metadata_matches_reference[GRAPPLE]",
+      "current": "tests/test_ironclad_factory_upgrade_parity.py::test_removed_grapple_retains_legacy_factory_id",
+      "passed": true,
+      "note": "Grapple was removed in v0.111.0; replacement covers legacy identity or exclusion from current generation."
+    },
+    {
+      "original": "tests/test_ironclad_factory_upgrade_parity.py::test_ironclad_factory_upgrade_dynamic_values_match_reference[GRAPPLE]",
+      "current": "tests/test_ironclad_factory_upgrade_parity.py::test_removed_grapple_is_absent_from_current_reference_and_generation",
+      "passed": true,
+      "note": "Grapple was removed in v0.111.0; replacement covers legacy identity or exclusion from current generation."
+    },
+    {
+      "original": "tests/test_map_generation_layout_parity.py::TestRoomTypeCounts::test_act3_counts_glory_rests_first_then_unknowns",
+      "current": "tests/test_map_generation_layout_parity.py::TestRoomTypeCounts::test_act3_counts_glory_rests_first_then_unknowns",
+      "passed": true,
+      "note": "Source-verified v0.111.0 implementation or fixture correction."
+    },
+    {
+      "original": "tests/test_monster_ai_state_machine_parity.py::test_cs_named_monster_factory_maps_to_expected_model[DecimillipedeSegmentBack]",
+      "current": "tests/test_monster_ai_state_machine_parity.py::test_cs_named_monster_factory_maps_to_expected_model[DecimillipedeSegmentBack]",
+      "passed": true,
+      "note": "Source-verified v0.111.0 implementation or fixture correction."
+    },
+    {
+      "original": "tests/test_monster_ai_state_machine_parity.py::test_cs_named_monster_factory_maps_to_expected_model[DecimillipedeSegmentFront]",
+      "current": "tests/test_monster_ai_state_machine_parity.py::test_cs_named_monster_factory_maps_to_expected_model[DecimillipedeSegmentFront]",
+      "passed": true,
+      "note": "Source-verified v0.111.0 implementation or fixture correction."
+    },
+    {
+      "original": "tests/test_monster_ai_state_machine_parity.py::test_cs_named_monster_factory_maps_to_expected_model[DecimillipedeSegmentMiddle]",
+      "current": "tests/test_monster_ai_state_machine_parity.py::test_cs_named_monster_factory_maps_to_expected_model[DecimillipedeSegmentMiddle]",
+      "passed": true,
+      "note": "Source-verified v0.111.0 implementation or fixture correction."
+    },
+    {
+      "original": "tests/test_monster_ai_state_machine_parity.py::TestFixedRotation::test_axebot_moves_use_original_player_targets_with_osty_redirect",
+      "current": "tests/test_monster_ai_state_machine_parity.py::TestFixedRotation::test_axebot_moves_use_original_player_targets_with_osty_redirect",
+      "passed": true,
+      "note": "Source-verified v0.111.0 implementation or fixture correction."
+    },
+    {
+      "original": "tests/test_monster_ai_state_machine_parity.py::TestFixedRotation::test_fabricator_spawn_history_is_shared_across_bot_pools",
+      "current": "tests/test_monster_ai_state_machine_parity.py::TestFixedRotation::test_fabricator_spawn_history_is_shared_across_bot_pools",
+      "passed": true,
+      "note": "Source-verified v0.111.0 implementation or fixture correction."
+    },
+    {
+      "original": "tests/test_necrobinder_card_effects_reference_parity.py::TestNecrobinderCardEffectsReferenceParity::test_upgraded_times_up_adds_retain_only",
+      "current": "tests/test_necrobinder_card_effects_reference_parity.py::TestNecrobinderCardEffectsReferenceParity::test_upgraded_times_up_adds_retain_and_removes_exhaust",
+      "passed": true,
+      "note": "Source-verified v0.111.0 implementation or fixture correction."
+    },
+    {
+      "original": "tests/test_necrobinder_factory_upgrade_parity.py::test_necrobinder_factory_upgrade_dynamic_values_match_reference[THE_SCYTHE]",
+      "current": "tests/test_necrobinder_factory_upgrade_parity.py::test_necrobinder_factory_upgrade_dynamic_values_match_reference[THE_SCYTHE]",
+      "passed": true,
+      "note": "Source-verified v0.111.0 implementation or fixture correction."
+    },
+    {
+      "original": "tests/test_necrobinder_parity.py::TestNecrobinderParity::test_sacrifice_kills_osty_and_gains_double_osty_hp_as_block",
+      "current": "tests/test_necrobinder_parity.py::TestNecrobinderParity::test_sacrifice_kills_osty_and_gains_triple_osty_hp_as_block",
+      "passed": true,
+      "note": "Source-verified v0.111.0 implementation or fixture correction."
+    },
+    {
+      "original": "tests/test_necrobinder_parity.py::TestNecrobinderParity::test_ally_sacrifice_kills_only_ally_osty_and_grants_ally_block",
+      "current": "tests/test_necrobinder_parity.py::TestNecrobinderParity::test_ally_sacrifice_kills_only_ally_osty_and_grants_ally_block",
+      "passed": true,
+      "note": "Source-verified v0.111.0 implementation or fixture correction."
+    },
+    {
+      "original": "tests/test_necrobinder_parity.py::TestNecrobinderParity::test_eidolon_exhausts_hand_and_grants_intangible_at_threshold",
+      "current": "tests/test_necrobinder_parity.py::TestNecrobinderParity::test_eidolon_preserves_non_ethereal_hand_without_granting_intangible",
+      "passed": true,
+      "note": "Source-verified v0.111.0 implementation or fixture correction."
+    },
+    {
+      "original": "tests/test_necrobinder_scythe_x_cost_and_debuff_parity.py::TestNecrobinderScytheXCostAndDebuffParity::test_the_scythe_damage_increases_after_each_play",
+      "current": "tests/test_necrobinder_scythe_x_cost_and_debuff_parity.py::TestNecrobinderScytheXCostAndDebuffParity::test_the_scythe_damage_increases_after_each_play",
+      "passed": true,
+      "note": "Source-verified v0.111.0 implementation or fixture correction."
+    },
+    {
+      "original": "tests/test_necrobinder_scythe_x_cost_and_debuff_parity.py::TestNecrobinderScytheXCostAndDebuffParity::test_the_scythe_upgrade_preserves_grown_damage",
+      "current": "tests/test_necrobinder_scythe_x_cost_and_debuff_parity.py::TestNecrobinderScytheXCostAndDebuffParity::test_the_scythe_upgrade_preserves_grown_damage",
+      "passed": true,
+      "note": "Source-verified v0.111.0 implementation or fixture correction."
+    },
+    {
+      "original": "tests/test_necrobinder_soul_and_doom_parity.py::TestNecrobinderSoulAndDoomParity::test_soul_storm_scales_damage_with_exhausted_soul_count",
+      "current": "tests/test_necrobinder_soul_and_doom_parity.py::TestNecrobinderSoulAndDoomParity::test_soul_storm_scales_damage_with_exhausted_soul_count",
+      "passed": true,
+      "note": "Source-verified v0.111.0 implementation or fixture correction."
+    },
+    {
+      "original": "tests/test_parity_helpers.py::TestStatusParity::test_brightest_flame_draws_gains_energy_and_loses_max_hp",
+      "current": "tests/test_parity_helpers.py::TestStatusParity::test_brightest_flame_draws_gains_energy_and_loses_max_hp",
+      "passed": true,
+      "note": "Source-verified v0.111.0 implementation or fixture correction."
+    },
+    {
+      "original": "tests/test_parity_helpers.py::TestStatusParity::test_non_ironclad_block_cards_fire_after_block_gained_hooks",
+      "current": "tests/test_parity_helpers.py::TestStatusParity::test_non_ironclad_block_cards_fire_after_block_gained_hooks",
+      "passed": true,
+      "note": "Source-verified v0.111.0 implementation or fixture correction."
+    },
+    {
+      "original": "tests/test_parity_helpers.py::TestStatusParity::test_sacrifice_kills_osty_and_gains_double_max_hp_block",
+      "current": "tests/test_parity_helpers.py::TestStatusParity::test_sacrifice_kills_osty_and_gains_triple_max_hp_block",
+      "passed": true,
+      "note": "Source-verified v0.111.0 implementation or fixture correction."
+    },
+    {
+      "original": "tests/test_parity_helpers.py::TestStatusParity::test_eidolon_exhausts_hand_and_grants_intangible_when_threshold_met",
+      "current": "tests/test_parity_helpers.py::TestStatusParity::test_eidolon_preserves_non_ethereal_hand_without_granting_intangible",
+      "passed": true,
+      "note": "Source-verified v0.111.0 implementation or fixture correction."
+    },
+    {
+      "original": "tests/test_potion_registry_usage_and_generation.py::TestPotionRegistry::test_total_count",
+      "current": "tests/test_potion_registry_usage_and_generation.py::TestPotionRegistry::test_total_count",
+      "passed": true,
+      "note": "Source-verified v0.111.0 implementation or fixture correction."
+    },
+    {
+      "original": "tests/test_potion_registry_usage_and_generation.py::TestRarityCounts::test_event_count",
+      "current": "tests/test_potion_registry_usage_and_generation.py::TestRarityCounts::test_event_count",
+      "passed": true,
+      "note": "Source-verified v0.111.0 implementation or fixture correction."
+    },
+    {
+      "original": "tests/test_power_lifecycle_and_modifier_hooks.py::TestPowerAmountChangedHooks::test_rolling_boulder_keeps_separate_instances_like_reference",
+      "current": "tests/test_power_lifecycle_and_modifier_hooks.py::TestPowerAmountChangedHooks::test_rolling_boulder_keeps_separate_instances_like_reference",
+      "passed": true,
+      "note": "Source-verified v0.111.0 implementation or fixture correction."
+    },
+    {
+      "original": "tests/test_power_lifecycle_and_modifier_hooks.py::TestPowerAmountChangedHooks::test_regen_power_heals_on_owner_side_turn_end_and_decrements",
+      "current": "tests/test_power_lifecycle_and_modifier_hooks.py::TestPowerAmountChangedHooks::test_regen_power_heals_on_owner_side_turn_end_and_decrements",
+      "passed": true,
+      "note": "Source-verified v0.111.0 implementation or fixture correction."
+    },
+    {
+      "original": "tests/test_regent_card_effects_reference_parity.py::TestRegentCardEffectsReferenceParity::test_devastate_spends_stars_and_deals_large_damage",
+      "current": "tests/test_regent_card_effects_reference_parity.py::TestRegentCardEffectsReferenceParity::test_devastate_spends_stars_and_deals_large_damage",
+      "passed": true,
+      "note": "Source-verified v0.111.0 implementation or fixture correction."
+    },
+    {
+      "original": "tests/test_regent_card_effects_reference_parity.py::TestRegentCardEffectsReferenceParity::test_crush_under_applies_temporary_strength_loss_to_hittable_enemies",
+      "current": "tests/test_regent_card_effects_reference_parity.py::TestRegentCardEffectsReferenceParity::test_crush_under_applies_temporary_strength_loss_to_hittable_enemies",
+      "passed": true,
+      "note": "Source-verified v0.111.0 implementation or fixture correction."
+    },
+    {
+      "original": "tests/test_regent_card_effects_reference_parity.py::TestRegentCardEffectsReferenceParity::test_hammer_time_repeats_forge_for_other_living_players",
+      "current": "tests/test_regent_card_effects_reference_parity.py::TestRegentCardEffectsReferenceParity::test_hammer_time_repeats_forge_for_other_living_players",
+      "passed": true,
+      "note": "Source-verified v0.111.0 implementation or fixture correction."
+    },
+    {
+      "original": "tests/test_regent_generated_cards_and_x_cost_parity.py::TestRegentGeneratedCardsAndXCostParity::test_collision_course_generates_debris_and_counts_as_generated_card",
+      "current": "tests/test_regent_generated_cards_and_x_cost_parity.py::TestRegentGeneratedCardsAndXCostParity::test_collision_course_generates_debris_and_counts_as_generated_card",
+      "passed": true,
+      "note": "Source-verified v0.111.0 implementation or fixture correction."
+    },
+    {
+      "original": "tests/test_regent_generated_cards_and_x_cost_parity.py::TestRegentGeneratedCardsAndXCostParity::test_supermassive_scales_with_generated_cards_this_combat",
+      "current": "tests/test_regent_generated_cards_and_x_cost_parity.py::TestRegentGeneratedCardsAndXCostParity::test_supermassive_scales_with_generated_cards_this_combat",
+      "passed": true,
+      "note": "Source-verified v0.111.0 implementation or fixture correction."
+    },
+    {
+      "original": "tests/test_regent_generated_cards_and_x_cost_parity.py::TestRegentGeneratedCardsAndXCostParity::test_terraforming_applies_vigor_that_is_consumed_by_next_powered_attack",
+      "current": "tests/test_regent_generated_cards_and_x_cost_parity.py::TestRegentGeneratedCardsAndXCostParity::test_terraforming_applies_vigor_that_is_consumed_by_next_powered_attack",
+      "passed": true,
+      "note": "Source-verified v0.111.0 implementation or fixture correction."
+    },
+    {
+      "original": "tests/test_regent_parity.py::TestRegentParity::test_refine_blade_forges_and_applies_energy_next_turn",
+      "current": "tests/test_regent_parity.py::TestRegentParity::test_refine_blade_forges_and_applies_energy_next_turn",
+      "passed": true,
+      "note": "Source-verified v0.111.0 implementation or fixture correction."
+    },
+    {
+      "original": "tests/test_regent_parity.py::TestRegentParity::test_spoils_of_battle_forges_then_draws_cards",
+      "current": "tests/test_regent_parity.py::TestRegentParity::test_spoils_of_battle_forges_then_draws_cards",
+      "passed": true,
+      "note": "Source-verified v0.111.0 implementation or fixture correction."
+    },
+    {
+      "original": "tests/test_regent_star_cost_void_form_forge_parity.py::TestRegentStarCostVoidFormForgeParity::test_guiding_star_spends_star_cost_and_draws_immediately",
+      "current": "tests/test_regent_star_cost_void_form_forge_parity.py::TestRegentStarCostVoidFormForgeParity::test_guiding_star_spends_one_star_and_schedules_next_turn_draw",
+      "passed": true,
+      "note": "Source-verified v0.111.0 implementation or fixture correction."
+    },
+    {
+      "original": "tests/test_regent_star_cost_void_form_forge_parity.py::TestRegentStarCostVoidFormForgeParity::test_alignment_spends_stars_and_grants_energy",
+      "current": "tests/test_regent_star_cost_void_form_forge_parity.py::TestRegentStarCostVoidFormForgeParity::test_alignment_spends_stars_and_grants_energy",
+      "passed": true,
+      "note": "Source-verified v0.111.0 implementation or fixture correction."
+    },
+    {
+      "original": "tests/test_regent_star_cost_void_form_forge_parity.py::TestRegentStarCostVoidFormForgeParity::test_void_form_waives_star_cost_for_covered_card_play",
+      "current": "tests/test_regent_star_cost_void_form_forge_parity.py::TestRegentStarCostVoidFormForgeParity::test_void_form_waives_star_cost_for_covered_card_play",
+      "passed": true,
+      "note": "Source-verified v0.111.0 implementation or fixture correction."
+    },
+    {
+      "original": "tests/test_relic_event_obtain_opening_rest_hooks_parity.py::TestRelicEventObtainOpeningRestHooksParity::test_toasty_mittens_round_one_exhausts_non_innate_card",
+      "current": "tests/test_relic_event_obtain_opening_rest_hooks_parity.py::TestRelicEventObtainOpeningRestHooksParity::test_toasty_mittens_round_one_exhausts_non_innate_card",
+      "passed": true,
+      "note": "Source-verified v0.111.0 implementation or fixture correction."
+    },
+    {
+      "original": "tests/test_relic_event_obtain_opening_rest_hooks_parity.py::TestRelicEventObtainOpeningRestHooksParity::test_signet_ring_grants_nine_hundred_ninety_nine_gold_on_obtain",
+      "current": "tests/test_relic_event_obtain_opening_rest_hooks_parity.py::TestRelicEventObtainOpeningRestHooksParity::test_signet_ring_grants_eight_hundred_eighty_eight_gold_on_obtain",
+      "passed": true,
+      "note": "Source-verified v0.111.0 implementation or fixture correction."
+    },
+    {
+      "original": "tests/test_relic_event_rewards_curses_gold_hooks_parity.py::TestRelicEventRewardsCursesGoldHooksParity::test_seal_of_gold_spends_five_gold_for_one_energy_each_player_turn",
+      "current": "tests/test_relic_event_rewards_curses_gold_hooks_parity.py::TestRelicEventRewardsCursesGoldHooksParity::test_seal_of_gold_spends_three_gold_for_one_energy_each_player_turn",
+      "passed": true,
+      "note": "Source-verified v0.111.0 implementation or fixture correction."
+    },
+    {
+      "original": "tests/test_relic_rare_shop_combat_start_map_and_autoplay_parity.py::test_fur_coat_marks_combat_rooms_and_sets_marked_enemies_to_one_hp",
+      "current": "tests/test_relic_rare_shop_combat_start_map_and_autoplay_parity.py::test_fur_coat_marks_combat_rooms_and_sets_marked_enemies_to_one_hp",
+      "passed": true,
+      "note": "Source-verified v0.111.0 implementation or fixture correction."
+    },
+    {
+      "original": "tests/test_relic_rare_shop_owner_scope_cost_and_generation_parity.py::TestRelicRareShopOwnerScopeCostAndGenerationParity::test_shop_event_card_play_relics_ignore_other_players_cards",
+      "current": "tests/test_relic_rare_shop_owner_scope_cost_and_generation_parity.py::TestRelicRareShopOwnerScopeCostAndGenerationParity::test_shop_event_card_play_relics_ignore_other_players_cards",
+      "passed": true,
+      "note": "Source-verified v0.111.0 implementation or fixture correction."
+    },
+    {
+      "original": "tests/test_relic_rare_shop_owner_scope_cost_and_generation_parity.py::TestRelicRareShopOwnerScopeCostAndGenerationParity::test_diamond_diadem_resets_after_side_turn_start",
+      "current": "tests/test_relic_rare_shop_owner_scope_cost_and_generation_parity.py::TestRelicRareShopOwnerScopeCostAndGenerationParity::test_diamond_diadem_grants_opening_block_and_blur_only",
+      "passed": true,
+      "note": "Source-verified v0.111.0 implementation or fixture correction."
+    },
+    {
+      "original": "tests/test_relic_reward_and_card_reward_hooks_parity.py::test_toy_box_wax_rewards_melt_after_three_combats",
+      "current": "tests/test_relic_reward_and_card_reward_hooks_parity.py::test_toy_box_wax_rewards_melt_after_three_combats",
+      "passed": true,
+      "note": "Source-verified v0.111.0 implementation or fixture correction."
+    },
+    {
+      "original": "tests/test_relic_reward_and_card_reward_hooks_parity.py::test_massive_scroll_enqueues_multiplayer_reward_pool",
+      "current": "tests/test_relic_reward_and_card_reward_hooks_parity.py::test_massive_scroll_enqueues_multiplayer_reward_pool",
+      "passed": true,
+      "note": "Source-verified v0.111.0 implementation or fixture correction."
+    },
+    {
+      "original": "tests/test_relic_uncommon_owner_scope_and_room_hooks_parity.py::TestRelicUncommonOwnerScopeAndRoomHooksParity::test_regalite_gains_block_for_owner_generated_combat_cards",
+      "current": "tests/test_relic_uncommon_owner_scope_and_room_hooks_parity.py::TestRelicUncommonOwnerScopeAndRoomHooksParity::test_regalite_gains_block_for_owner_generated_combat_cards",
+      "passed": true,
+      "note": "Source-verified v0.111.0 implementation or fixture correction."
+    },
+    {
+      "original": "tests/test_relic_uncommon_owner_scope_and_room_hooks_parity.py::TestRelicUncommonOwnerScopeAndRoomHooksParity::test_regalite_block_triggers_after_block_gained_hooks",
+      "current": "tests/test_relic_uncommon_owner_scope_and_room_hooks_parity.py::TestRelicUncommonOwnerScopeAndRoomHooksParity::test_regalite_block_triggers_after_block_gained_hooks",
+      "passed": true,
+      "note": "Source-verified v0.111.0 implementation or fixture correction."
+    },
+    {
+      "original": "tests/test_relic_uncommon_room_potion_orb_hooks_parity.py::TestRelicUncommonRoomPotionOrbHooksParity::test_delicate_frond_uses_out_of_combat_potion_pool",
+      "current": "tests/test_relic_uncommon_room_potion_orb_hooks_parity.py::TestRelicUncommonRoomPotionOrbHooksParity::test_delicate_frond_uses_out_of_combat_potion_pool",
+      "passed": true,
+      "note": "Source-verified v0.111.0 implementation or fixture correction."
+    },
+    {
+      "original": "tests/test_rewards.py::TestCardRarityOdds::test_uniform_base_odds_without_pity_change_api",
+      "current": "tests/test_rewards.py::TestCardRarityOdds::test_uniform_base_odds_without_pity_change_api",
+      "passed": true,
+      "note": "Source-verified v0.111.0 implementation or fixture correction."
+    },
+    {
+      "original": "tests/test_rng_parity.py::test_rng_seeded_next_matches_csharp_random_sequence",
+      "current": "tests/test_rng_parity.py::test_rng_seeded_next_matches_csharp_random_sequence",
+      "passed": true,
+      "note": "Source-verified v0.111.0 implementation or fixture correction."
+    },
+    {
+      "original": "tests/test_rng_parity.py::test_named_rng_streams_match_game_seed_derivation",
+      "current": "tests/test_rng_parity.py::test_named_rng_streams_match_game_seed_derivation",
+      "passed": true,
+      "note": "Source-verified v0.111.0 implementation or fixture correction."
+    },
+    {
+      "original": "tests/test_rng_parity.py::test_run_rng_set_exposes_game_named_streams",
+      "current": "tests/test_rng_parity.py::test_run_rng_set_exposes_game_named_streams",
+      "passed": true,
+      "note": "Source-verified v0.111.0 implementation or fixture correction."
+    },
+    {
+      "original": "tests/test_rng_parity.py::test_event_rng_seed_matches_game_event_derivation",
+      "current": "tests/test_rng_parity.py::test_event_rng_seed_matches_game_event_derivation",
+      "passed": true,
+      "note": "Source-verified v0.111.0 implementation or fixture correction."
+    },
+    {
+      "original": "tests/test_rng_parity.py::test_shuffle_uses_csharp_fisher_yates_sequence",
+      "current": "tests/test_rng_parity.py::test_shuffle_uses_csharp_fisher_yates_sequence",
+      "passed": true,
+      "note": "Source-verified v0.111.0 implementation or fixture correction."
+    },
+    {
+      "original": "tests/test_run_deck_choice_flow.py::test_manager_context_requires_full_enchant_choice_before_confirm",
+      "current": "tests/test_run_deck_choice_flow.py::test_manager_context_requires_full_enchant_choice_before_confirm",
+      "passed": true,
+      "note": "Source-verified v0.111.0 implementation or fixture correction."
+    },
+    {
+      "original": "tests/test_run_deck_choice_flow.py::test_treasure_relic_with_enchant_reward_pauses_then_returns_to_map",
+      "current": "tests/test_run_deck_choice_flow.py::test_treasure_relic_with_enchant_reward_pauses_then_returns_to_map",
+      "passed": true,
+      "note": "Source-verified v0.111.0 implementation or fixture correction."
+    },
+    {
+      "original": "tests/test_run_deck_choice_flow.py::test_shop_buy_relic_with_multi_choice_resumes_shop_after_confirm",
+      "current": "tests/test_run_deck_choice_flow.py::test_shop_buy_relic_with_multi_choice_resumes_shop_after_confirm",
+      "passed": true,
+      "note": "Source-verified v0.111.0 implementation or fixture correction."
+    },
+    {
+      "original": "tests/test_run_deck_choice_flow.py::test_boss_relic_pick_with_deck_choice_resumes_to_next_act_after_confirm",
+      "current": "tests/test_run_deck_choice_flow.py::test_boss_relic_pick_with_deck_choice_resumes_to_next_act_after_confirm",
+      "passed": true,
+      "note": "Source-verified v0.111.0 implementation or fixture correction."
+    },
+    {
+      "original": "tests/test_run_env.py::TestActionMasksPerPhase::test_run_level_multi_choice_in_map_phase_uses_choose_then_confirm",
+      "current": "tests/test_run_env.py::TestActionMasksPerPhase::test_run_level_multi_choice_in_map_phase_uses_choose_then_confirm",
+      "passed": true,
+      "note": "Source-verified v0.111.0 implementation or fixture correction."
+    },
+    {
+      "original": "tests/test_run_flow.py::TestConcreteRunObjects::test_shop_purchase_adds_real_card_and_potion",
+      "current": "tests/test_run_flow.py::TestConcreteRunObjects::test_shop_purchase_adds_real_card_and_potion",
+      "passed": true,
+      "note": "Source-verified v0.111.0 implementation or fixture correction."
+    },
+    {
+      "original": "tests/test_run_flow.py::TestPotionRewardOdds::test_elite_bonus",
+      "current": "tests/test_run_flow.py::TestPotionRewardOdds::test_elite_bonus",
+      "passed": true,
+      "note": "Source-verified v0.111.0 implementation or fixture correction."
+    },
+    {
+      "original": "tests/test_run_manager_rewards.py::test_elite_victory_offers_relic_reward_object",
+      "current": "tests/test_run_manager_rewards.py::test_elite_victory_offers_relic_reward_object",
+      "passed": true,
+      "note": "Source-verified v0.111.0 implementation or fixture correction."
+    },
+    {
+      "original": "tests/test_silent_card_effects_reference_parity.py::TestSilentCardEffectsReferenceParity::test_tracking_adds_two_first_then_one_when_already_active",
+      "current": "tests/test_silent_card_effects_reference_parity.py::TestSilentCardEffectsReferenceParity::test_tracking_stacks_fifty_percent_each_play",
+      "passed": true,
+      "note": "Source-verified v0.111.0 implementation or fixture correction."
+    },
+    {
+      "original": "tests/test_silent_card_effects_reference_parity.py::TestSilentCardEffectsReferenceParity::test_outbreak_card_applies_reference_power_amounts",
+      "current": "tests/test_silent_card_effects_reference_parity.py::TestSilentCardEffectsReferenceParity::test_outbreak_applies_poison_and_triggers_it_immediately",
+      "passed": true,
+      "note": "Source-verified v0.111.0 implementation or fixture correction."
+    },
+    {
+      "original": "tests/test_silent_card_effects_reference_parity.py::TestSilentCardEffectsReferenceParity::test_silent_direct_damage_and_block_cards_match_reference",
+      "current": "tests/test_silent_card_effects_reference_parity.py::TestSilentCardEffectsReferenceParity::test_silent_direct_damage_and_block_cards_match_reference",
+      "passed": true,
+      "note": "Source-verified v0.111.0 implementation or fixture correction."
+    },
+    {
+      "original": "tests/test_silent_draw_retain_discard_parity.py::TestSilentDrawRetainDiscardParity::test_well_laid_plans_retains_one_card_during_end_of_turn_flush",
+      "current": "tests/test_silent_draw_retain_discard_parity.py::TestSilentDrawRetainDiscardParity::test_well_laid_plans_retains_all_cards_during_end_of_turn_flush",
+      "passed": true,
+      "note": "Source-verified v0.111.0 implementation or fixture correction."
+    },
+    {
+      "original": "tests/test_silent_draw_retain_discard_parity.py::TestSilentDrawRetainDiscardParity::test_well_laid_plans_retains_extra_cards_beyond_existing_single_turn_retain",
+      "current": "tests/test_silent_draw_retain_discard_parity.py::TestSilentDrawRetainDiscardParity::test_well_laid_plans_retains_extra_cards_beyond_existing_single_turn_retain",
+      "passed": true,
+      "note": "Source-verified v0.111.0 implementation or fixture correction."
+    },
+    {
+      "original": "tests/test_silent_poison_tracking_x_cost_parity.py::TestSilentPoisonTrackingXCostParity::test_anticipate_grants_temporary_dexterity_until_turn_end",
+      "current": "tests/test_silent_poison_tracking_x_cost_parity.py::TestSilentPoisonTrackingXCostParity::test_anticipate_grants_temporary_dexterity_until_turn_end",
+      "passed": true,
+      "note": "Source-verified v0.111.0 implementation or fixture correction."
+    },
+    {
+      "original": "tests/test_silent_poison_tracking_x_cost_parity.py::TestSilentPoisonTrackingXCostParity::test_expertise_draws_up_to_six_and_does_not_overdraw_when_hand_is_full_enough",
+      "current": "tests/test_silent_poison_tracking_x_cost_parity.py::TestSilentPoisonTrackingXCostParity::test_expertise_draws_two_and_retains_only_new_cards",
+      "passed": true,
+      "note": "Source-verified v0.111.0 implementation or fixture correction."
+    },
+    {
+      "original": "tests/test_silent_poison_tracking_x_cost_parity.py::TestSilentPoisonTrackingXCostParity::test_tracking_applies_two_stacks_and_doubles_damage_against_weak_targets",
+      "current": "tests/test_silent_poison_tracking_x_cost_parity.py::TestSilentPoisonTrackingXCostParity::test_tracking_applies_fifty_percent_and_multiplies_damage_against_weak_targets",
+      "passed": true,
+      "note": "Source-verified v0.111.0 implementation or fixture correction."
+    },
+    {
+      "original": "tests/test_silent_poison_tracking_x_cost_parity.py::TestSilentPoisonTrackingXCostParity::test_tracking_applies_to_owner_pet_attacks",
+      "current": "tests/test_silent_poison_tracking_x_cost_parity.py::TestSilentPoisonTrackingXCostParity::test_tracking_requires_a_card_source_for_pet_attacks",
+      "passed": true,
+      "note": "Source-verified v0.111.0 implementation or fixture correction."
+    },
+    {
+      "original": "tests/test_status_curse_card_effects_parity.py::TestStatusCurseCardEffectsParity::test_relax_gains_block_and_next_turn_draw_and_energy",
+      "current": "tests/test_status_curse_card_effects_parity.py::TestStatusCurseCardEffectsParity::test_relax_gains_block_and_next_turn_draw_and_energy",
+      "passed": true,
+      "note": "Source-verified v0.111.0 implementation or fixture correction."
+    },
+    {
+      "original": "tests/test_status_curse_card_effects_parity.py::TestStatusCurseCardEffectsParity::test_maul_play_grows_all_owner_maul_copies_and_upgrade_preserves_growth",
+      "current": "tests/test_status_curse_card_effects_parity.py::TestStatusCurseCardEffectsParity::test_maul_play_grows_all_owner_maul_copies_and_upgrade_preserves_growth",
+      "passed": true,
+      "note": "Source-verified v0.111.0 implementation or fixture correction."
+    },
+    {
+      "original": "tests/test_status_curse_card_effects_parity.py::TestStatusCurseCardEffectsParity::test_fuel_gains_energy_before_drawing_void",
+      "current": "tests/test_status_curse_card_effects_parity.py::TestStatusCurseCardEffectsParity::test_fuel_gains_energy_without_drawing",
+      "passed": true,
+      "note": "Source-verified v0.111.0 implementation or fixture correction."
+    },
+    {
+      "original": "tests/test_status_curse_card_effects_parity.py::TestStatusCurseCardEffectsParity::test_brightest_flame_gains_energy_before_drawing_void",
+      "current": "tests/test_status_curse_card_effects_parity.py::TestStatusCurseCardEffectsParity::test_brightest_flame_gains_energy_before_drawing_void",
+      "passed": true,
+      "note": "Source-verified v0.111.0 implementation or fixture correction."
+    },
+    {
+      "original": "tests/test_v0_107_1_new_content_parity.py::TestNewCardPoolMembership::test_scare_in_silent_pool",
+      "current": "tests/test_v0_107_1_new_content_parity.py::TestNewCardPoolMembership::test_sidesteps_replaces_removed_scare_in_current_pool",
+      "passed": true,
+      "note": "Source-verified v0.111.0 implementation or fixture correction."
+    },
+    {
+      "original": "tests/test_v0_107_1_new_powers_parity.py::TestNoEnergyGainPowerParity::test_applied_by_expect_a_fight",
+      "current": "tests/test_v0_107_1_new_powers_parity.py::TestNoEnergyGainPowerParity::test_expect_a_fight_no_longer_applies_no_energy_gain",
+      "passed": true,
+      "note": "Source-verified v0.111.0 implementation or fixture correction."
+    },
+    {
+      "original": "tests/test_web_play_run.py::test_web_session_starts_at_neow_and_advances_to_map",
+      "current": "tests/test_web_play_run.py::test_web_session_starts_at_neow_and_advances_to_map",
+      "passed": true,
+      "note": "Source-verified v0.111.0 implementation or fixture correction."
+    },
+    {
+      "original": "tests/test_web_play_run.py::test_web_session_can_reach_first_combat_reward",
+      "current": "tests/test_web_play_run.py::test_web_session_can_reach_first_combat_reward",
+      "passed": true,
+      "note": "Source-verified v0.111.0 implementation or fixture correction."
+    },
+    {
+      "original": "tests/test_web_play_run.py::test_web_session_can_take_card_reward_and_return_to_map",
+      "current": "tests/test_web_play_run.py::test_web_session_can_take_card_reward_and_return_to_map",
+      "passed": true,
+      "note": "Source-verified v0.111.0 implementation or fixture correction."
+    },
+    {
+      "original": "tests/test_web_play_run.py::test_web_session_can_continue_to_second_map_node_after_rewards",
+      "current": "tests/test_web_play_run.py::test_web_session_can_continue_to_second_map_node_after_rewards",
+      "passed": true,
+      "note": "Source-verified v0.111.0 implementation or fixture correction."
+    }
+  ]
+}

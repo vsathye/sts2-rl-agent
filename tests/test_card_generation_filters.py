@@ -80,7 +80,7 @@ def test_card_generation_filters_multiplayer_constraints_like_reference():
     assert CardId.STRATAGEM in singleplayer_colorless
     assert CardId.STRATAGEM in multiplayer_colorless
     assert CardId.WELL_LAID_PLANS in singleplayer_silent
-    assert CardId.WELL_LAID_PLANS not in multiplayer_silent
+    assert CardId.WELL_LAID_PLANS in multiplayer_silent
 
 
 def test_basic_strike_transform_excludes_only_basic_strike_defend_candidates():
@@ -186,3 +186,18 @@ def test_curse_pool_matches_reference_pool_without_legacy_curses():
         CardId.SHAME,
         CardId.WRITHE,
     }
+
+
+def test_v111_factories_keep_character_generation_and_transform_boundaries():
+    # A shared implementation module must not mix character generation pools.
+    for module, included, excluded in [
+        ("ironclad", CardId.MIDNIGHT, CardId.FADE),
+        ("silent", CardId.FADE, CardId.MIDNIGHT),
+        ("defect", CardId.HIBERNATE, CardId.FADE),
+        ("colorless", CardId.THE_BALL, CardId.MIDNIGHT),
+    ]:
+        ids = eligible_registered_cards(module_name=f"sts2_env.cards.{module}", generation_context=None)
+        assert included in ids
+        assert excluded not in ids
+    ids = eligible_transform_cards(create_card(CardId.MIDNIGHT), character_id="Silent", is_multiplayer=True)
+    assert CardId.FADE not in ids

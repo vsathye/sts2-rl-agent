@@ -155,8 +155,9 @@ class TestNewCardPoolMembership:
     def test_not_yet_in_ironclad_pool(self):
         assert CardId.NOT_YET in IRONCLAD_CARD_POOL
 
-    def test_scare_in_silent_pool(self):
-        assert CardId.SCARE in SILENT_CARD_POOL
+    def test_sidesteps_replaces_removed_scare_in_current_pool(self):
+        assert CardId.SCARE not in SILENT_CARD_POOL
+        assert CardId.SIDESTEP in SILENT_CARD_POOL
 
     def test_wither_in_status_pool(self):
         assert CardId.WITHER in STATUS_CARD_POOL

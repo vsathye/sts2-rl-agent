@@ -155,8 +155,8 @@ BOWLBUG_SILK_MONSTER_ID = "BOWLBUG_SILK"
 BOWLBUG_SILK_TOUGH_MIN_HP = 41
 BOWLBUG_SILK_TOUGH_MAX_HP = 44
 EXOSKELETON_MONSTER_ID = "EXOSKELETON"
-EXOSKELETON_TOUGH_MIN_HP = 25
-EXOSKELETON_TOUGH_MAX_HP = 29
+EXOSKELETON_TOUGH_MIN_HP = 26
+EXOSKELETON_TOUGH_MAX_HP = 30
 CHOMPER_MONSTER_ID = "CHOMPER"
 CHOMPER_TOUGH_MIN_HP = 63
 CHOMPER_TOUGH_MAX_HP = 67
@@ -443,18 +443,14 @@ class TestAct1NormalEncounters:
         ]
 
     def test_ruby_raiders_normal_samples_three_unique_raiders_in_original_pool_order(self):
-        encounter_seed = 42
-        expected_raiders_for_seed = [
-            "CROSSBOW_RUBY_RAIDER",
-            "AXE_RUBY_RAIDER",
-            "ASSASSIN_RUBY_RAIDER",
-        ]
+        from tests.test_rng_parity import VECTORS
+        pool = ["AXE_RUBY_RAIDER", "ASSASSIN_RUBY_RAIDER", "BRUTE_RUBY_RAIDER", "CROSSBOW_RUBY_RAIDER", "TRACKER_RUBY_RAIDER"]
+        row = next(row for row in VECTORS if row["seed"] == 42)
+        expected = [pool.pop(int(sample * len(pool))) for sample in row["doubles"][:3]]
         combat = _make_combat()
-
-        setup_ruby_raiders_normal(combat, Rng(encounter_seed))
-
-        assert [enemy.monster_id for enemy in combat.enemies] == expected_raiders_for_seed
-        assert len(set(enemy.monster_id for enemy in combat.enemies)) == len(expected_raiders_for_seed)
+        setup_ruby_raiders_normal(combat, Rng(42))
+        assert [enemy.monster_id for enemy in combat.enemies] == expected
+        assert len(set(expected)) == 3
 
     def test_ruby_raiders_tough_ascension_hp_matches_csharp(self):
         seen_raiders = set()
@@ -721,9 +717,9 @@ class TestAct2Pools:
     def test_decimillipede_elite_offsets_segment_openers_from_original_random_starter(self):
         encounter_seed = 0
         expected_openers = [
+            "BULK_MOVE",
             "CONSTRICT_MOVE",
             "WRITHE_MOVE",
-            "BULK_MOVE",
         ]
         combat = _make_combat(encounter_seed)
 

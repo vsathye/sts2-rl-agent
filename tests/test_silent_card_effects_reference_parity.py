@@ -443,15 +443,15 @@ class TestSilentCardEffectsReferenceParity:
         assert enemy.get_power_amount(PowerId.STRANGLE) == 3
         assert enemy.get_power_amount(PowerId.CONSTRICT) == 0
 
-    def test_tracking_adds_two_first_then_one_when_already_active(self):
+    def test_tracking_stacks_fifty_percent_each_play(self):
         combat = _make_combat()
         combat.hand = [silent_cards.make_tracking(), silent_cards.make_tracking()]
         combat.energy = 4
 
         assert combat.play_card(0)
-        assert combat.player.get_power_amount(PowerId.TRACKING) == 2
+        assert combat.player.get_power_amount(PowerId.TRACKING) == 50
         assert combat.play_card(0)
-        assert combat.player.get_power_amount(PowerId.TRACKING) == 3
+        assert combat.player.get_power_amount(PowerId.TRACKING) == 100
 
     def test_echoing_slash_repeats_once_for_each_enemy_killed(self):
         combat = _make_combat(extra_enemies=2)
@@ -569,20 +569,17 @@ class TestSilentCardEffectsReferenceParity:
         assert combat.player.block == BLUR_UPGRADED_BLOCK
         assert combat.player.get_power_amount(PowerId.BLUR) == BLUR_POWER_AMOUNT
 
-    def test_outbreak_card_applies_reference_power_amounts(self):
-        combat = _make_combat()
-        combat.hand = [silent_cards.make_outbreak()]
-        combat.energy = 1
-
-        assert combat.play_card(0)
-        assert combat.player.get_power_amount(PowerId.OUTBREAK) == OUTBREAK_POWER_AMOUNT
-
-        upgraded_combat = _make_combat()
-        upgraded_combat.hand = [silent_cards.make_outbreak(upgraded=True)]
-        upgraded_combat.energy = 1
-
-        assert upgraded_combat.play_card(0)
-        assert upgraded_combat.player.get_power_amount(PowerId.OUTBREAK) == OUTBREAK_UPGRADED_POWER_AMOUNT
+    def test_outbreak_applies_poison_and_triggers_it_immediately(self):
+        for upgraded, poison in [(False, 9), (True, 12)]:
+            combat = _make_combat()
+            enemy = combat.enemies[0]
+            enemy.max_hp = enemy.current_hp = 100
+            combat.hand = [silent_cards.make_outbreak(upgraded=upgraded)]
+            combat.energy = 3
+            assert combat.play_card(0)
+            assert enemy.current_hp == 100 - poison
+            assert enemy.get_power_amount(PowerId.POISON) == poison - 1
+            assert not combat.player.has_power(PowerId.OUTBREAK)
 
     def test_outbreak_damage_hits_only_hittable_enemies(self):
         combat = _make_combat(extra_enemies=1)
@@ -739,8 +736,8 @@ class TestSilentCardEffectsReferenceParity:
         flick_combat.energy = 1
 
         assert flick_combat.play_card(0)
-        # FlickFlack.cs: DamageVar(6m) upgraded by 2 -> 8 damage to each enemy.
-        assert [enemy.current_hp for enemy in flick_combat.enemies] == [92, 92]
+        # FlickFlack.cs: DamageVar(7m) upgraded by 2 -> 9 damage to each enemy.
+        assert [enemy.current_hp for enemy in flick_combat.enemies] == [91, 91]
 
         block_combat = _make_combat()
         block_combat.hand = [make_untouchable(upgraded=True)]

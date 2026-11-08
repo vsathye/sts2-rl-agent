@@ -47,9 +47,9 @@ class TestSilentPoisonTrackingXCostParity:
         combat.energy = 0
 
         assert combat.play_card(0)
-        # Anticipate.cs: PowerVar<DexterityPower>(2m); OnUpgrade: Dexterity.UpgradeValueBy(1m) -> 3.
-        assert combat.player.get_power_amount(PowerId.ANTICIPATE) == 3
-        assert combat.player.get_power_amount(PowerId.DEXTERITY) == 3
+        # Anticipate.cs: PowerVar<DexterityPower>(2m); OnUpgrade: Dexterity.UpgradeValueBy(2m) -> 4.
+        assert combat.player.get_power_amount(PowerId.ANTICIPATE) == 4
+        assert combat.player.get_power_amount(PowerId.DEXTERITY) == 4
 
         fire_after_turn_end(CombatSide.PLAYER, combat)
 
@@ -86,7 +86,7 @@ class TestSilentPoisonTrackingXCostParity:
         assert enemy.current_hp == hp_before_tick - 5
         assert enemy.get_power_amount(PowerId.POISON) == 4
 
-    def test_expertise_draws_up_to_six_and_does_not_overdraw_when_hand_is_full_enough(self):
+    def test_expertise_draws_two_and_retains_only_new_cards(self):
         combat = _make_combat()
         kept_attack = make_strike_silent()
         kept_skill = make_defend_silent()
@@ -100,8 +100,10 @@ class TestSilentPoisonTrackingXCostParity:
         combat.energy = 1
 
         assert combat.play_card(0)
-        assert combat.hand == [kept_attack, kept_skill, draw_1, draw_2, draw_3, draw_4]
-        assert combat.draw_pile == [draw_5]
+        assert combat.hand == [kept_attack, kept_skill, draw_1, draw_2]
+        assert draw_1.single_turn_retain and draw_2.single_turn_retain
+        assert not kept_attack.single_turn_retain
+        assert combat.draw_pile == [draw_3, draw_4, draw_5]
 
         combat = _make_combat()
         combat.hand = [make_expertise()] + [make_strike_silent() for _ in range(6)]
@@ -109,8 +111,8 @@ class TestSilentPoisonTrackingXCostParity:
         combat.energy = 1
 
         assert combat.play_card(0)
-        assert len(combat.hand) == 6
-        assert len(combat.draw_pile) == 1
+        assert len(combat.hand) == 7
+        assert len(combat.draw_pile) == 0
 
     def test_noxious_fumes_applies_poison_to_all_enemies_at_player_turn_start(self):
         combat = _make_combat(extra_enemies=1)
@@ -169,7 +171,7 @@ class TestSilentPoisonTrackingXCostParity:
         assert combat.play_card(0)
         assert combat.energy == 1
 
-    def test_tracking_applies_two_stacks_and_doubles_damage_against_weak_targets(self):
+    def test_tracking_applies_fifty_percent_and_multiplies_damage_against_weak_targets(self):
         tracked_combat = _make_combat()
         tracked_enemy = tracked_combat.enemies[0]
         tracked_enemy.apply_power(PowerId.WEAK, 1)
@@ -177,7 +179,7 @@ class TestSilentPoisonTrackingXCostParity:
         tracked_combat.energy = 3
 
         assert tracked_combat.play_card(0)
-        assert tracked_combat.player.get_power_amount(PowerId.TRACKING) == 2
+        assert tracked_combat.player.get_power_amount(PowerId.TRACKING) == 50
         tracked_start_hp = tracked_enemy.current_hp
         assert tracked_combat.play_card(0, 0)
         tracked_damage = tracked_start_hp - tracked_enemy.current_hp
@@ -192,19 +194,19 @@ class TestSilentPoisonTrackingXCostParity:
         assert baseline_combat.play_card(0, 0)
         baseline_damage = baseline_start_hp - baseline_enemy.current_hp
 
-        assert tracked_damage == baseline_damage * 2
+        assert tracked_damage == baseline_damage * 3 // 2
 
-    def test_tracking_applies_to_owner_pet_attacks(self):
+    def test_tracking_requires_a_card_source_for_pet_attacks(self):
         combat = _make_combat()
         enemy = combat.enemies[0]
         enemy.apply_power(PowerId.WEAK, 1)
         pet = combat.summon_event_pet(combat.player, "PAELS_LEGION")
         assert pet is not None
-        combat.player.apply_power(PowerId.TRACKING, 2)
+        combat.player.apply_power(PowerId.TRACKING, 50)
 
         combat.deal_damage(pet, enemy, 5, ValueProp.MOVE)
 
-        assert enemy.current_hp == enemy.max_hp - 10
+        assert enemy.current_hp == enemy.max_hp - 5
 
     def test_malaise_uses_x_energy_for_strength_and_weak_and_allows_zero_energy_play(self):
         combat = _make_combat()

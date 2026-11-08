@@ -2,13 +2,16 @@
   "game_version": "0.111.0",
   "validation_status": "migration_in_progress",
   "full_suite": {
-    "passed": 4773,
-    "failed": 145,
-    "seconds": 281.97,
-    "note": "Full run collected 14 migration cases. Subsequently fixed Haze/Outbreak poison field and added five focused cases; focused suite now passes 19. Entomancer HP correction separately passes monster audit."
+    "passed": 4961,
+    "failed": 0,
+    "errors": 0,
+    "skipped": 0,
+    "seconds": 293.56,
+    "command": ".venv/bin/python -m pytest -q --tb=short",
+    "evidence": "regression_final.txt"
   },
   "focused_suite": {
-    "passed": 19,
+    "passed": 40,
     "failed": 0
   },
   "card_dynamic_audit": "passed",
@@ -21,5 +24,28 @@
     "unmapped": 48
   },
   "long_training_launched": false,
-  "real_game_bridge_validated": false
+  "real_game_bridge_validated": false,
+  "previous_checkpoint": {
+    "passed": 4773,
+    "failed": 145,
+    "seconds": 281.97,
+    "note": "Full run collected 14 migration cases. Subsequently fixed Haze/Outbreak poison field and added five focused cases; focused suite now passes 19. Entomancer HP correction separately passes monster audit."
+  },
+  "simulator_revision": "v111-migration-2",
+  "original_failure_resolution": {
+    "total": 145,
+    "resolved": 145,
+    "unresolved": 0,
+    "evidence": "regression_resolution.json"
+  },
+  "new_multiplayer_cards": 16,
+  "card_static_audit": "passed",
+  "five_character_smoke": {
+    "combat_episodes": 10,
+    "run_episodes": 5,
+    "exceptions": 0,
+    "truncations": 0,
+    "policy": "random",
+    "scope": "execution_only_no_performance_verdict"
+  }
 }

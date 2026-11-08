@@ -257,14 +257,16 @@ def modify_damage(
         if is_relic:
             damage += listener.modify_damage_additive(owner, dealer, target, props, card_source)
         else:
-            damage += listener.modify_damage_additive(owner, dealer, target, props)
+            method = getattr(listener, "modify_damage_additive_from_card", None)
+            damage += method(owner, dealer, target, props, card_source) if method else listener.modify_damage_additive(owner, dealer, target, props)
 
     # Step 2: Multiplicative modifiers
     for owner, listener, is_relic in _iter_hook_listeners(combat):
         if is_relic:
             damage *= listener.modify_damage_multiplicative(owner, dealer, target, props, card_source)
         else:
-            damage *= listener.modify_damage_multiplicative(owner, dealer, target, props)
+            method = getattr(listener, "modify_damage_multiplicative_from_card", None)
+            damage *= method(owner, dealer, target, props, card_source) if method else listener.modify_damage_multiplicative(owner, dealer, target, props)
     if card_source is not None and hasattr(card_source, "enchantments"):
         damage *= enchant_damage_multiplicative(card_source, props)
 

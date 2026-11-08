@@ -92,7 +92,8 @@ class TestCardRarityOdds:
     def test_uniform_base_odds_without_pity_change_api(self):
         odds = CardRarityOdds()
         odds.current_value = 0.4
-        rng = Rng(42)
+        from types import SimpleNamespace
+        rng = SimpleNamespace(next_float=lambda: 0.9)
 
         assert odds.roll_with_base_odds(rng, context="uniform") == CardRarity.COMMON
         assert odds.current_value == pytest.approx(0.4)

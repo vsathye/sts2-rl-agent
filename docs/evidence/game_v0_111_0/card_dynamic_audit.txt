@@ -1,0 +1,1 @@
+card dynamic var audit passed

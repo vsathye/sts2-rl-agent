@@ -60,7 +60,7 @@ def test_normal_victory_still_uses_single_card_reward_screen():
 
 def test_elite_victory_offers_relic_reward_object():
     mgr = RunManager(seed=3, character_id="Ironclad")
-    mgr.run_state.potion_reward_odds.current_value = 0.0
+    mgr.run_state.potion_reward_odds.current_value = -1.0
     mgr._combat = _won_combat(extra_card_rewards=0)
     mgr._current_room_type = RoomType.ELITE
 

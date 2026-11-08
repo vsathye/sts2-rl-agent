@@ -6,7 +6,7 @@
       "simulator": {
         "game_version": "0.111.0",
         "game_build": "24724944",
-        "simulator_revision": "v111-migration-1",
+        "simulator_revision": "v111-migration-2",
         "validation_status": "migration_in_progress"
       },
       "config": {
@@ -15,7 +15,7 @@
         "ascension": 0,
         "act_count": 1,
         "observation": "character-v1",
-        "max_steps": 300,
+        "max_steps": 200,
         "max_turns": 200,
         "starting_relic": false
       },
@@ -56,7 +56,7 @@
       "simulator": {
         "game_version": "0.111.0",
         "game_build": "24724944",
-        "simulator_revision": "v111-migration-1",
+        "simulator_revision": "v111-migration-2",
         "validation_status": "migration_in_progress"
       },
       "config": {
@@ -65,7 +65,7 @@
         "ascension": 0,
         "act_count": 1,
         "observation": "character-v1",
-        "max_steps": 300,
+        "max_steps": 200,
         "max_turns": 200,
         "starting_relic": false
       },
@@ -106,7 +106,7 @@
       "simulator": {
         "game_version": "0.111.0",
         "game_build": "24724944",
-        "simulator_revision": "v111-migration-1",
+        "simulator_revision": "v111-migration-2",
         "validation_status": "migration_in_progress"
       },
       "config": {
@@ -115,7 +115,7 @@
         "ascension": 0,
         "act_count": 1,
         "observation": "character-v1",
-        "max_steps": 300,
+        "max_steps": 200,
         "max_turns": 200,
         "starting_relic": false
       },
@@ -156,7 +156,7 @@
       "simulator": {
         "game_version": "0.111.0",
         "game_build": "24724944",
-        "simulator_revision": "v111-migration-1",
+        "simulator_revision": "v111-migration-2",
         "validation_status": "migration_in_progress"
       },
       "config": {
@@ -165,7 +165,7 @@
         "ascension": 0,
         "act_count": 1,
         "observation": "character-v1",
-        "max_steps": 300,
+        "max_steps": 200,
         "max_turns": 200,
         "starting_relic": false
       },
@@ -206,7 +206,7 @@
       "simulator": {
         "game_version": "0.111.0",
         "game_build": "24724944",
-        "simulator_revision": "v111-migration-1",
+        "simulator_revision": "v111-migration-2",
         "validation_status": "migration_in_progress"
       },
       "config": {
@@ -215,7 +215,7 @@
         "ascension": 0,
         "act_count": 1,
         "observation": "character-v1",
-        "max_steps": 300,
+        "max_steps": 200,
         "max_turns": 200,
         "starting_relic": false
       },

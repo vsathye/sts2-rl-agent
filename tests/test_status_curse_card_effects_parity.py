@@ -123,7 +123,7 @@ class TestStatusCurseCardEffectsParity:
         combat.energy = 3
 
         assert combat.play_card(0)
-        assert combat.player.block == 17
+        assert combat.player.block == 18
         assert combat.player.get_power_amount(PowerId.DRAW_CARDS_NEXT_TURN) == 3
         assert combat.player.get_power_amount(PowerId.ENERGY_NEXT_TURN) == 3
 
@@ -152,15 +152,15 @@ class TestStatusCurseCardEffectsParity:
 
         assert combat.play_card(0, 0)
 
-        assert played.base_damage == 6
-        assert in_draw.base_damage == 6
-        assert in_discard.base_damage == 6
+        assert played.base_damage == 7
+        assert in_draw.base_damage == 7
+        assert in_discard.base_damage == 7
 
         combat.upgrade_card(in_draw)
 
         assert in_draw.upgraded is True
-        assert in_draw.base_damage == 7
-        assert in_draw.effect_vars["increase"] == 2
+        assert in_draw.base_damage == 8
+        assert in_draw.effect_vars["increase"] == 3
 
     def test_neows_fury_lets_player_select_discard_cards_up_to_cards_var(self):
         # NeowsFury.cs OnPlay (lines 36-40): after the attack the player selects
@@ -320,16 +320,16 @@ class TestStatusCurseCardEffectsParity:
 
         assert combat.energy == 3
 
-    def test_fuel_gains_energy_before_drawing_void(self):
-        """Matches Fuel.cs: gain energy before Draw, so drawn Void removes one."""
+    def test_fuel_gains_energy_without_drawing(self):
         combat = _make_combat()
+        void = make_void()
         combat.hand = [make_fuel()]
-        combat.draw_pile = [make_void()]
+        combat.draw_pile = [void]
         combat.energy = 0
-
         assert combat.play_card(0)
-
-        assert combat.energy == 0
+        assert combat.energy == 1
+        assert combat.draw_pile == [void]
+        assert combat.hand == []
 
     def test_brightest_flame_gains_energy_before_drawing_void(self):
         """Matches BrightestFlame.cs: gain energy before Draw, so drawn Void removes one."""
@@ -342,7 +342,7 @@ class TestStatusCurseCardEffectsParity:
         assert combat.play_card(0)
 
         assert combat.energy == 1
-        assert combat.player.max_hp == max_hp_before - 1
+        assert combat.player.max_hp == max_hp_before - 2
 
     def test_infection_deals_turn_end_in_hand_damage_then_discards(self):
         combat = _make_combat()

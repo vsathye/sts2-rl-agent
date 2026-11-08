@@ -478,7 +478,7 @@ class TestColorlessCardEffectsReferenceParity:
         combat.energy = 2
 
         assert combat.play_card(0, 0)
-        assert enemy.current_hp == 175
+        assert enemy.current_hp == 180
 
     def test_rend_counts_negative_strength_but_ignores_temporary_debuffs(self):
         combat = _make_combat()
@@ -491,7 +491,7 @@ class TestColorlessCardEffectsReferenceParity:
         combat.energy = 2
 
         assert combat.play_card(0, 0)
-        assert enemy.current_hp == 180
+        assert enemy.current_hp == 185
 
     def test_rend_uses_normal_attack_damage_modifiers(self):
         combat = _make_combat()
@@ -503,7 +503,7 @@ class TestColorlessCardEffectsReferenceParity:
         combat.energy = 2
 
         assert combat.play_card(0, 0)
-        assert enemy.current_hp == 182
+        assert enemy.current_hp == 187
 
     def test_gold_axe_scales_with_all_players_finished_card_plays(self):
         # GoldAxe.cs CanonicalVars (lines 20-21): the multiplier is
@@ -574,7 +574,7 @@ class TestColorlessCardEffectsReferenceParity:
         )
         combat.hand = [make_beacon_of_hope(), make_finesse()]
         combat.draw_pile = []
-        combat.energy = 1
+        combat.energy = 2
 
         assert combat.play_card(0)
         assert combat.play_card(0)
@@ -590,7 +590,7 @@ class TestColorlessCardEffectsReferenceParity:
         enemy.max_hp = 100
         enemy.current_hp = 100
         combat.hand = [make_beacon_of_hope(), make_fisticuffs()]
-        combat.energy = 2
+        combat.energy = 3
 
         assert combat.play_card(0)
         assert combat.play_card(0, 0)

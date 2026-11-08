@@ -1,7 +1,7 @@
 """Version identity for simulator artifacts; not a claim of complete game parity."""
 GAME_VERSION = "0.111.0"
 GAME_BUILD = "24724944"
-SIMULATOR_REVISION = "v111-migration-1"
+SIMULATOR_REVISION = "v111-migration-2"
 VALIDATION_STATUS = "migration_in_progress"
 
 

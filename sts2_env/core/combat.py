@@ -184,6 +184,7 @@ class CombatState:
         self._draw_events_this_turn: list[tuple[Creature, CardInstance, bool]] = []
         self._draw_events_combat: list[Creature] = []
         self._exhaust_events_this_turn: list[CardInstance] = []
+        self.cards_exhausted_this_combat = 0
         self._discard_events_this_turn: list[CardInstance] = []
         self._stars_gained_this_turn: list[tuple[Creature, int]] = []
         self._power_events_this_turn: list[tuple[Creature, PowerId, int, Creature | None]] = []
@@ -1057,10 +1058,16 @@ class CombatState:
         card: CardInstance,
         owner: Creature,
         added_by_player: bool,
+        creator: Creature | None = None,
     ) -> None:
         from sts2_env.core.hooks import fire_after_card_generated_for_combat
 
-        fire_after_card_generated_for_combat(card, added_by_player, self)
+        previous = getattr(self, "_active_generation_creator", None)
+        self._active_generation_creator = creator or getattr(self.active_card_source, "owner", None) or owner
+        try:
+            fire_after_card_generated_for_combat(card, added_by_player, self)
+        finally:
+            self._active_generation_creator = previous
 
     def _add_generated_card_to_combat(
         self,
@@ -1071,6 +1078,7 @@ class CombatState:
         added_by_player: bool = True,
         random_position: bool = False,
         bottom_position: bool = False,
+        creator: Creature | None = None,
     ) -> None:
         if card is None or (self._combat_started and self.is_over):
             return
@@ -1096,7 +1104,7 @@ class CombatState:
         else:
             raise ValueError(f"Unsupported generated card pile: {pile_name}")
         self._apply_card_after_card_entered_combat(card, owner)
-        self._apply_card_after_card_generated_for_combat(card, owner, added_by_player)
+        self._apply_card_after_card_generated_for_combat(card, owner, added_by_player, creator)
 
     def add_generated_card_to_creature_hand(
         self,
@@ -1120,6 +1128,7 @@ class CombatState:
         added_by_player: bool = True,
         random_position: bool = False,
         bottom_position: bool = False,
+        creator: Creature | None = None,
     ) -> None:
         self._add_generated_card_to_combat(
             card,
@@ -1128,6 +1137,7 @@ class CombatState:
             added_by_player=added_by_player,
             random_position=random_position,
             bottom_position=bottom_position,
+            creator=creator,
         )
 
     def add_generated_card_to_creature_discard(
@@ -1306,6 +1316,13 @@ class CombatState:
         card: CardInstance,
         result: CardPlayResult,
     ) -> None:
+        if card.card_id == CardId.THE_BALL:
+            allies = self.get_player_allies_of(owner)
+            if allies:
+                owner = self.combat_targets_rng.choice(allies)
+                card.owner = owner
+                if result.pile_type == PileType.DISCARD:
+                    result = CardPlayResult(PileType.DRAW, CardPilePosition.RANDOM)
         owner_state = self.combat_player_state_for(owner) or self.current_player_state
         if result.pile_type == PileType.NONE:
             return
@@ -1447,6 +1464,16 @@ class CombatState:
 
         while self._pending_play is not None:
             ctx = self._pending_play
+            queued = ctx.get("after_play_autoplays", [])
+            if queued:
+                # Finish the current hook dispatch before starting a copied
+                # card. Preserve the parent across any child card choice.
+                self.auto_play_card(queued.pop(0))
+                if self.pending_choice is not None and self._pending_play is not None:
+                    self._pending_play["_resume_parent"] = ctx
+                    return
+                self._pending_play = ctx
+                continue
             card = ctx["card"]
             target = ctx["target"]
             owner = ctx["owner"]
@@ -1463,6 +1490,8 @@ class CombatState:
                     apply_enchantment_after_card_played(card)
                     self._fire_after_card_played_late(card)
                 ctx["awaiting_after_hook"] = False
+                if ctx.get("after_play_autoplays"):
+                    continue
                 if self.is_over:
                     self._pending_play = None
                     return
@@ -1472,7 +1501,9 @@ class CombatState:
                     owner_state.play.remove(card)
 
                 if any(card in pile for pile in owner_state.all_piles):
-                    self._pending_play = None
+                    self._pending_play = ctx.get("_resume_parent")
+                    if self._pending_play is not None:
+                        continue
                     return
 
                 result = self._modified_card_play_result(
@@ -1483,7 +1514,9 @@ class CombatState:
                     energy_value=ctx["energy_value"],
                 )
                 self._move_card_to_play_result(owner, card, result)
-                self._pending_play = None
+                self._pending_play = ctx.get("_resume_parent")
+                if self._pending_play is not None:
+                    continue
                 if self._end_turn_after_play and self.current_side == CombatSide.PLAYER and not self.is_over:
                     self._end_turn_after_play = False
                     self.end_player_turn()
@@ -1515,6 +1548,8 @@ class CombatState:
                 apply_enchantment_on_card_played(card, self)
                 apply_enchantment_after_card_played(card)
                 self._fire_after_card_played_late(card)
+            if self.pending_choice is not None:
+                return
             if self.is_over:
                 self._pending_play = None
                 return
@@ -2433,6 +2468,7 @@ class CombatState:
 
     def record_card_exhausted(self, card: CardInstance) -> None:
         self._exhaust_events_this_turn.append(card)
+        self.cards_exhausted_this_combat += 1
 
     def was_card_exhausted_this_turn(self, owner: Creature) -> bool:
         return any(getattr(card, "owner", None) is owner for card in self._exhaust_events_this_turn)

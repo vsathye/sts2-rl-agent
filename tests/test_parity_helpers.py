@@ -2708,7 +2708,7 @@ class TestStatusParity:
         assert combat.play_card(0)
         assert combat.energy == 2
         assert len(combat.hand) == 2
-        assert combat.player.max_hp == starting_max_hp - 1
+        assert combat.player.max_hp == starting_max_hp - 2
         assert combat.player.current_hp == min(starting_hp, combat.player.max_hp)
 
     def test_beckon_triggers_at_turn_end_in_hand_not_on_draw(self):
@@ -2921,7 +2921,7 @@ class TestStatusParity:
             ("Silent", create_ironclad_starter_deck(), make_survivor(), 8),
             ("Defect", create_defect_starter_deck(), make_charge_battery(), 7),
             ("Ironclad", create_ironclad_starter_deck(), make_stack(), 3),
-            ("Necrobinder", create_necrobinder_starter_deck(), make_sacrifice(), 10),
+            ("Necrobinder", create_necrobinder_starter_deck(), make_sacrifice(), 15),
         ]
         for character_id, deck, card, expected_block in cases:
             combat = _make_combat(deck, character_id)
@@ -3272,7 +3272,7 @@ class TestStatusParity:
         assert combat.osty is not None
         assert combat.osty.max_hp == 20
 
-    def test_sacrifice_kills_osty_and_gains_double_max_hp_block(self):
+    def test_sacrifice_kills_osty_and_gains_triple_max_hp_block(self):
         combat = _make_combat(create_necrobinder_starter_deck(), "Necrobinder")
         combat.summon_osty(combat.player, 5)
         card = make_sacrifice()
@@ -3282,7 +3282,7 @@ class TestStatusParity:
         assert combat.play_card(0)
         assert combat.osty is not None
         assert not combat.osty.is_alive
-        assert combat.player.block == 10
+        assert combat.player.block == 15
 
     def test_end_of_days_immediately_kills_doomed_enemies(self):
         combat = _make_combat(create_necrobinder_starter_deck(), "Necrobinder")
@@ -3373,7 +3373,7 @@ class TestStatusParity:
         assert combat.pending_choice is None
         assert target_card.is_ethereal
 
-    def test_eidolon_exhausts_hand_and_grants_intangible_when_threshold_met(self):
+    def test_eidolon_preserves_non_ethereal_hand_without_granting_intangible(self):
         combat = _make_combat(create_necrobinder_starter_deck(), "Necrobinder")
         card = CardInstance(
             card_id=CardId.EIDOLON,
@@ -3386,9 +3386,9 @@ class TestStatusParity:
         combat.energy = 2
 
         assert combat.play_card(0)
-        assert len(combat.hand) == 0
-        assert len(combat.exhaust_pile) >= 9
-        assert combat.player.has_power(PowerId.INTANGIBLE)
+        assert len(combat.hand) == 9
+        assert all(c.card_id == CardId.EIDOLON for c in combat.exhaust_pile)
+        assert not combat.player.has_power(PowerId.INTANGIBLE)
 
     def test_transfigure_grants_replay_and_increases_cost(self):
         combat = _make_combat(create_necrobinder_starter_deck(), "Necrobinder")
